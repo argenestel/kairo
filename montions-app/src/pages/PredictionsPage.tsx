@@ -3,7 +3,7 @@ import type { EventCategory, EventInfo } from '../chains/types';
 import { ChainGlyph, Search } from '../components/Icons';
 import { useCopy } from '../copy';
 import { eventSource, noAsk, yesAsk } from '../lib/events';
-import { fmtCents, fmtCountdown, fmtDayLong, fmtPct, fmtVolume } from '../lib/format';
+import { fmtCents, fmtCountdown, fmtDayLong, fmtVolume } from '../lib/format';
 import { useNow } from '../lib/hooks';
 import { useChain } from '../state/chain';
 import { Link } from '../state/route';
@@ -28,6 +28,12 @@ function titleCase(value: string): string {
   return value.slice(0, 1).toUpperCase() + value.slice(1);
 }
 
+function probabilityLabels(yes: number | undefined): [string, string] {
+  if (yes == null) return ['—', '—'];
+  const yesWhole = Math.round(yes * 100);
+  return [`${yesWhole}%`, `${100 - yesWhole}%`];
+}
+
 function DemoBadge() {
   return <span className="predictions-page__demo"><span className="predictions-page__demo-dot" />Demo only</span>;
 }
@@ -38,19 +44,19 @@ function ChainBadge({ label, chain }: { label: string; chain: ReturnType<typeof 
 
 function Probability({ event, feature = false }: { event: EventInfo; feature?: boolean }) {
   const yes = eventProbability(event);
-  const no = yes == null ? undefined : 1 - yes;
+  const [yesLabel, noLabel] = probabilityLabels(yes);
   const style = yes == null ? undefined : { '--yes-share': `${yes * 100}%` } as CSSProperties;
   return (
     <div className={`probability-readout${feature ? ' probability-readout--feature' : ''}`}>
       <div className="probability-readout__line">
-        <b>{yes == null ? '—' : fmtPct(yes)}</b>
+        <b>{yesLabel}</b>
         <span>YES probability</span>
       </div>
-      <div className={`probability-bar${yes == null ? ' is-unknown' : ''}`} style={style} aria-label={yes == null ? 'Probability unavailable' : `YES ${fmtPct(yes)}, NO ${fmtPct(no!)}`}>
+      <div className={`probability-bar${yes == null ? ' is-unknown' : ''}`} style={style} aria-label={yes == null ? 'Probability unavailable' : `YES ${yesLabel}, NO ${noLabel}`}>
         <span className="probability-bar__yes" />
         <span className="probability-bar__no" />
       </div>
-      <div className="probability-readout__ends"><b>YES {yes == null ? '—' : fmtPct(yes)}</b><b>NO {no == null ? '—' : fmtPct(no)}</b></div>
+      <div className="probability-readout__ends"><b>YES {yesLabel}</b><b>NO {noLabel}</b></div>
     </div>
   );
 }
@@ -106,6 +112,7 @@ function EventCard({ event, chain, demo, now, copy }: {
   const yes = yesAsk(event);
   const no = noAsk(event);
   const probability = eventProbability(event);
+  const [yesLabel] = probabilityLabels(probability);
   const style = probability == null ? undefined : { '--yes-share': `${probability * 100}%` } as CSSProperties;
   return (
     <li>
@@ -119,7 +126,7 @@ function EventCard({ event, chain, demo, now, copy }: {
         </div>
         <h2><Link className="predictions-card__question-link" to={`/predictions/${encodeURIComponent(event.key)}`}>{event.question}</Link></h2>
         <div className="predictions-card__probability">
-          <div className="predictions-card__probability-line"><span>YES probability</span><strong>{probability == null ? '—' : fmtPct(probability)}</strong></div>
+          <div className="predictions-card__probability-line"><span>YES probability</span><strong>{yesLabel}</strong></div>
           <div className={`probability-bar${probability == null ? ' is-unknown' : ''}`} style={style} aria-hidden><span className="probability-bar__yes" /><span className="probability-bar__no" /></div>
         </div>
         <div className="predictions-card__prices">

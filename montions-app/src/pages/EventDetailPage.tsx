@@ -21,6 +21,12 @@ function titleCase(value: string): string {
   return value.slice(0, 1).toUpperCase() + value.slice(1);
 }
 
+function probabilityLabels(yes: number | undefined): [string, string] {
+  if (yes == null) return ['—', '—'];
+  const yesWhole = Math.round(yes * 100);
+  return [`${yesWhole}%`, `${100 - yesWhole}%`];
+}
+
 function clampProbability(value: number): number {
   return Math.max(0.01, Math.min(0.99, value));
 }
@@ -115,6 +121,7 @@ export default function EventDetailPage({ eventKey }: { eventKey: string }) {
       return;
     }
     let live = true;
+    setQuote(null);
     sourceAdapter.quoteEvent(event.id, outcome, budget).then(
       (q) => { if (live) setQuote(q); },
       () => { if (live) setQuote(null); },
@@ -232,7 +239,7 @@ function EventPick({ event, demo, outcome, budget, quote, positions, onOutcome, 
   const y = yesAsk(event);
   const n = noAsk(event);
   const probability = eventProbability(event);
-  const noProbability = probability == null ? undefined : 1 - probability;
+  const [yesLabel, noLabel] = probabilityLabels(probability);
   const probabilityStyle = probability == null ? undefined : { '--yes-share': `${probability * 100}%` } as CSSProperties;
   const closed = event.status !== 'open' || event.closeTime <= now;
   const stages = timelineStages(event, now);
@@ -259,10 +266,10 @@ function EventPick({ event, demo, outcome, budget, quote, positions, onOutcome, 
           <section className="event-detail__panel glass" aria-labelledby="market-outlook">
             <div className="event-detail__panel-head"><div><h2 id="market-outlook">Market outlook</h2><small>Probability implied by the current YES/NO book</small></div><span className="status-badge status-badge--open">Live quote</span></div>
             <div className="event-probability">
-              <div className="event-probability__big"><b>{probability == null ? '—' : fmtPct(probability)}</b><span>YES chance</span></div>
+              <div className="event-probability__big"><b>{yesLabel}</b><span>YES chance</span></div>
               <div className="event-probability__detail">
-                <div className={`probability-bar${probability == null ? ' is-unknown' : ''}`} style={probabilityStyle} aria-label={probability == null ? 'Probability unavailable' : `YES ${fmtPct(probability)}, NO ${fmtPct(noProbability!)}`}><span className="probability-bar__yes" /><span className="probability-bar__no" /></div>
-                <div className="probability-readout__ends"><b>YES {probability == null ? '—' : fmtPct(probability)} · {y != null ? fmtCents(y) : '—'}</b><b>NO {noProbability == null ? '—' : fmtPct(noProbability)} · {n != null ? fmtCents(n) : '—'}</b></div>
+                <div className={`probability-bar${probability == null ? ' is-unknown' : ''}`} style={probabilityStyle} aria-label={probability == null ? 'Probability unavailable' : `YES ${yesLabel}, NO ${noLabel}`}><span className="probability-bar__yes" /><span className="probability-bar__no" /></div>
+                <div className="probability-readout__ends"><b>YES {yesLabel} · {y != null ? fmtCents(y) : '—'}</b><b>NO {noLabel} · {n != null ? fmtCents(n) : '—'}</b></div>
               </div>
             </div>
           </section>
@@ -299,7 +306,7 @@ function EventPick({ event, demo, outcome, budget, quote, positions, onOutcome, 
           </div>
           <label className="event-buy__amount"><span className="event-buy__label">Amount at risk</span><span className="event-buy__input-wrap"><span className="event-buy__currency">$</span><input className="event-buy__input num" type="number" min="1" max="10000" step="1" value={budget} onChange={(input) => onBudget(Math.max(1, Math.min(10000, Number(input.target.value) || 1)))} /></span><span className="event-buy__quick">{[25, 50, 100, 250].map((amount) => <button key={amount} type="button" onClick={() => onBudget(amount)}>${amount}</button>)}</span></label>
           <dl className="event-buy__metrics">
-            <div className="event-buy__metric"><dt>Chance</dt><dd className={outcome === 'yes' ? 'up' : 'down'}>{(outcome === 'yes' ? probability : noProbability) == null ? '—' : fmtPct(outcome === 'yes' ? probability! : noProbability!)}</dd></div>
+            <div className="event-buy__metric"><dt>Chance</dt><dd className={outcome === 'yes' ? 'up' : 'down'}>{outcome === 'yes' ? yesLabel : noLabel}</dd></div>
             <div className="event-buy__metric"><dt>Contracts</dt><dd>{quote?.contracts ? fmtContracts(quote.contracts) : '—'}</dd></div>
             <div className="event-buy__metric"><dt>Payout if right</dt><dd>{quote?.payout ? fmtMoney(quote.payout, 2) : '—'}</dd></div>
             <div className="event-buy__metric"><dt>Max loss</dt><dd>{quote?.cost ? fmtMoney(quote.cost, 2) : fmtMoney(budget, 2)}</dd></div>
@@ -311,7 +318,7 @@ function EventPick({ event, demo, outcome, budget, quote, positions, onOutcome, 
       </div>
 
       <div className="event-mobile-buybar" aria-label="Buy ticket">
-        <div className="event-mobile-buybar__summary"><b>{outcome.toUpperCase()} · {quote?.contracts ? fmtContracts(quote.contracts) : '—'} contracts</b><span>{quote?.cost ? fmtMoney(quote.cost, 2) : fmtMoney(budget, 2)} max loss · {(outcome === 'yes' ? probability : noProbability) == null ? '—' : fmtPct(outcome === 'yes' ? probability! : noProbability!)} chance</span></div>
+        <div className="event-mobile-buybar__summary"><b>{outcome.toUpperCase()} · {quote?.contracts ? fmtContracts(quote.contracts) : '—'} contracts</b><span>{quote?.cost ? fmtMoney(quote.cost, 2) : fmtMoney(budget, 2)} max loss · {outcome === 'yes' ? yesLabel : noLabel} chance</span></div>
         <button type="button" onClick={onPrint} disabled={closed || !quote?.tradable}>{buyLabel}</button>
       </div>
     </div>
