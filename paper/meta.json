@@ -1,0 +1,8 @@
+{
+  "title": "Canonical Events",
+  "subtitle": "Fully collateralised binary options with oracle-equivalent settlement and contingent-surplus netting",
+  "authors": "Montions",
+  "date": "2026-10-11",
+  "version": "0.1.0",
+  "abstract": "Options and prediction-market liquidity are siloed per chain, and each venue has its own oracle and its own notion of the price at expiry. Bridging collateral to unify them adds credit and attestation risk while the ticket is still open. This paper specifies Canonical Events: a chain-agnostic market key (asset, strike, expiry, comparator), a shared first-print settlement rule that each oracle class proves or approximates onchain, and fully collateralised local books so that nothing cross-chain is ever under-collateralised. The new primitive is contingent-surplus netting: an unpaired YES burned on venue A and an unpaired NO burned on venue B are together worth exactly $1 in every agreeing state, paid after settlement from whichever venue holds the surplus. Teleport and cross-venue maker netting are built on the same receipt. We state invariants, quantify near-strike basis risk, define a disagreement reserve, and separate what is live on testnets (per-venue CLOB, collateral, settlement, canonical keys, multi-chain routing UI) from what is proposed (contingent-surplus netting, teleport, cross-venue maker netting)."
+}

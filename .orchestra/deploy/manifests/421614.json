@@ -1,0 +1,61 @@
+{
+  "chainId": 421614,
+  "network": "testnet",
+  "oracle": "chainlink",
+  "rpc": "https://sepolia-rollup.arbitrum.io/rpc",
+  "explorer": "https://sepolia.arbiscan.io",
+  "contracts": {
+    "book": "0x26F24a01ba7EE5C5Ca29f73b9BbB7d4cFAa0035e",
+    "bookEngine": "0x635c6981Ec028Bbde45603B52d50B0f9f89e070d",
+    "chainlinkOracle": "0xAE3Bc21Cf5A4bF961DbBeC69066A937b88e2704B",
+    "chainlinkResolver": "0xc907f4FEF8782d87f17D4CC181A3f0AE267735A3",
+    "collateral": "0x844EAC441D9c70Dc6745Ca1a41643995B7B04612",
+    "quoter": "0x4094e4CC956d989580233034b6B898db4aE6b78e",
+    "vault": "0x6EBFA2426f1ae0Bfd87fDFAFde093C1E583f457A"
+  },
+  "assets": [
+    {
+      "symbol": "ETH",
+      "name": "Ethereum",
+      "assetId": "0xaaaebeba3810b1e6b70781f14b2d72c1cb89c0b2b320c43bb67ff79f562f5ff4",
+      "feed": "0xd30e2101a97dcbAeBCBC04F14C3f624E67A35165",
+      "decimals": 8,
+      "quote": "USD",
+      "oracle": "chainlink",
+      "settleDelay": 3600,
+      "ladder": true,
+      "strikeStep": 25,
+      "tier": "major",
+      "mock": false
+    },
+    {
+      "symbol": "BTC",
+      "name": "Bitcoin",
+      "assetId": "0xe98e2830be1a7e4156d656a7505e65d08c67660dc618072422e9c78053c261e9",
+      "feed": "0x56a43EB56Da12C0dc1D972ACb089c06a5dEF8e69",
+      "decimals": 8,
+      "quote": "USD",
+      "oracle": "chainlink",
+      "settleDelay": 3600,
+      "ladder": true,
+      "strikeStep": 500,
+      "tier": "major",
+      "mock": false
+    },
+    {
+      "symbol": "LINK",
+      "name": "Chainlink",
+      "assetId": "0x921a3539bcb764c889432630877414523e7fbca00c211bc787aeae69e2e3a779",
+      "feed": "0x0FB99723Aee6f420beAD13e6bBB79b7E6F034298",
+      "decimals": 8,
+      "quote": "USD",
+      "oracle": "chainlink",
+      "settleDelay": 3600,
+      "ladder": true,
+      "strikeStep": 0.25,
+      "tier": "major",
+      "mock": false
+    }
+  ],
+  "startBlock": "318126996"
+}

@@ -1,0 +1,14 @@
+{
+  "cluster": "devnet",
+  "pythReceiver": "rec5EKMGg6MxZYaMdyBfgwp4d5rB9T1VQH5pJv5LtFJ",
+  "pythPushOracle": "pythWSnswVUd12oZpeFP8e9CVaEqJg25g1Vtc2biRsT",
+  "note": "strikeStep in USD; vol is annualised; priceAccount = Pyth sponsored PriceUpdateV2 (shard 0) on devnet",
+  "assets": [
+    { "symbol": "SOL",  "name": "Solana",   "feedId": "ef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d", "priceAccount": "7UVimffxr9ow1uXYxsr4LHAcV58mLzhmwaeKvJ1pjLiE", "strikeStep": 1,     "vol": 0.85, "maxConfBps": 200, "settleWindow": 60 },
+    { "symbol": "BTC",  "name": "Bitcoin",  "feedId": "e62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43", "priceAccount": "4cSM2e6rvbGQUFiJbqytoVMi5GgghSMr8LwVrT9VPSPo", "strikeStep": 500,   "vol": 0.55, "maxConfBps": 200, "settleWindow": 60 },
+    { "symbol": "ETH",  "name": "Ethereum", "feedId": "ff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace", "priceAccount": "42amVS4KgzR9rA28tkVYqVXjq9Qa8dcZQMbH5EYFX6XC", "strikeStep": 25,    "vol": 0.70, "maxConfBps": 200, "settleWindow": 60 },
+    { "symbol": "BNB",  "name": "BNB",      "feedId": "2f95862b045670cd22bee3114c39763a4a08beeb663b145d283c31d7d1101c4f", "priceAccount": "A3qp5QG9xGeJR1gexbW9b9eMMsMDLzx3rhud9SnNhwb4", "strikeStep": 5,     "vol": 0.60, "maxConfBps": 200, "settleWindow": 60 },
+    { "symbol": "XRP",  "name": "XRP",      "feedId": "ec5d399846a9209f3fe5881d70aae9268c94339ff9817e8d18ff19fa05eea1c8", "priceAccount": "Ae3LGcV5Wt5Z11xvhxSX1h65uNyjuX4qYFFbgifLx5eX", "strikeStep": 0.01,  "vol": 0.90, "maxConfBps": 200, "settleWindow": 60 },
+    { "symbol": "DOGE", "name": "Dogecoin", "feedId": "dcef50dd0a4cd2dcc17e45df1676dcb336a11a61c69df7a0299b0150c672d25c", "priceAccount": "681QkKLoAQrB5h23Ewq9c8rjM19RBuzqwXZf2RPr9Pyw", "strikeStep": 0.001, "vol": 1.00, "maxConfBps": 200, "settleWindow": 60 }
+  ]
+}

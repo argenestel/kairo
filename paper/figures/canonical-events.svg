@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420" role="img" aria-labelledby="t1 d1">
+  <title id="t1">Canonical event across venues</title>
+  <desc id="d1">One chain-agnostic event key fans out to four fully collateralised venue books, each with its own oracle and local USDC.</desc>
+  <style>
+    .line { fill: none; stroke: currentColor; stroke-width: 1.5; }
+    .line-dash { fill: none; stroke: currentColor; stroke-width: 1.2; stroke-dasharray: 4 3; opacity: 0.7; }
+    .box { fill: none; stroke: currentColor; stroke-width: 1.5; }
+    .label { fill: currentColor; font-family: ui-sans-serif, system-ui, sans-serif; }
+  </style>
+
+  <!-- canonical event -->
+  <rect class="box" x="210" y="24" width="300" height="88" rx="8"/>
+  <text class="label" x="360" y="50" text-anchor="middle" font-size="13" font-weight="600">Canonical event κ</text>
+  <text class="label" x="360" y="72" text-anchor="middle" font-size="12">(SOL, 120, T, ≥)</text>
+  <text class="label" x="360" y="94" text-anchor="middle" font-size="11" opacity="0.75">key = SOL:120:T</text>
+
+  <!-- fan-out -->
+  <path class="line" d="M360 112 L360 148"/>
+  <path class="line" d="M360 148 L90 148 L90 176"/>
+  <path class="line" d="M360 148 L270 148 L270 176"/>
+  <path class="line" d="M360 148 L450 148 L450 176"/>
+  <path class="line" d="M360 148 L630 148 L630 176"/>
+
+  <!-- venue cards -->
+  <g>
+    <rect class="box" x="18" y="176" width="144" height="168" rx="8"/>
+    <text class="label" x="90" y="200" text-anchor="middle" font-size="12" font-weight="600">Base</text>
+    <text class="label" x="90" y="220" text-anchor="middle" font-size="10" opacity="0.75">Sepolia · 84532</text>
+    <rect class="box" x="36" y="236" width="108" height="36" rx="4"/>
+    <text class="label" x="90" y="258" text-anchor="middle" font-size="11">CLOB · tUSDC</text>
+    <text class="label" x="90" y="292" text-anchor="middle" font-size="10">Chainlink</text>
+    <text class="label" x="90" y="310" text-anchor="middle" font-size="10" opacity="0.75">first round ≥ T</text>
+    <text class="label" x="90" y="328" text-anchor="middle" font-size="10">YES iff P ≥ 120</text>
+  </g>
+  <g>
+    <rect class="box" x="198" y="176" width="144" height="168" rx="8"/>
+    <text class="label" x="270" y="200" text-anchor="middle" font-size="12" font-weight="600">Arbitrum</text>
+    <text class="label" x="270" y="220" text-anchor="middle" font-size="10" opacity="0.75">Sepolia · 421614</text>
+    <rect class="box" x="216" y="236" width="108" height="36" rx="4"/>
+    <text class="label" x="270" y="258" text-anchor="middle" font-size="11">CLOB · tUSDC</text>
+    <text class="label" x="270" y="292" text-anchor="middle" font-size="10">Chainlink</text>
+    <text class="label" x="270" y="310" text-anchor="middle" font-size="10" opacity="0.75">first round ≥ T</text>
+    <text class="label" x="270" y="328" text-anchor="middle" font-size="10">YES iff P ≥ 120</text>
+  </g>
+  <g>
+    <rect class="box" x="378" y="176" width="144" height="168" rx="8"/>
+    <text class="label" x="450" y="200" text-anchor="middle" font-size="12" font-weight="600">HyperEVM</text>
+    <text class="label" x="450" y="220" text-anchor="middle" font-size="10" opacity="0.75">testnet · 998</text>
+    <rect class="box" x="396" y="236" width="108" height="36" rx="4"/>
+    <text class="label" x="450" y="258" text-anchor="middle" font-size="11">CLOB · tUSDC</text>
+    <text class="label" x="450" y="292" text-anchor="middle" font-size="10">HyperCore</text>
+    <text class="label" x="450" y="310" text-anchor="middle" font-size="10" opacity="0.75">record in [T, T+W]</text>
+    <text class="label" x="450" y="328" text-anchor="middle" font-size="10">YES iff P ≥ 120</text>
+  </g>
+  <g>
+    <rect class="box" x="558" y="176" width="144" height="168" rx="8"/>
+    <text class="label" x="630" y="200" text-anchor="middle" font-size="12" font-weight="600">Solana</text>
+    <text class="label" x="630" y="220" text-anchor="middle" font-size="10" opacity="0.75">devnet</text>
+    <rect class="box" x="576" y="236" width="108" height="36" rx="4"/>
+    <text class="label" x="630" y="258" text-anchor="middle" font-size="11">CLOB · tUSDC</text>
+    <text class="label" x="630" y="292" text-anchor="middle" font-size="10">Pyth</text>
+    <text class="label" x="630" y="310" text-anchor="middle" font-size="10" opacity="0.75">first print ≥ T</text>
+    <text class="label" x="630" y="328" text-anchor="middle" font-size="10">YES iff P ≥ 120</text>
+  </g>
+
+  <text class="label" x="360" y="372" text-anchor="middle" font-size="11" opacity="0.8">Same economic event. Local collateral. Venue-local oracle under a shared first-print rule.</text>
+  <text class="label" x="360" y="394" text-anchor="middle" font-size="11" opacity="0.8">Nothing is bridged to open or settle a ticket.</text>
+</svg>

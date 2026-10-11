@@ -1,0 +1,7 @@
+[
+  { "slug": "thesis", "title": "Thesis", "file": "thesis/thesis.md" },
+  { "slug": "litepaper", "title": "Litepaper", "file": "thesis/litepaper.md" },
+  { "slug": "pitch", "title": "Pitch", "file": "thesis/pitch.md" },
+  { "slug": "submission", "title": "Hackathon submission", "file": "thesis/submission.md" },
+  { "slug": "demo-script", "title": "Demo script", "file": "thesis/demo-script.md" }
+]

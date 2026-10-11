@@ -1,0 +1,14 @@
+{
+  "chainId": 84532,
+  "contracts": {
+    "book": "0xe576F3037f23f166fA402a2cd18b4193340280DE",
+    "bookEngine": "0x842fB7478A8c123F514870767f7D47528b68A846",
+    "chainlinkOracle": "0x12A579C7De04c4369e1FDB7400bAdd4547e8cDC5",
+    "chainlinkResolver": "0x7a4cA85e5F4e5a5E794f74Be353E4d915bD1996e",
+    "collateral": "0x63D93aa61454055F2d710c0db4e1C0d71cfc8223",
+    "quoter": "0x81e77a74526d97b8Ead63091636e9313251267C1",
+    "vault": "0xAd8073A78ec9D353726Ee1dAC6AAeC17d99A2723"
+  },
+  "feedsRegistered": 9,
+  "startBlock": 47980636
+}

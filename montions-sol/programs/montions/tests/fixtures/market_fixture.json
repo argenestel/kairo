@@ -1,0 +1,74 @@
+{
+  "comment": "Market account produced by programs/montions/tests/engine_fixture.rs. u64/i64 as decimal strings; side 0=bid 1=ask; NIL=255; levels best-first with FIFO order ids; orders = live slots by slot index; seats = allocated seats; trades newest first.",
+  "accountSize": 5184,
+  "discriminatorHex": "dbbed53700e3c69a",
+  "actors": { "maker": "4ejCctnusizkTnjmc6pHFSV95NLA4rWi8ju8KAsZ6N94", "alice": "6kDN4EEECyCmnbVW8MvmGaQneHrPwpo8TPPjExb7Kr3f", "bob": "8qhXVZfYYDQo7QFEed3FHiLSDDNYyW4igEspTDWTbbwz" },
+  "header": {
+    "asset": "36bQKy5gGsAYFhz6aEK9ZJjbTiVXaPirHMa2yRqoQ2ZV",
+    "feedIdHex": "e0e1e2e3e4e5e6e7e8e9eaebecedeeeff0f1f2f3f4f5f6f7f8f9fafbfcfdfeff",
+    "creator": "5C5ZmJWzc7NZaWjq6VRdaSfF2e1mTN1Gc1ENnD7oYCaS",
+    "yesMint": "7HZjCdxJwMaauKVZckY7baatbZY1LLHguuuTWSJH2r8u",
+    "noMint": "9P3tdyPdGbncE8FJ91ebciWYAUgqeCuoekKNvjXxa6Uk",
+    "vault": "BUY45JpwbqzdYw12fGm5bSMnVjowaMCG9MGMpEevZkUT",
+    "strike": "15000000000",
+    "expiry": "1760004000",
+    "createdAt": "1759999700",
+    "settlePrice": "0",
+    "settlePublishTime": "0",
+    "pool": "50000000",
+    "yesTotal": "50",
+    "noTotal": "50",
+    "fees": "49680",
+    "volume": "30",
+    "nextOrderId": "12",
+    "bidBits": ["4547580092481536", "0"],
+    "askBits": ["6196953087261802496", "0"],
+    "status": 1,
+    "outcome": 0,
+    "bump": 254,
+    "vaultBump": 253,
+    "yesMintBump": 252,
+    "noMintBump": 251,
+    "lastTradeTick": 57,
+    "tradeHead": 6,
+    "tradeCount": 6,
+    "freeHead": 9
+  },
+  "bestBid": 52,
+  "bestAsk": 57,
+  "bids": [
+    { "tick": 52, "qty": "4", "orderIds": ["7"] },
+    { "tick": 45, "qty": "3", "orderIds": ["1"] },
+    { "tick": 43, "qty": "12", "orderIds": ["2", "10"] }
+  ],
+  "asks": [
+    { "tick": 57, "qty": "2", "orderIds": ["4"] },
+    { "tick": 58, "qty": "4", "orderIds": ["8", "11"] },
+    { "tick": 60, "qty": "8", "orderIds": ["6"] },
+    { "tick": 62, "qty": "5", "orderIds": ["9"] }
+  ],
+  "orders": [
+    { "slot": 0, "id": "1", "qty": "3", "ts": "1760000000", "seat": 0, "owner": "4ejCctnusizkTnjmc6pHFSV95NLA4rWi8ju8KAsZ6N94", "side": 0, "tick": 45, "fromHeld": false, "prev": 255, "next": 255 },
+    { "slot": 1, "id": "2", "qty": "10", "ts": "1760000000", "seat": 0, "owner": "4ejCctnusizkTnjmc6pHFSV95NLA4rWi8ju8KAsZ6N94", "side": 0, "tick": 43, "fromHeld": false, "prev": 255, "next": 7 },
+    { "slot": 2, "id": "9", "qty": "5", "ts": "1760000026", "seat": 0, "owner": "4ejCctnusizkTnjmc6pHFSV95NLA4rWi8ju8KAsZ6N94", "side": 1, "tick": 62, "fromHeld": true, "prev": 255, "next": 255 },
+    { "slot": 3, "id": "4", "qty": "2", "ts": "1760000000", "seat": 0, "owner": "4ejCctnusizkTnjmc6pHFSV95NLA4rWi8ju8KAsZ6N94", "side": 1, "tick": 57, "fromHeld": false, "prev": 255, "next": 255 },
+    { "slot": 4, "id": "7", "qty": "4", "ts": "1760000015", "seat": 2, "owner": "8qhXVZfYYDQo7QFEed3FHiLSDDNYyW4igEspTDWTbbwz", "side": 0, "tick": 52, "fromHeld": true, "prev": 255, "next": 255 },
+    { "slot": 5, "id": "6", "qty": "8", "ts": "1760000005", "seat": 2, "owner": "8qhXVZfYYDQo7QFEed3FHiLSDDNYyW4igEspTDWTbbwz", "side": 1, "tick": 60, "fromHeld": true, "prev": 255, "next": 255 },
+    { "slot": 6, "id": "8", "qty": "3", "ts": "1760000021", "seat": 1, "owner": "6kDN4EEECyCmnbVW8MvmGaQneHrPwpo8TPPjExb7Kr3f", "side": 1, "tick": 58, "fromHeld": false, "prev": 255, "next": 8 },
+    { "slot": 7, "id": "10", "qty": "2", "ts": "1760000029", "seat": 2, "owner": "8qhXVZfYYDQo7QFEed3FHiLSDDNYyW4igEspTDWTbbwz", "side": 0, "tick": 43, "fromHeld": false, "prev": 1, "next": 255 },
+    { "slot": 8, "id": "11", "qty": "1", "ts": "1760000029", "seat": 1, "owner": "6kDN4EEECyCmnbVW8MvmGaQneHrPwpo8TPPjExb7Kr3f", "side": 1, "tick": 58, "fromHeld": false, "prev": 6, "next": 255 }
+  ],
+  "seats": [
+    { "index": 0, "owner": "4ejCctnusizkTnjmc6pHFSV95NLA4rWi8ju8KAsZ6N94", "cash": "32400000", "locked": "6510000", "yes": "2", "no": "18", "yesLocked": "5", "noLocked": "0", "openOrders": 4 },
+    { "index": 1, "owner": "6kDN4EEECyCmnbVW8MvmGaQneHrPwpo8TPPjExb7Kr3f", "cash": "0", "locked": "1680000", "yes": "5", "no": "0", "yesLocked": "0", "noLocked": "0", "openOrders": 2 },
+    { "index": 2, "owner": "8qhXVZfYYDQo7QFEed3FHiLSDDNYyW4igEspTDWTbbwz", "cash": "0", "locked": "860000", "yes": "0", "no": "0", "yesLocked": "8", "noLocked": "4", "openOrders": 3 }
+  ],
+  "trades": [
+    { "ts": "1760000027", "qty": 2, "tick": 57, "takerIsBuyer": true },
+    { "ts": "1760000023", "qty": 6, "tick": 57, "takerIsBuyer": true },
+    { "ts": "1760000023", "qty": 4, "tick": 55, "takerIsBuyer": true },
+    { "ts": "1760000014", "qty": 7, "tick": 45, "takerIsBuyer": false },
+    { "ts": "1760000014", "qty": 5, "tick": 47, "takerIsBuyer": false },
+    { "ts": "1760000009", "qty": 6, "tick": 55, "takerIsBuyer": true }
+  ]
+}

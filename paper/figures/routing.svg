@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 400" role="img" aria-labelledby="t4 d4">
+  <title id="t4">Collateral-local, liquidity-global routing</title>
+  <desc id="d4">A ticket is quoted on every venue that lists the canonical event. The router picks a book. Collateral never leaves its chain until a proposed post-settlement surplus transfer.</desc>
+  <style>
+    .line { fill: none; stroke: currentColor; stroke-width: 1.5; }
+    .arrow { fill: none; stroke: currentColor; stroke-width: 1.5; marker-end: url(#arr4); }
+    .box { fill: none; stroke: currentColor; stroke-width: 1.5; }
+    .label { fill: currentColor; font-family: ui-sans-serif, system-ui, sans-serif; }
+  </style>
+  <defs>
+    <marker id="arr4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+    </marker>
+  </defs>
+
+  <rect class="box" x="40" y="28" width="280" height="88" rx="8"/>
+  <text class="label" x="180" y="58" text-anchor="middle" font-size="13" font-weight="600">Ticket</text>
+  <text class="label" x="180" y="80" text-anchor="middle" font-size="11">“SOL above $120 by Friday”</text>
+  <text class="label" x="180" y="100" text-anchor="middle" font-size="11" opacity="0.75">budget $100 · max loss = premium</text>
+
+  <path class="arrow" d="M320 72 L390 72"/>
+
+  <rect class="box" x="390" y="28" width="290" height="88" rx="8"/>
+  <text class="label" x="535" y="58" text-anchor="middle" font-size="13" font-weight="600">Router</text>
+  <text class="label" x="535" y="80" text-anchor="middle" font-size="11">κ = SOL:120:T · quote all books</text>
+  <text class="label" x="535" y="100" text-anchor="middle" font-size="11" opacity="0.75">best contracts per dollar, live book</text>
+
+  <!-- three venue quotes -->
+  <path class="arrow" d="M180 116 L180 168"/>
+  <path class="arrow" d="M535 116 L535 168"/>
+  <path class="line" d="M180 168 L535 168"/>
+
+  <rect class="box" x="24" y="168" width="208" height="120" rx="8"/>
+  <text class="label" x="128" y="192" text-anchor="middle" font-size="12" font-weight="600">Solana book</text>
+  <text class="label" x="128" y="214" text-anchor="middle" font-size="11">ask 41¢ · 180 contracts</text>
+  <text class="label" x="128" y="234" text-anchor="middle" font-size="11">$100 → 243 YES</text>
+  <text class="label" x="128" y="258" text-anchor="middle" font-size="11" opacity="0.75">local tUSDC · Pyth</text>
+  <text class="label" x="128" y="276" text-anchor="middle" font-size="11" font-weight="600">selected</text>
+
+  <rect class="box" x="256" y="168" width="208" height="120" rx="8"/>
+  <text class="label" x="360" y="192" text-anchor="middle" font-size="12" font-weight="600">Base book</text>
+  <text class="label" x="360" y="214" text-anchor="middle" font-size="11">ask 44¢ · 90 contracts</text>
+  <text class="label" x="360" y="234" text-anchor="middle" font-size="11">$100 → 227 YES</text>
+  <text class="label" x="360" y="258" text-anchor="middle" font-size="11" opacity="0.75">local tUSDC · Chainlink</text>
+  <text class="label" x="360" y="276" text-anchor="middle" font-size="11">thinner</text>
+
+  <rect class="box" x="488" y="168" width="208" height="120" rx="8"/>
+  <text class="label" x="592" y="192" text-anchor="middle" font-size="12" font-weight="600">HyperEVM book</text>
+  <text class="label" x="592" y="214" text-anchor="middle" font-size="11">no rest</text>
+  <text class="label" x="592" y="234" text-anchor="middle" font-size="11">not tradable yet</text>
+  <text class="label" x="592" y="258" text-anchor="middle" font-size="11" opacity="0.75">local tUSDC · HyperCore</text>
+  <text class="label" x="592" y="276" text-anchor="middle" font-size="11">skip</text>
+
+  <text class="label" x="360" y="322" text-anchor="middle" font-size="12">Collateral never crosses a bridge to trade.</text>
+  <text class="label" x="360" y="344" text-anchor="middle" font-size="11" opacity="0.8">Proposed later: contingent-surplus receipts can move a dollar after settlement (CCTP),</text>
+  <text class="label" x="360" y="364" text-anchor="middle" font-size="11" opacity="0.8">or a solver can front $1 on another venue against that receipt (teleport).</text>
+  <text class="label" x="360" y="384" text-anchor="middle" font-size="11" opacity="0.8">Until then, payouts redeem on the venue that matched the ticket.</text>
+</svg>

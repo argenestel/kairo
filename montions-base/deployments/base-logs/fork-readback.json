@@ -1,0 +1,26 @@
+{
+  "chainId": 84532,
+  "seriesCount": "148",
+  "assetCount": "9",
+  "vaultNAV": "1000000000000",
+  "sampleSeries": "0x0c51e4385932211b1de5e88e6e4287da5228c7234bce97fb36ef94751b880687",
+  "fair": [
+    97,
+    "974774415052662512",
+    "600000000000000000",
+    "2504020000000000000000"
+  ],
+  "bestBidAsk": [
+    95,
+    "535",
+    99,
+    "535"
+  ],
+  "quote": {
+    "filled": "1",
+    "cost": "990000",
+    "avgTick": 99,
+    "worstTick": 99,
+    "complete": true
+  }
+}

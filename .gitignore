@@ -1,0 +1,41 @@
+# ── not part of the Kairo monorepo ──
+/montions/
+/montions-dev/
+/montions-wt/
+/montions-sol-wt/
+/montions-app-stable/
+/research/
+
+# ── secrets: never commit ──
+.env
+.env.*
+!.env.example
+**/.dev/
+**/secrets/
+*.pass
+*keystore*
+id.json
+**/target/deploy/*.json
+**/*-keypair.json
+.orchestra/secrets/
+.orchestra/stable/
+.orchestra/logs/
+.orchestra/deploy/*.so
+
+# ── build output / deps ──
+node_modules/
+**/target/
+**/out/
+**/out_*/
+**/cache/
+**/cache_*/
+**/broadcast/
+**/dist/
+**/.anchor/
+**/test-ledger/
+*.log
+.DS_Store
+**/.vercel/
+**/keeper/.state/
+**/deployments/logs/
+**/deployments/rehearsal/

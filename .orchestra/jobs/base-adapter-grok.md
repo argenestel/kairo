@@ -1,0 +1,17 @@
+Read /home/arg/projects/hack/colessolana/.orchestra/CONTEXT.md first.
+
+# Job: Base Sepolia adapter for the multi-chain UI (Grok)
+
+You own ONLY: /home/arg/projects/hack/colessolana/montions-app/src/chains/base.ts. Do not edit any other file (if you need a new npm dependency, list it in your report instead of installing it; viem is already installed).
+
+Implement `export function createBaseAdapter(opts?: {...}): ChainAdapter` against the FROZEN interface montions-app/src/chains/types.ts (read every doc comment). Reference implementations to learn from: montions-app/src/chains/solana.ts (same interface, Solana) and montions-app/src/chains/mock.ts; the old Monad app montions/app/src/api/chain.ts + montions/app/src/lib/wallets.ts (viem reads, multicall deposit+placeOrder, wallets, gas padding); contracts + ABIs in montions-base (src/MontionsBook.sol, src/Quoter.sol, src/interfaces/*, src/oracle/chainlink/ChainlinkOracle.sol, src/resolvers/ChainlinkSettlementResolver.sol; compiled ABIs under montions-base/out/** after `forge build`, and montions-base/sdk/src).
+
+Requirements:
+- Import the SDK as `@montions/base-sdk` (alias → montions-base/sdk/src/index.ts) and the deployment manifest lazily via `import.meta.glob('/../montions-base/deployments/84532.json')` or a dynamic import of `@montions/base-deployments/84532.json` wrapped in try/catch: if the manifest doesn't exist yet (deploy in progress by another job) the adapter must still load and every method must fail with a clear "Base deployment not found yet" error, while `meta`, `walletOptions` and `listAssets` (Chainlink prices read directly from the feeds in the CONTEXT) still work.
+- meta: id 'base-sepolia', label 'Base', network 'Sepolia', collateral 'tUSDC', native 'ETH', oracleName 'Chainlink', settlementNote honest ("Settles on the first Chainlink round at or after expiry, proven onchain; voids 50/50 if no round is recorded within the grace period"), explorer https://sepolia.basescan.org.
+- Prices: poll latestRoundData every 10 s (multicall), emit on change.
+- strikes/expiries/getMarket/quote: from the Book's series (above = YES, below = NO; NO price = 1 − best bid; book walk for the budget; chance from Quoter fair or a lognormal model with the asset's vol). Base does NOT create markets on demand from the UI: strikes() and expiries() return only combinations that have an Open series; quote() sets tradable=false with a reason otherwise.
+- Wallets: EIP-6963 discovery (MetaMask, Coinbase Wallet, Rabby, …) + switch/add chain 84532; plus a built-in "Burner" wallet (private key in localStorage, viem local account; tell the user to fund it with Base Sepolia ETH; show its address).
+- faucet(): tUSDC `faucet()`; buy(): approve or permit + deposit + placeOrder IOC with a price guard (multicall if the Book supports it, like the old app); positions(): ERC-1155 balances across series + Book cash; claim(): resolve if needed (record round hint if the resolver requires it — compute the hint like the keeper) then redeem + withdraw; sell(): IOC sell held tokens.
+- Robust errors (human messages), no `any` leaks in the public surface, typecheck clean: `cd /home/arg/projects/hack/colessolana/montions-app && npx tsc --noEmit` (report only errors in base.ts).
+- Self-test: a small node/tsx script in a temp dir (NOT in montions-app/src) that imports your adapter's non-wallet paths and prints listAssets() against Base Sepolia RPC. If montions-base/deployments/84532.json exists by the time you finish, also print strikes/expiries/quote for one asset.

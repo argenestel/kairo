@@ -1,0 +1,32 @@
+{
+  "name": "@montions/demo-bots",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.5.0",
+  "scripts": {
+    "price-bot": "tsx src/price-bot.ts",
+    "keeper": "tsx src/keeper.ts",
+    "seed-ladder": "tsx src/seed-ladder.ts",
+    "base-seed": "tsx src/evm-seed.ts",
+    "base-keeper": "tsx src/evm-keeper.ts",
+    "evm-seed": "tsx src/evm-seed.ts",
+    "evm-keeper": "tsx src/evm-keeper.ts",
+    "stock-feeder": "tsx src/stock-feeder.ts",
+    "stock-seed": "tsx src/stock-seed.ts",
+    "event-maker": "tsx src/event-maker.ts",
+    "event-resolver": "tsx src/event-resolver-bot.ts",
+    "dev-check": "tsx src/dev-check.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "viem": "^2.21.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}

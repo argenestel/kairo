@@ -1,0 +1,154 @@
+.mascot {
+  display: inline-flex;
+  line-height: 0;
+  vertical-align: middle;
+  user-select: none;
+}
+
+.mascot__svg {
+  overflow: visible;
+  display: block;
+}
+
+.mascot--idle .mascot__bob,
+.mascot--point .mascot__bob,
+.mascot--hold-ticket .mascot__bob {
+  animation: mascot-bob 2.6s ease-in-out infinite;
+  transform-origin: 120px 270px;
+  transform-box: view-box;
+}
+
+.mascot--cheer .mascot__bob {
+  animation: mascot-cheer 0.72s ease-in-out infinite;
+  transform-origin: 120px 270px;
+  transform-box: view-box;
+}
+
+.mascot__eyes {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: mascot-blink 4.6s ease-in-out infinite;
+}
+
+.mascot--sleepy .mascot__eyes {
+  animation: none;
+}
+
+.mascot--static .mascot__bob,
+.mascot--static .mascot__eyes {
+  animation: none;
+}
+
+@keyframes mascot-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes mascot-cheer {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-9px) scale(1.035); }
+}
+
+@keyframes mascot-blink {
+  0%, 88%, 96%, 100% { transform: scaleY(1); }
+  91%, 93% { transform: scaleY(0.08); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mascot__bob,
+  .mascot__eyes,
+  .sakura__petal,
+  .sparkle {
+    animation: none !important;
+  }
+}
+
+/* ── speech bubble ─────────────────────────────────── */
+.speech-bubble {
+  position: relative;
+  display: inline-block;
+  max-width: 22rem;
+  padding: 0.7rem 1rem 0.85rem;
+  border-radius: 1.35rem 1.35rem 1.35rem 0.55rem;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+  color: #5a3a48;
+  background: #ffe6f2;
+  border: 2px solid #ffc2d6;
+  box-shadow: 0 8px 20px rgba(255, 150, 180, 0.22);
+}
+
+.speech-bubble__tail {
+  position: absolute;
+  left: 1.15rem;
+  bottom: -9px;
+  width: 16px;
+  height: 16px;
+  background: inherit;
+  border-right: 2px solid #ffc2d6;
+  border-bottom: 2px solid #ffc2d6;
+  border-radius: 0 0 4px 0;
+  transform: rotate(45deg);
+}
+
+.speech-bubble--right .speech-bubble__tail {
+  left: auto;
+  right: 1.15rem;
+}
+
+.speech-bubble--pink { background: #ffe6f2; border-color: #ffc2d6; color: #5a3a48; }
+.speech-bubble--mint { background: #e6fff8; border-color: #9ee8dc; color: #1a4a44; }
+.speech-bubble--lavender { background: #f3e8ff; border-color: #d4b8fe; color: #3b1d6e; }
+.speech-bubble--cream { background: #fff6ec; border-color: #ffc4b0; color: #8a4034; }
+.speech-bubble--sky { background: #e8f1ff; border-color: #b4ccff; color: #2a4a86; }
+
+.speech-bubble--mint .speech-bubble__tail,
+.speech-bubble--lavender .speech-bubble__tail,
+.speech-bubble--cream .speech-bubble__tail,
+.speech-bubble--sky .speech-bubble__tail,
+.speech-bubble--pink .speech-bubble__tail {
+  border-right-color: inherit;
+  border-bottom-color: inherit;
+}
+
+/* ── sakura ────────────────────────────────────────── */
+.sakura {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.sakura__petal {
+  position: absolute;
+  top: -8%;
+  will-change: transform;
+  animation-name: sakura-fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes sakura-fall {
+  0% { transform: translate3d(0, -10%, 0) rotate(var(--rot)); }
+  100% { transform: translate3d(var(--drift), 115vh, 0) rotate(calc(var(--rot) + 360deg)); }
+}
+
+/* ── sparkles ──────────────────────────────────────── */
+.sparkles {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.sparkle {
+  position: absolute;
+  animation: sparkle-twinkle ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes sparkle-twinkle {
+  0%, 100% { opacity: 0.15; transform: scale(0.55) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1) rotate(18deg); }
+}

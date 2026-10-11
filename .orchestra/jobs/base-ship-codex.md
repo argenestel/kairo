@@ -1,0 +1,19 @@
+Read /home/arg/projects/hack/colessolana/.orchestra/CONTEXT.md first.
+
+# Job: finish and ship Montions on Base Sepolia with Chainlink settlement (Codex)
+
+You own: /home/arg/projects/hack/colessolana/montions-base/** only. (Read-only reference: montions/ — its docs/DEPLOY.md, scripts/testnet-deploy.sh, bots/, sdk/.)
+
+Current state: montions-base is a copy of montions with new `src/oracle/chainlink/{ChainlinkOracle,IAggregatorV3}.sol`, `src/resolvers/ChainlinkSettlementResolver.sol`, `test/chainlink/{ChainlinkOracle,ChainlinkBook}.t.sol`, `script/DeployBase.s.sol` (possibly incomplete). `forge test` = 295 passing. Read these files and `docs/SPEC.md` (§14 amendments), `docs/ONCHAIN.md`, `src/Quoter.sol`, `src/MakerVault.sol`, `src/MontionsBook.sol` before changing anything.
+
+Settlement design (must hold): price = the FIRST Chainlink round with `updatedAt >= expiry`, proven by a permissionless `record(feed, expiry, roundIdHint)` that checks `getRoundData(hint).updatedAt >= expiry` and the previous round of the same phase has `updatedAt < expiry` (first round of a phase: verify against the previous phase aggregator or reject + document); `resolve(data, expiry)` reads the recorded price; the Book voids 50/50 after VOID_GRACE if nothing is recorded. Answers must be > 0; scale 8 decimals → 1e18; `describe()`/`decode()`/`encode()` like the other resolvers. Quoter.fair and MakerVault must price these series (mirror the Pyth production path).
+
+Tasks:
+1. Review and complete the Chainlink contracts + tests (cover: first-round selection, wrong hints (too early / not first / other phase / round 0), stale or non-positive answers, decimals scaling, describe strings, end-to-end create series → vault quotes → buy YES and NO → warp → new round → record → resolve → redeem; void path). Keep all 295+ tests green.
+2. Finish `script/DeployBase.s.sol` + `scripts/base-deploy.sh` (modelled on scripts/testnet-deploy.sh; key via `cast wallet private-key --keystore ../montions/.dev/keystore/montions-testnet --password-file ../montions/.dev/testnet.pass` into an env var for the child process only — never echo it): deploys TestUSDC (faucet), ChainlinkOracle (register every LIVE Base Sepolia Chainlink USD feed you can verify onchain with `description()` + a recent `latestRoundData().updatedAt`; at least ETH, BTC, LINK), ChainlinkSettlementResolver, MontionsBook (resolver allowed), Quoter, MakerVault (deposit tUSDC), and writes `deployments/84532.json` in the same schema as deployments/10143.json plus `oracle: "chainlink"` and per-asset `feed` addresses.
+3. Bots for 84532 (`bots/`): seed ladder (per asset 5–7 strikes on a sensible grid around spot × expiries: tomorrow 16:00 UTC, next Friday 16:00 UTC, last Friday of next month 16:00 UTC), vault refresh, and a keeper that records round hints right after expiry (scan backwards from latestRoundData), resolves, refreshes quotes, and rolls the ladder. Add `docs/BASE.md` with exact commands.
+4. Fork rehearsal (mandatory first): `anvil --fork-url https://sepolia.base.org --port 8547` → full deploy + seed + a buy YES and a buy NO + settlement of one series (e.g. create a series whose expiry is just before the latest real round so `record` can use real rounds) → redeem. Paste the outputs.
+5. Real deploy (allowed, budget ≤ 0.04 ETH of the deployer's 0.06): print the gas + L1-fee estimate first, then deploy + seed to Base Sepolia (chain 84532) and verify by reading state back (series count, a quote, vault NAV). Do NOT start long-running processes; print the keeper start command.
+6. SDK: make `montions-base/sdk` export what a UI adapter needs for 84532 (chain definition, `loadDeployment(84532)`, ABIs incl. ChainlinkOracle/ChainlinkSettlementResolver, quote helpers). Keep its tests green.
+
+Done = forge tests green (paste counts), fork rehearsal log, deployed addresses (deployments/84532.json), basescan links for 3 sample txs, ETH spent, keeper command.

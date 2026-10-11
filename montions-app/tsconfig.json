@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": false,
+    "isolatedModules": true,
+    "noEmit": true,
+    "types": ["vite/client"],
+    "baseUrl": ".",
+    "paths": {
+      "@montions/solana-sdk": ["../montions-sol/sdk/src/index.ts"],
+      "@montions/base-sdk": ["../montions-base/sdk/src/index.ts"],
+      "@montions/sol-config/*": ["../montions-sol/config/*"],
+      "@montions/base-deployments/*": ["../montions-base/deployments/*"]
+    }
+  },
+  "include": ["src"]
+}

@@ -1,0 +1,15 @@
+Read /home/arg/projects/hack/colessolana/.orchestra/CONTEXT.md first (incl. the DIRECTION UPDATE).
+
+# Job: finish + ship the EVM stack on Base Sepolia, made chain-generic (Grok)
+
+This continues /home/arg/projects/hack/colessolana/.orchestra/jobs/base-ship-codex.md — read it fully; every requirement there still applies. A Codex run made partial progress in montions-base/ before it ran out of credits: inspect the current state first (`forge build`, `forge test`, `diff -ru /home/arg/projects/hack/colessolana/montions/src /home/arg/projects/hack/colessolana/montions-base/src`, read script/DeployBase.s.sol, scripts/, bots/src/, sdk/src/) and continue from there — don't redo finished work.
+
+You own montions-base/** EXCEPT these paths owned by the parallel HyperCore job: src/oracle/hypercore/**, src/resolvers/HyperCoreSettlementResolver.sol, test/hypercore/**, script/DeployHyperEVM.s.sol, scripts/hyperevm-*.
+
+Additions to the original brief (EVM-first, multi-chain):
+- Make deployment, bots and the SDK **chain-generic**: a `config/chains.json` with one entry per chain {chainId, name, rpc, explorer, oracle: "chainlink"|"hypercore", feeds/indices per asset, strike grid per asset, expiry schedule} and deployments/<chainId>.json per chain. Fill entries for 84532 (Base Sepolia) and 421614 (Arbitrum Sepolia, Chainlink feeds in CONTEXT); leave 998 for the HyperCore job but keep the schema ready for it (oracle "hypercore", perp index + szDecimals per asset).
+- **Same strike grids and expiry schedule on every chain** (cross-chain thesis): grid per asset = ETH $25, BTC $500, LINK $0.25, SOL $1; expiries = tomorrow 16:00 UTC, next Friday 16:00 UTC, last Friday of next month 16:00 UTC. The seed ladder and keeper derive markets from chains.json so every chain lists the same (asset, strike, expiry) keys.
+- `scripts/evm-deploy.sh <chainId>` (generic successor of base-deploy.sh) with the same secret-handling rules; refuses to run if the deployer balance on that chain is below the estimate.
+- Real deploy: Base Sepolia only for now (budget ≤ 0.04 ETH, print estimate first). The deployer now HAS 0.06 ETH on Arbitrum Sepolia (user funded it): after the 421614 fork rehearsal passes, deploy + seed there for real (budget ≤ 0.04 ETH) and read back. (Old condition, now satisfied: if the deployer has ≥ 0.02 ETH on Arbitrum Sepolia when you get there (`cast balance 0x4fcDca6181Cd22ca253c69b891a7Fc3370DD3E39 --rpc-url https://sepolia-rollup.arbitrum.io/rpc -e`), run the fork rehearsal for 421614 and deploy there too (budget ≤ 0.03 ETH). Otherwise rehearse 421614 on an anvil fork only and report the exact command.
+- Write docs/EVM.md (replaces BASE.md if you created it): architecture per chain, how settlement works with Chainlink, commands for deploy/seed/keeper per chain, addresses table.
+Done = forge tests green (paste counts), fork rehearsal logs (84532 and 421614), Base deployed + seeded + read back (addresses, 3 basescan tx links, ETH spent), keeper command per chain, docs/EVM.md.

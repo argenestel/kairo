@@ -1,0 +1,10 @@
+[
+  { "slug": "overview", "title": "Overview" },
+  { "slug": "how-it-works", "title": "How it works" },
+  { "slug": "chains", "title": "Chains" },
+  { "slug": "settlement", "title": "Settlement" },
+  { "slug": "user-guide", "title": "User guide" },
+  { "slug": "developers", "title": "Developers" },
+  { "slug": "faq", "title": "FAQ" },
+  { "slug": "glossary", "title": "Glossary" }
+]

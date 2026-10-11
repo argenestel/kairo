@@ -1,0 +1,169 @@
+/**
+ * Theme tokens. Components consume these variables — never hard-code a second look.
+ * Set `data-mode` on <html> (serious | uwu). The uwu pack is a complete token surface so a
+ * second visual mode can ship without touching components; copy, mascots and the pastel
+ * scene are filled in by the modes job.
+ */
+
+:root {
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --radius-pill: 999px;
+  --radius-card: 22px;
+  --radius-sheet: 22px;
+  --radius-lens: 28px;
+  --font-sans: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-serif: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+  --font-uwu: 'M PLUS Rounded 1c', 'Trebuchet MS', 'Segoe UI', sans-serif;
+  --chain-base: #2f6bff;
+  --chain-arbitrum: #28a0f0;
+  --chain-hyperliquid: #50eed0;
+  --chain-solana: #9945ff;
+  --chain-mock: #ffd23f;
+}
+
+html[data-mode='serious'],
+html:not([data-mode]) {
+  color-scheme: dark;
+  --font: var(--font-sans);
+  --mono: var(--font-mono);
+  --serif: var(--font-serif);
+  --bg: #04070e;
+  --text: #eef2f8;
+  --muted: rgba(226, 233, 245, 0.66);
+  --faint: rgba(226, 233, 245, 0.42);
+  --ghost: rgba(226, 233, 245, 0.22);
+  --line: rgba(255, 255, 255, 0.11);
+  --line-strong: rgba(255, 255, 255, 0.24);
+  --glass: rgba(14, 18, 28, 0.55);
+  --glass-strong: rgba(12, 16, 25, 0.86);
+  --glass-top: rgba(22, 28, 40, 0.62);
+  --glass-bot: rgba(12, 16, 25, 0.58);
+  --up: #3ddc84;
+  --up-soft: #7ff0b0;
+  --down: #ff5a5f;
+  --down-soft: #ff9497;
+  --play: #ffd23f;
+  --paper: #f3f0e8;
+  --ink: #15171c;
+  --ring: rgba(150, 196, 255, 0.95);
+  --cta-from: #f7f5f1;
+  --cta-to: #dedad2;
+  --cta-fg: #111318;
+  --cta-key-bg: #17191f;
+  --cta-key-fg: #f2f2f2;
+  --on-up: #03140a;
+  --on-down: #1d0405;
+  --warn: #ffd98a;
+  --sheet-top: rgba(20, 25, 37, 0.94);
+  --sheet-bot: rgba(11, 14, 22, 0.96);
+  --backdrop: rgba(2, 4, 9, 0.55);
+  --printer-top: #252a34;
+  --printer-bot: #10151e;
+  --sign: #5de992;
+  --sign-fg: #092413;
+  --panel: #111315;
+  --panel-fg: #f7f7f1;
+  --stamp: #16844b;
+  --info-card-top: rgba(14, 21, 30, 0.94);
+  --info-card-bot: rgba(7, 12, 19, 0.92);
+  --lens-up-bot: #04261eac;
+  --lens-down-bot: #32121aac;
+  --ruler-tick: 220, 228, 240;
+  --ruler-marker: 190, 205, 230;
+  --scene-sky-0: #03050b;
+  --scene-sky-1: #060b17;
+  --scene-sky-2: #0a1424;
+  --scene-sky-3: #0b1520;
+  --scene-horizon: 70, 120, 180;
+  --scene-hill-0: #0a1620;
+  --scene-hill-0-low: #060d14;
+  --scene-hill-1: #0b1b20;
+  --scene-hill-1-low: #071015;
+  --scene-hill-2: #0d211f;
+  --scene-hill-2-low: #081311;
+  --scene-hill-3: #0f261f;
+  --scene-hill-3-low: #091612;
+  --scene-vignette: rgba(2, 4, 8, 0.55);
+  --scene-vignette-top: rgba(2, 4, 9, 0.35);
+  --scene-mood-neutral-a: 86, 214, 190;
+  --scene-mood-neutral-b: 128, 112, 250;
+  --scene-mood-up-a: 61, 220, 132;
+  --scene-mood-up-b: 72, 196, 210;
+  --scene-mood-down-a: 255, 96, 110;
+  --scene-mood-down-b: 190, 90, 200;
+}
+
+html[data-mode='uwu'] {
+  color-scheme: light;
+  --font: var(--font-uwu);
+  --mono: var(--font-mono);
+  --serif: var(--font-uwu);
+  --radius-card: 28px;
+  --radius-sheet: 26px;
+  --radius-lens: 32px;
+  --bg: #f6e4ef;
+  --text: #3a2448;
+  --muted: rgba(58, 36, 72, 0.64);
+  --faint: rgba(58, 36, 72, 0.42);
+  --ghost: rgba(58, 36, 72, 0.22);
+  --line: rgba(90, 40, 80, 0.14);
+  --line-strong: rgba(90, 40, 80, 0.28);
+  --glass: rgba(255, 250, 252, 0.62);
+  --glass-strong: rgba(255, 246, 250, 0.88);
+  --glass-top: rgba(255, 252, 254, 0.72);
+  --glass-bot: rgba(255, 236, 244, 0.7);
+  --up: #2db37a;
+  --up-soft: #4ad59a;
+  --down: #ef6b8a;
+  --down-soft: #f59ab0;
+  --play: #ff8fab;
+  --paper: #fff7fb;
+  --ink: #3a2448;
+  --ring: rgba(232, 120, 168, 0.95);
+  --cta-from: #ffe4f0;
+  --cta-to: #ffc2d8;
+  --cta-fg: #4a1834;
+  --cta-key-bg: #fff;
+  --cta-key-fg: #c44d7a;
+  --on-up: #06301c;
+  --on-down: #4a1020;
+  --warn: #c97a14;
+  --sheet-top: rgba(255, 246, 250, 0.96);
+  --sheet-bot: rgba(255, 232, 242, 0.96);
+  --backdrop: rgba(60, 20, 40, 0.28);
+  --printer-top: #f7cfe0;
+  --printer-bot: #eeb8d0;
+  --sign: #ff9ec0;
+  --sign-fg: #4a1834;
+  --panel: #3a2448;
+  --panel-fg: #fff5f9;
+  --stamp: #2db37a;
+  --info-card-top: rgba(255, 250, 252, 0.88);
+  --info-card-bot: rgba(255, 236, 244, 0.9);
+  --lens-up-bot: #b8f0d4cc;
+  --lens-down-bot: #ffd0dccc;
+  --ruler-tick: 90, 50, 80;
+  --ruler-marker: 232, 120, 168;
+  --scene-sky-0: #f8d3e6;
+  --scene-sky-1: #f3c6e0;
+  --scene-sky-2: #eec0d8;
+  --scene-sky-3: #f0c8c0;
+  --scene-horizon: 255, 180, 200;
+  --scene-hill-0: #e8b8d0;
+  --scene-hill-0-low: #dca8c4;
+  --scene-hill-1: #e0c0d8;
+  --scene-hill-1-low: #d0a8c4;
+  --scene-hill-2: #d8c8e0;
+  --scene-hill-2-low: #c8b0d4;
+  --scene-hill-3: #c8dcc8;
+  --scene-hill-3-low: #b0ccb4;
+  --scene-vignette: rgba(240, 180, 200, 0.28);
+  --scene-vignette-top: rgba(255, 220, 230, 0.35);
+  --scene-mood-neutral-a: 255, 160, 200;
+  --scene-mood-neutral-b: 200, 160, 255;
+  --scene-mood-up-a: 80, 210, 160;
+  --scene-mood-up-b: 255, 170, 200;
+  --scene-mood-down-a: 255, 120, 150;
+  --scene-mood-down-b: 210, 140, 220;
+}

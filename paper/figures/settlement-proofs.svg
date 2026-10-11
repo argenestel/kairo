@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 460" role="img" aria-labelledby="t3 d3">
+  <title id="t3">First-print settlement proofs per oracle</title>
+  <desc id="d3">Chainlink proves the first round at or after expiry by round adjacency. Pyth proves it with prev_publish_time when posted. HyperCore records the current precompile price inside a short window.</desc>
+  <style>
+    .line { fill: none; stroke: currentColor; stroke-width: 1.5; }
+    .tick { stroke: currentColor; stroke-width: 1.5; }
+    .box { fill: none; stroke: currentColor; stroke-width: 1.5; }
+    .label { fill: currentColor; font-family: ui-sans-serif, system-ui, sans-serif; }
+    .dot { fill: currentColor; }
+  </style>
+
+  <!-- Chainlink -->
+  <rect class="box" x="16" y="16" width="224" height="428" rx="8"/>
+  <text class="label" x="128" y="42" text-anchor="middle" font-size="13" font-weight="600">Chainlink</text>
+  <text class="label" x="128" y="62" text-anchor="middle" font-size="10" opacity="0.75">Base / Arbitrum</text>
+  <text class="label" x="128" y="86" text-anchor="middle" font-size="11">round adjacency</text>
+  <text class="label" x="128" y="104" text-anchor="middle" font-size="10">exact, given a hint</text>
+
+  <line class="line" x1="48" y1="160" x2="208" y2="160"/>
+  <line class="tick" x1="128" y1="152" x2="128" y2="168"/>
+  <text class="label" x="128" y="184" text-anchor="middle" font-size="10">expiry T</text>
+
+  <circle class="dot" cx="88" cy="160" r="4"/>
+  <text class="label" x="88" y="140" text-anchor="middle" font-size="10">R−1</text>
+  <text class="label" x="88" y="214" text-anchor="middle" font-size="9">updatedAt &lt; T</text>
+
+  <circle class="dot" cx="176" cy="160" r="4"/>
+  <text class="label" x="176" y="140" text-anchor="middle" font-size="10">R ★</text>
+  <text class="label" x="176" y="214" text-anchor="middle" font-size="9">updatedAt ≥ T</text>
+
+  <text class="label" x="128" y="250" text-anchor="middle" font-size="10">record(feed, T, R)</text>
+  <text class="label" x="128" y="280" text-anchor="middle" font-size="10">phase = current</text>
+  <text class="label" x="128" y="298" text-anchor="middle" font-size="10">R not first of phase &gt; 1</text>
+  <text class="label" x="128" y="330" text-anchor="middle" font-size="10">P = answer(R)</text>
+  <text class="label" x="128" y="360" text-anchor="middle" font-size="10">YES iff P ≥ K</text>
+  <text class="label" x="128" y="392" text-anchor="middle" font-size="10" opacity="0.75">unprovable → void</text>
+  <text class="label" x="128" y="410" text-anchor="middle" font-size="10" opacity="0.75">after VOID_GRACE</text>
+
+  <!-- Pyth -->
+  <rect class="box" x="248" y="16" width="224" height="428" rx="8"/>
+  <text class="label" x="360" y="42" text-anchor="middle" font-size="13" font-weight="600">Pyth</text>
+  <text class="label" x="360" y="62" text-anchor="middle" font-size="10" opacity="0.75">Solana (and EVM pull)</text>
+  <text class="label" x="360" y="86" text-anchor="middle" font-size="11">prev_publish_time</text>
+  <text class="label" x="360" y="104" text-anchor="middle" font-size="10">exact when posted</text>
+
+  <line class="line" x1="280" y1="160" x2="440" y2="160"/>
+  <line class="tick" x1="360" y1="152" x2="360" y2="168"/>
+  <text class="label" x="360" y="184" text-anchor="middle" font-size="10">expiry T</text>
+
+  <circle class="dot" cx="320" cy="160" r="4"/>
+  <text class="label" x="320" y="140" text-anchor="middle" font-size="10">prev</text>
+  <text class="label" x="320" y="214" text-anchor="middle" font-size="9">prev &lt; T</text>
+
+  <circle class="dot" cx="400" cy="160" r="4"/>
+  <text class="label" x="400" y="140" text-anchor="middle" font-size="10">print ★</text>
+  <text class="label" x="400" y="214" text-anchor="middle" font-size="9">publish ≥ T</text>
+
+  <text class="label" x="360" y="250" text-anchor="middle" font-size="10">accept iff</text>
+  <text class="label" x="360" y="268" text-anchor="middle" font-size="10">prev &lt; T ≤ publish</text>
+  <text class="label" x="360" y="298" text-anchor="middle" font-size="10">or sponsored window</text>
+  <text class="label" x="360" y="316" text-anchor="middle" font-size="10">publish ∈ [T, T+W]</text>
+  <text class="label" x="360" y="346" text-anchor="middle" font-size="10">conf ≤ 2% of |price|</text>
+  <text class="label" x="360" y="376" text-anchor="middle" font-size="10">YES iff P ≥ K</text>
+  <text class="label" x="360" y="408" text-anchor="middle" font-size="10" opacity="0.75">window path: keeper</text>
+  <text class="label" x="360" y="424" text-anchor="middle" font-size="10" opacity="0.75">picks a print in W</text>
+
+  <!-- HyperCore -->
+  <rect class="box" x="480" y="16" width="224" height="428" rx="8"/>
+  <text class="label" x="592" y="42" text-anchor="middle" font-size="13" font-weight="600">HyperCore</text>
+  <text class="label" x="592" y="62" text-anchor="middle" font-size="10" opacity="0.75">precompile 0x…0807</text>
+  <text class="label" x="592" y="86" text-anchor="middle" font-size="11">windowed record</text>
+  <text class="label" x="592" y="104" text-anchor="middle" font-size="10">approximate</text>
+
+  <line class="line" x1="512" y1="160" x2="672" y2="160"/>
+  <line class="tick" x1="544" y1="152" x2="544" y2="168"/>
+  <line class="tick" x1="640" y1="152" x2="640" y2="168"/>
+  <text class="label" x="544" y="184" text-anchor="middle" font-size="10">T</text>
+  <text class="label" x="640" y="184" text-anchor="middle" font-size="10">T+W</text>
+
+  <rect class="box" x="544" y="148" width="96" height="24" rx="2" opacity="0.35"/>
+  <circle class="dot" cx="588" cy="160" r="4"/>
+  <text class="label" x="588" y="140" text-anchor="middle" font-size="10">record ★</text>
+  <text class="label" x="592" y="214" text-anchor="middle" font-size="9">first caller wins</text>
+
+  <text class="label" x="592" y="250" text-anchor="middle" font-size="10">oraclePx(perpIndex)</text>
+  <text class="label" x="592" y="268" text-anchor="middle" font-size="10">is current price only</text>
+  <text class="label" x="592" y="298" text-anchor="middle" font-size="10">accept iff</text>
+  <text class="label" x="592" y="316" text-anchor="middle" font-size="10">T ≤ now ≤ T+W</text>
+  <text class="label" x="592" y="346" text-anchor="middle" font-size="10">P = raw / 10^(6−szDec)</text>
+  <text class="label" x="592" y="376" text-anchor="middle" font-size="10">YES iff P ≥ K</text>
+  <text class="label" x="592" y="408" text-anchor="middle" font-size="10" opacity="0.75">no historical proof</text>
+  <text class="label" x="592" y="424" text-anchor="middle" font-size="10" opacity="0.75">W short · keeper races</text>
+</svg>

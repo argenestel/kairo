@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 520" role="img" aria-labelledby="t2 d2">
+  <title id="t2">Contingent-surplus netting</title>
+  <desc id="d2">Burning YES on venue A and NO on venue B leaves exactly one dollar of surplus on the venue whose outcome wins. After settlement a message plus a USDC transfer pays the pair.</desc>
+  <style>
+    .line { fill: none; stroke: currentColor; stroke-width: 1.5; }
+    .arrow { fill: none; stroke: currentColor; stroke-width: 1.5; marker-end: url(#arr); }
+    .box { fill: none; stroke: currentColor; stroke-width: 1.5; }
+    .label { fill: currentColor; font-family: ui-sans-serif, system-ui, sans-serif; }
+  </style>
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+    </marker>
+  </defs>
+
+  <!-- venues -->
+  <rect class="box" x="24" y="24" width="280" height="210" rx="8"/>
+  <text class="label" x="164" y="48" text-anchor="middle" font-size="13" font-weight="600">Venue A (e.g. Solana)</text>
+  <text class="label" x="164" y="70" text-anchor="middle" font-size="11" opacity="0.75">pool = $n · YES = n · NO = n</text>
+
+  <rect class="box" x="48" y="88" width="100" height="52" rx="6"/>
+  <text class="label" x="98" y="110" text-anchor="middle" font-size="12" font-weight="600">YES_A</text>
+  <text class="label" x="98" y="128" text-anchor="middle" font-size="10" opacity="0.75">pays $1 if YES</text>
+
+  <rect class="box" x="180" y="88" width="100" height="52" rx="6"/>
+  <text class="label" x="230" y="110" text-anchor="middle" font-size="12">NO_A</text>
+  <text class="label" x="230" y="128" text-anchor="middle" font-size="10" opacity="0.75">stays on A</text>
+
+  <path class="arrow" d="M98 140 L98 168"/>
+  <text class="label" x="110" y="162" font-size="10">burn 1 YES</text>
+
+  <rect class="box" x="48" y="168" width="232" height="50" rx="6"/>
+  <text class="label" x="164" y="190" text-anchor="middle" font-size="12">CSR_A (YES-receipt)</text>
+  <text class="label" x="164" y="208" text-anchor="middle" font-size="10" opacity="0.75">A surplus = $1  iff  A resolves YES</text>
+
+  <rect class="box" x="416" y="24" width="280" height="210" rx="8"/>
+  <text class="label" x="556" y="48" text-anchor="middle" font-size="13" font-weight="600">Venue B (e.g. Base)</text>
+  <text class="label" x="556" y="70" text-anchor="middle" font-size="11" opacity="0.75">pool = $m · YES = m · NO = m</text>
+
+  <rect class="box" x="440" y="88" width="100" height="52" rx="6"/>
+  <text class="label" x="490" y="110" text-anchor="middle" font-size="12">YES_B</text>
+  <text class="label" x="490" y="128" text-anchor="middle" font-size="10" opacity="0.75">stays on B</text>
+
+  <rect class="box" x="572" y="88" width="100" height="52" rx="6"/>
+  <text class="label" x="622" y="110" text-anchor="middle" font-size="12" font-weight="600">NO_B</text>
+  <text class="label" x="622" y="128" text-anchor="middle" font-size="10" opacity="0.75">pays $1 if NO</text>
+
+  <path class="arrow" d="M622 140 L622 168"/>
+  <text class="label" x="508" y="162" font-size="10">burn 1 NO</text>
+
+  <rect class="box" x="440" y="168" width="232" height="50" rx="6"/>
+  <text class="label" x="556" y="190" text-anchor="middle" font-size="12">CSR_B (NO-receipt)</text>
+  <text class="label" x="556" y="208" text-anchor="middle" font-size="10" opacity="0.75">B surplus = $1  iff  B resolves NO</text>
+
+  <!-- after settlement -->
+  <path class="arrow" d="M164 234 L164 268"/>
+  <path class="arrow" d="M556 234 L556 268"/>
+
+  <rect class="box" x="24" y="268" width="672" height="228" rx="8"/>
+  <text class="label" x="360" y="292" text-anchor="middle" font-size="13" font-weight="600">After expiry — each venue pays its own surplus</text>
+  <text class="label" x="360" y="312" text-anchor="middle" font-size="11" opacity="0.8">CSR_A + CSR_B is worth $1 in every agreeing state. Message proof + CCTP moves the dollar.</text>
+
+  <!-- payoff table as boxes -->
+  <rect class="box" x="48" y="332" width="200" height="64" rx="6"/>
+  <text class="label" x="148" y="356" text-anchor="middle" font-size="11" font-weight="600">A = YES, B = YES</text>
+  <text class="label" x="148" y="376" text-anchor="middle" font-size="11">$1 from A · $0 from B</text>
+
+  <rect class="box" x="260" y="332" width="200" height="64" rx="6"/>
+  <text class="label" x="360" y="356" text-anchor="middle" font-size="11" font-weight="600">A = NO, B = NO</text>
+  <text class="label" x="360" y="376" text-anchor="middle" font-size="11">$0 from A · $1 from B</text>
+
+  <rect class="box" x="472" y="332" width="200" height="64" rx="6"/>
+  <text class="label" x="572" y="356" text-anchor="middle" font-size="11" font-weight="600">A void, B void</text>
+  <text class="label" x="572" y="376" text-anchor="middle" font-size="11">$0.50 + $0.50 = $1</text>
+
+  <rect class="box" x="48" y="412" width="304" height="64" rx="6"/>
+  <text class="label" x="200" y="436" text-anchor="middle" font-size="11" font-weight="600">Disagree, both win (A YES, B NO)</text>
+  <text class="label" x="200" y="456" text-anchor="middle" font-size="11">$2 windfall — haircut into reserve</text>
+
+  <rect class="box" x="368" y="412" width="304" height="64" rx="6"/>
+  <text class="label" x="520" y="436" text-anchor="middle" font-size="11" font-weight="600">Disagree, both lose (A NO, B YES)</text>
+  <text class="label" x="520" y="456" text-anchor="middle" font-size="11">$0 — reserve tops up to $1</text>
+</svg>

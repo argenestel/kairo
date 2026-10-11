@@ -1,0 +1,26 @@
+{
+  "success": true,
+  "chainId": 84532,
+  "bot": "0x4fcDca6181Cd22ca253c69b891a7Fc3370DD3E39",
+  "feed": "0x4aDC67696bA383F43DD60A9e78F2C97Fbbfc7cb1",
+  "aggregator": "0xa24A68DD788e1D7eb4CA517765CFb2b7e217e7a3",
+  "settlementSeries": "0x08cf88595e04dc8ee6c060c627cab86f61a98cb41014062ab3fe246c65dc29bb",
+  "settlementExpiry": "1791728367",
+  "predecessorRound": "18446744073709837009",
+  "successorRound": "18446744073709837010",
+  "predecessorUpdatedAt": "1791728246",
+  "successorUpdatedAt": "1791729092",
+  "outcome": "YES",
+  "payout": "1000000",
+  "txs": {
+    "collateralApproval": "0x47b8755253a4024aaa97b3f8f75af0158cff909fea61a6a7693fd52090939201",
+    "bookDeposit": "0x7a4f6e88c24678726c637abb6ddd01cf2c557da484ced941bc14f6639021b290",
+    "buyYes": "0x694fc9d4aee14dd22fbc91e79edceb89dd644d1c6751bf17b345b39b3a34acff",
+    "buyNo": "0xb60da60f34cf1d469df5bc4c3deb51c48326af179baed9d1ef046122337f92bc",
+    "settlementCreate": "0xf5bcd42162c91dab800699273beaa9c8474167bff18b1020c5c473ab707ab523",
+    "settlementSplit": "0xa5de83e5b109d9c7e38916ae03b7fac2642f2bd2b2c2c91b0f240960bcb58ce4",
+    "settlementRecord": "0x603bbdca5a34277b3ec2c24d518462a092f7f5ffb65bc4f0d607796e3af96cfb",
+    "settlementResolve": "0xe1cf9b787a3cc362d296a3c8d9934d1dda056e0e56e4950bf205fb37c07bca29",
+    "settlementRedeem": "0x2ae82799ca438533f0cdec6453a6d5570ae5b1e7dbf2339ba5e186720760575e"
+  }
+}

@@ -1,0 +1,5 @@
+allowBuilds:
+  esbuild: true
+  bufferutil: true
+  utf-8-validate: true
+  bigint-buffer: true

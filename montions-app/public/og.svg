@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#04070e"/>
+      <stop offset="0.55" stop-color="#0a1424"/>
+      <stop offset="1" stop-color="#0b1b20"/>
+    </linearGradient>
+    <linearGradient id="moon" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffe7a8"/>
+      <stop offset="1" stop-color="#ffb86b"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#sky)"/>
+  <path d="M820 90a170 170 0 1 0 110 248A140 140 0 0 1 820 90z" fill="url(#moon)"/>
+  <path d="M980 150l18 48 48 18-48 18-18 48-18-48-48-18 48-18z" fill="#fff6dc"/>
+  <text x="80" y="250" fill="#eef2f8" font-family="Geist, ui-sans-serif, system-ui" font-size="92" font-weight="650" letter-spacing="-3">Kairo</text>
+  <text x="80" y="330" fill="#eef2f8" font-family="Instrument Serif, Georgia, serif" font-size="42" font-style="italic" fill-opacity="0.88">say it, print it, place it</text>
+  <text x="80" y="430" fill="#eef2f8" font-family="Geist, ui-sans-serif, system-ui" font-size="24" fill-opacity="0.55">Outcome-first options &amp; predictions · Base · Arbitrum · Solana</text>
+  <rect x="80" y="480" width="220" height="44" rx="22" fill="#f7f5f1"/>
+  <text x="190" y="508" text-anchor="middle" fill="#111318" font-family="Geist, ui-sans-serif, system-ui" font-size="16" font-weight="600">Print a ticket</text>
+</svg>

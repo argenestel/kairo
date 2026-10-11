@@ -1,0 +1,7 @@
+Read /home/arg/projects/hack/colessolana/.orchestra/CONTEXT.md first (incl. the DIRECTION UPDATE).
+
+# Job: deploy + seed Montions on HyperEVM testnet (998) and wire it into the generic EVM tooling (Grok)
+
+Preconditions (manager checked): evm-base-grok and hypercore-grok are done; the deployer has ≥ 1 HYPE on HyperEVM testnet. Read both of their reports (/home/arg/projects/hack/colessolana/.orchestra/out/evm-base-grok.md, hypercore-grok.md) and docs/EVM.md + docs/HYPEREVM.md.
+
+You own montions-base/** for this job (the earlier jobs are finished). Tasks: add the 998 entry to config/chains.json (assets from the hypercore report, same strike grids/expiry schedule as other chains); integrate HyperCoreOracle/HyperCoreSettlementResolver into the generic deploy (scripts/evm-deploy.sh 998), seed ladder and keeper (keeper must `record()` within seconds after each expiry — the window is short); enable big blocks for the deployer (scripts/hyperevm-bigblocks.*) if contract sizes need it; fork rehearsal; then real deploy + seed (budget ≤ 50% of the deployer's HYPE balance, print estimate first) and read-back verification (series count, a quote, vault NAV, explorer links — testnet explorer e.g. https://testnet.purrsec.com or whichever is current). Keep `forge test` green. Update docs/EVM.md + docs/HYPEREVM.md with addresses. Print the keeper start command; do not start long-running processes.

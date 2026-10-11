@@ -1,0 +1,415 @@
+{
+  "version": 1,
+  "asOf": "2026-10-11",
+  "note": "Kairo event-market catalog. Keys are chain-agnostic. closeTime is unix seconds (UTC) and is both trading expiry and the optimistic-resolver close. Priors are quoted YES probabilities from public venues on 2026-10-11; they are starting quotes for the EOA maker, not settlement. Book MAX_DURATION is 90 days so every closeTime here is before 2027-01-09. No markets on private individuals' health, deaths, or violence.",
+  "bondAmount": "100000000",
+  "challengeWindowSeconds": 7200,
+  "arbitrationFeeBps": 500,
+  "events": [
+    {
+      "key": "BTC-100K-2026",
+      "question": "Will Coinbase BTC-USD trade at or above $100,000 at any time before 2027-01-01 00:00 UTC?",
+      "rules": "YES if Coinbase BTC-USD (https://api.coinbase.com/v2/prices/BTC-USD/spot or the BTC-USD candle) prints a trade or last price >= 100000.00 at any UTC timestamp strictly before 2027-01-01 00:00:00. Intraday wicks count. INVALID if Coinbase BTC-USD is unavailable for the whole window. Timezone: UTC.",
+      "resolutionSource": "https://www.coinbase.com/price/bitcoin",
+      "closeTime": 1798740000,
+      "closeTimeISO": "2026-12-31T18:00:00Z",
+      "category": "crypto",
+      "icon": "₿",
+      "prior": {
+        "yes": 0.285,
+        "basis": "Polymarket 'What price will Bitcoin hit in 2026?' — Will Bitcoin reach $100,000 by December 31, 2026 = 28.5% as of 2026-10-11. Coinbase spot $83,942.57 same day.",
+        "source": "https://polymarket.com/event/what-price-will-bitcoin-hit-before-2027"
+      }
+    },
+    {
+      "key": "BTC-DIP-70K-2026",
+      "question": "Will Coinbase BTC-USD trade at or below $70,000 at any time before 2027-01-01 00:00 UTC?",
+      "rules": "YES if Coinbase BTC-USD prints a trade or last price <= 70000.00 at any UTC timestamp strictly before 2027-01-01 00:00:00. Intraday wicks count. INVALID if Coinbase BTC-USD is unavailable for the whole window. Timezone: UTC.",
+      "resolutionSource": "https://www.coinbase.com/price/bitcoin",
+      "closeTime": 1798740000,
+      "closeTimeISO": "2026-12-31T18:00:00Z",
+      "category": "crypto",
+      "icon": "📉",
+      "prior": {
+        "yes": 0.345,
+        "basis": "Polymarket 'Will Bitcoin dip to $70,000 by December 31, 2026?' = 34.5% as of 2026-10-11.",
+        "source": "https://polymarket.com/event/what-price-will-bitcoin-hit-before-2027"
+      }
+    },
+    {
+      "key": "ETH-3K-2026",
+      "question": "Will Coinbase ETH-USD trade at or above $3,000 at any time before 2027-01-01 00:00 UTC?",
+      "rules": "YES if Coinbase ETH-USD prints a trade or last price >= 3000.00 at any UTC timestamp strictly before 2027-01-01 00:00:00. Intraday wicks count. INVALID if Coinbase ETH-USD is unavailable for the whole window. Timezone: UTC.",
+      "resolutionSource": "https://www.coinbase.com/price/ethereum",
+      "closeTime": 1798740000,
+      "closeTimeISO": "2026-12-31T18:00:00Z",
+      "category": "crypto",
+      "icon": "Ξ",
+      "prior": {
+        "yes": 0.445,
+        "basis": "Polymarket 'Will Ethereum reach $3,000 by December 31, 2026?' = 44.5% as of 2026-10-11. Coinbase spot $2,549.34 same day.",
+        "source": "https://polymarket.com/event/what-price-will-ethereum-hit-before-2027"
+      }
+    },
+    {
+      "key": "ETH-DIP-2250-2026",
+      "question": "Will Coinbase ETH-USD trade at or below $2,250 at any time before 2027-01-01 00:00 UTC?",
+      "rules": "YES if Coinbase ETH-USD prints a trade or last price <= 2250.00 at any UTC timestamp strictly before 2027-01-01 00:00:00. Intraday wicks count. INVALID if Coinbase ETH-USD is unavailable for the whole window. Timezone: UTC.",
+      "resolutionSource": "https://www.coinbase.com/price/ethereum",
+      "closeTime": 1798740000,
+      "closeTimeISO": "2026-12-31T18:00:00Z",
+      "category": "crypto",
+      "icon": "📉",
+      "prior": {
+        "yes": 0.46,
+        "basis": "Polymarket 'Will Ethereum dip to $2,250 by December 31, 2026?' = 46.0% as of 2026-10-11.",
+        "source": "https://polymarket.com/event/what-price-will-ethereum-hit-before-2027"
+      }
+    },
+    {
+      "key": "BTC-DOM-70-2026",
+      "question": "Will Bitcoin dominance (CoinMarketCap) print at or above 70.00% at any time before 2027-01-01 00:00 UTC?",
+      "rules": "YES if CoinMarketCap Bitcoin dominance (BTC market cap / total crypto market cap, as published on the BTC dominance chart) is >= 70.00 at any UTC timestamp strictly before 2027-01-01 00:00:00. Snapshots, not a daily average. INVALID if CMC dominance is unpublished for the whole window. Timezone: UTC.",
+      "resolutionSource": "https://coinmarketcap.com/charts/bitcoin-dominance/",
+      "closeTime": 1798740000,
+      "closeTimeISO": "2026-12-31T18:00:00Z",
+      "category": "crypto",
+      "icon": "📊",
+      "prior": {
+        "yes": 0.085,
+        "basis": "Polymarket 'Will Bitcoin Dominance hit 70% before 2027?' = 8.5% as of 2026-10-11.",
+        "source": "https://polymarket.com/event/will-bitcoin-dominance-hit-70-before-2027"
+      }
+    },
+    {
+      "key": "FED-CUT-2026-10-28",
+      "question": "Will the FOMC cut the federal funds target range at the 27–28 October 2026 meeting?",
+      "rules": "YES if the FOMC implementation note / statement for the 27-28 Oct 2026 meeting lowers the target range for the federal funds rate relative to the range in effect immediately before that meeting (any size cut). NO if the range is unchanged or raised. INVALID if no statement is published by 2026-10-29 23:59 UTC. Decision usually ~14:00 ET. Timezone: America/New_York.",
+      "resolutionSource": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+      "closeTime": 1793206800,
+      "closeTimeISO": "2026-10-28T17:00:00Z",
+      "category": "macro",
+      "icon": "🏦",
+      "prior": {
+        "yes": 0.007,
+        "basis": "Polymarket 'Fed Decision in October?' 25bp cut 0.55% + 50bp+ cut 0.15% = 0.70% as of 2026-10-11. Sep 16 2026 FOMC had just raised the range to 3.75–4.00%.",
+        "source": "https://polymarket.com/event/fed-decision-in-october-20260617190323537"
+      }
+    },
+    {
+      "key": "FED-HIKE-2026-10-28",
+      "question": "Will the FOMC raise the federal funds target range at the 27–28 October 2026 meeting?",
+      "rules": "YES if the FOMC implementation note / statement for the 27-28 Oct 2026 meeting raises the target range relative to the range in effect immediately before that meeting (any size hike). NO if unchanged or cut. INVALID if no statement by 2026-10-29 23:59 UTC. Timezone: America/New_York.",
+      "resolutionSource": "https://www.federalreserve.gov/newsevents/pressreleases.htm",
+      "closeTime": 1793206800,
+      "closeTimeISO": "2026-10-28T17:00:00Z",
+      "category": "macro",
+      "icon": "📈",
+      "prior": {
+        "yes": 0.169,
+        "basis": "Polymarket 25bp hike 16.5% + 50bp+ hike 0.35% = 16.85% as of 2026-10-11.",
+        "source": "https://polymarket.com/event/fed-decision-in-october-20260617190323537"
+      }
+    },
+    {
+      "key": "FED-HIKE-25-2026-12-09",
+      "question": "Will the FOMC raise the federal funds target range by 25 bps (and not 50+) at the 8–9 December 2026 meeting?",
+      "rules": "YES if the upper bound of the target range in the Dec 8-9 2026 implementation note is exactly 25 basis points above the upper bound in effect immediately before that meeting. NO for hold, cut, or a hike of 50 bps or more. INVALID if no statement by 2026-12-10 23:59 UTC. Timezone: America/New_York.",
+      "resolutionSource": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+      "closeTime": 1796835600,
+      "closeTimeISO": "2026-12-09T17:00:00Z",
+      "category": "macro",
+      "icon": "🏦",
+      "prior": {
+        "yes": 0.745,
+        "basis": "Polymarket 'Fed Decision in December?' 25bp hike = 74.5% as of 2026-10-11 (hold 22.5%, 50bp+ hike 2.95%).",
+        "source": "https://polymarket.com/event/fed-decision-in-december-20260729232808632"
+      }
+    },
+    {
+      "key": "CPI-YOY-GE-3-7-SEP-2026",
+      "question": "Will US CPI-U 12-month inflation for September 2026 be 3.7% or higher?",
+      "rules": "YES if the BLS CPI-U 12-month percent change (not seasonally adjusted, all items, US city average) for September 2026, as published in the official CPI news release, is >= 3.7 after normal BLS rounding to one decimal. First print only; later revisions do not count. INVALID if BLS does not publish that print by 2026-10-31. Timezone: America/New_York.",
+      "resolutionSource": "https://www.bls.gov/cpi/",
+      "closeTime": 1791979200,
+      "closeTimeISO": "2026-10-14T12:00:00Z",
+      "category": "macro",
+      "icon": "🧾",
+      "prior": {
+        "yes": 0.533,
+        "basis": "Polymarket 'September Inflation US - Annual' 3.7% = 43.5%, 3.8% = 7.8%, 3.9% = 1.3%, 4.0%+ = 0.7% → P(>=3.7%) ≈ 53.3% as of 2026-10-11. Release typically 08:30 ET 14 Oct 2026.",
+        "source": "https://polymarket.com/event/september-inflation-us-annual"
+      }
+    },
+    {
+      "key": "CORE-CPI-YOY-GE-2-5-SEP-2026",
+      "question": "Will US core CPI (all items less food and energy) YoY for September 2026 be 2.5% or higher?",
+      "rules": "YES if the BLS CPI-U 12-month percent change, all items less food and energy, for September 2026 (first print, one decimal) is >= 2.5. Later revisions ignored. INVALID if unpublished by 2026-10-31. Timezone: America/New_York.",
+      "resolutionSource": "https://www.bls.gov/news.release/cpi.toc.htm",
+      "closeTime": 1791979200,
+      "closeTimeISO": "2026-10-14T12:00:00Z",
+      "category": "macro",
+      "icon": "🧾",
+      "prior": {
+        "yes": 0.507,
+        "basis": "Polymarket 'Core CPI YoY - September 2026' 2.5%=36.5, 2.6%=12.0, 2.7%=0.95, 2.8%=0.6, 2.9%+=0.6 → P(>=2.5%) ≈ 50.7% as of 2026-10-11.",
+        "source": "https://polymarket.com/event/core-cpi-yoy-september-2026"
+      }
+    },
+    {
+      "key": "UNEMP-OCT-2026-GE-4-2",
+      "question": "Will the US U-3 unemployment rate for October 2026 be 4.2% or higher?",
+      "rules": "YES if the BLS Employment Situation U-3 unemployment rate (seasonally adjusted, civilian, first print, one decimal) for October 2026 is >= 4.2. Later revisions ignored. INVALID if unpublished by 2026-11-30. Timezone: America/New_York.",
+      "resolutionSource": "https://www.bls.gov/news.release/empsit.toc.htm",
+      "closeTime": 1793970000,
+      "closeTimeISO": "2026-11-06T13:00:00Z",
+      "category": "macro",
+      "icon": "👷",
+      "prior": {
+        "yes": 0.668,
+        "basis": "Polymarket 'October Unemployment Rate' 4.2%=36.5, 4.3%=25.5, 4.4%=2.45, 4.5%=1.15, >=4.6%=1.15 → P(>=4.2%) ≈ 66.8% as of 2026-10-11. Release 06 Nov 2026 08:30 ET.",
+        "source": "https://polymarket.com/event/october-unemployment-rate-2026"
+      }
+    },
+    {
+      "key": "GDP-Q3-2026-GT-3-0",
+      "question": "Will the BEA advance estimate of US real GDP growth for 2026 Q3 be greater than 3.0% SAAR?",
+      "rules": "YES if the Bureau of Economic Analysis advance (first) estimate of real GDP, seasonally adjusted annual rate, for 2026 Q3 is > 3.0 percent. Use the headline SAAR figure in the BEA news release. Later revisions (second/third) do not count. INVALID if unpublished by 2026-11-15. Timezone: America/New_York.",
+      "resolutionSource": "https://www.bea.gov/data/gdp/gross-domestic-product",
+      "closeTime": 1793275200,
+      "closeTimeISO": "2026-10-29T12:00:00Z",
+      "category": "macro",
+      "icon": "📉",
+      "prior": {
+        "yes": 0.645,
+        "basis": "Polymarket 'US GDP growth in Q3 2026?' greater than 3.0% = 64.5% as of 2026-10-11.",
+        "source": "https://polymarket.com/event/us-gdp-growth-in-q3-2026-20260730144539767"
+      }
+    },
+    {
+      "key": "SPX-8K-2026",
+      "question": "Will the S&P 500 index (SPX) trade at or above 8,000 at any time before 2027-01-01 00:00 UTC?",
+      "rules": "YES if the S&P 500 cash index (SPX, as published by S&P Dow Jones Indices / major terminals) prints an intraday last or official print >= 8000.00 at any UTC timestamp strictly before 2027-01-01 00:00:00. Futures (ES) do not count. INVALID if SPX is unpublished for the whole window. Timezone: America/New_York for the cash session, UTC for the cutoff.",
+      "resolutionSource": "https://www.spglobal.com/spdji/en/indices/equity/sp-500/",
+      "closeTime": 1798740000,
+      "closeTimeISO": "2026-12-31T18:00:00Z",
+      "category": "macro",
+      "icon": "📈",
+      "prior": {
+        "yes": 0.575,
+        "basis": "Polymarket 'Will S&P 500 (SPX) hit $8,000 (HIGH) in December?' = 57.5% as of 2026-10-11.",
+        "source": "https://polymarket.com/event/spx-hit-dec-2026"
+      }
+    },
+    {
+      "key": "GOLD-4400-OCT-2026",
+      "question": "Will spot gold (XAUUSD) trade at or above $4,400 at any time in October 2026?",
+      "rules": "YES if a major spot gold print (XAUUSD as shown on Kitco or a G10 bank/LBMA-derived spot) is >= 4400.00 at any UTC timestamp in [2026-10-01 00:00, 2026-11-01 00:00). Intraday wicks count. INVALID if no reputable spot series is available. Timezone: UTC.",
+      "resolutionSource": "https://www.kitco.com/price/precious-metals",
+      "closeTime": 1793480400,
+      "closeTimeISO": "2026-10-31T21:00:00Z",
+      "category": "macro",
+      "icon": "🥇",
+      "prior": {
+        "yes": 0.27,
+        "basis": "Polymarket 'Will Gold (XAUUSD) hit (HIGH) $4,400 in October?' = 27.0% as of 2026-10-11.",
+        "source": "https://polymarket.com/event/what-price-will-xauusd-hit-in-october-2026"
+      }
+    },
+    {
+      "key": "US-HOUSE-DEM-2026",
+      "question": "Will the Democratic Party hold a majority of U.S. House seats after the 2026 midterms?",
+      "rules": "YES if, when the 120th Congress is first called to order (or, if later, when AP Decision Desk / Clerk of the House first reports a party majority), Democrats (including members who caucus with Democrats) hold at least 218 of 435 voting seats. Special elections after opening day do not flip this market. A 217-217 tie is NO. INVALID only if the 2026 House elections are not held. Timezone: America/New_York.",
+      "resolutionSource": "https://clerk.house.gov/",
+      "closeTime": 1793721600,
+      "closeTimeISO": "2026-11-03T16:00:00Z",
+      "category": "politics",
+      "icon": "🏛️",
+      "prior": {
+        "yes": 0.905,
+        "basis": "Polymarket 'Will the Democratic Party control the House after the 2026 Midterm elections?' = 90.5% as of 2026-10-11.",
+        "source": "https://polymarket.com/event/which-party-will-win-the-house-in-2026"
+      }
+    },
+    {
+      "key": "US-SENATE-DEM-2026",
+      "question": "Will the Democratic Party control the U.S. Senate after the 2026 midterms?",
+      "rules": "YES if Democrats (including independents who caucus with Democrats) hold at least 51 Senate seats, or 50 seats plus the Vice President's tie-breaking vote, when the new Senate is first sworn in after the 2026 elections. A 50-50 chamber with a Republican VP is NO. INVALID if the 2026 Senate elections are not held. Timezone: America/New_York.",
+      "resolutionSource": "https://www.senate.gov/",
+      "closeTime": 1793721600,
+      "closeTimeISO": "2026-11-03T16:00:00Z",
+      "category": "politics",
+      "icon": "🏛️",
+      "prior": {
+        "yes": 0.635,
+        "basis": "Polymarket 'Will the Democratic Party control the Senate after the 2026 Midterm elections?' = 63.5% as of 2026-10-11.",
+        "source": "https://polymarket.com/event/which-party-will-win-the-senate-in-2026"
+      }
+    },
+    {
+      "key": "CA-GOV-BECERRA-2026",
+      "question": "Will Xavier Becerra win the 2026 California gubernatorial election?",
+      "rules": "YES if the California Secretary of State certified statement of vote names Xavier Becerra as the elected Governor of California for the 8 Nov 2026 statewide election (or the 3 Nov 2026 date as scheduled). Runoff/top-two: the certified general-election winner. INVALID if the election is not held or no certified winner by 2027-01-08. Timezone: America/Los_Angeles.",
+      "resolutionSource": "https://www.sos.ca.gov/elections",
+      "closeTime": 1793721600,
+      "closeTimeISO": "2026-11-03T16:00:00Z",
+      "category": "politics",
+      "icon": "🌴",
+      "prior": {
+        "yes": 0.961,
+        "basis": "Polymarket 'California Governor Election Winner' Xavier Becerra = 96.1% as of 2026-10-11.",
+        "source": "https://polymarket.com/event/california-governor-election-2026"
+      }
+    },
+    {
+      "key": "WS-LAD-2026",
+      "question": "Will the Los Angeles Dodgers win the 2026 World Series?",
+      "rules": "YES if MLB.com / the Commissioner's office names the Los Angeles Dodgers the 2026 World Series champion. A shortened or vacated series still counts if MLB names a champion. INVALID if the 2026 World Series is not completed and no champion is named by 2026-11-30. Timezone: America/New_York.",
+      "resolutionSource": "https://www.mlb.com/world-series",
+      "closeTime": 1792627200,
+      "closeTimeISO": "2026-10-22T00:00:00Z",
+      "category": "sports",
+      "icon": "⚾",
+      "prior": {
+        "yes": 0.425,
+        "basis": "Polymarket 'MLB World Series Champion 2026' Dodgers = 42.5% as of 2026-10-11 (NLCS/ALCS still live: LAD, MIL, TB, CLE).",
+        "source": "https://polymarket.com/event/mlb-world-series-champion-2026"
+      }
+    },
+    {
+      "key": "WS-MIL-2026",
+      "question": "Will the Milwaukee Brewers win the 2026 World Series?",
+      "rules": "YES if MLB names the Milwaukee Brewers the 2026 World Series champion. INVALID if no 2026 champion is named by 2026-11-30. Timezone: America/New_York.",
+      "resolutionSource": "https://www.mlb.com/world-series",
+      "closeTime": 1792627200,
+      "closeTimeISO": "2026-10-22T00:00:00Z",
+      "category": "sports",
+      "icon": "⚾",
+      "prior": {
+        "yes": 0.258,
+        "basis": "Polymarket Brewers = 25.8% as of 2026-10-11.",
+        "source": "https://polymarket.com/event/mlb-world-series-champion-2026"
+      }
+    },
+    {
+      "key": "WS-TB-2026",
+      "question": "Will the Tampa Bay Rays win the 2026 World Series?",
+      "rules": "YES if MLB names the Tampa Bay Rays the 2026 World Series champion. INVALID if no 2026 champion is named by 2026-11-30. Timezone: America/New_York.",
+      "resolutionSource": "https://www.mlb.com/world-series",
+      "closeTime": 1792627200,
+      "closeTimeISO": "2026-10-22T00:00:00Z",
+      "category": "sports",
+      "icon": "⚾",
+      "prior": {
+        "yes": 0.221,
+        "basis": "Polymarket Rays = 22.1% as of 2026-10-11.",
+        "source": "https://polymarket.com/event/mlb-world-series-champion-2026"
+      }
+    },
+    {
+      "key": "WS-NL-2026",
+      "question": "Will a National League team win the 2026 World Series?",
+      "rules": "YES if the 2026 World Series champion is an NL club (as of opening day 2026 alignment). The Dodgers or Brewers winning is YES; an AL champion (Rays or Guardians, if they advance) is NO. INVALID if no champion by 2026-11-30. Timezone: America/New_York.",
+      "resolutionSource": "https://www.mlb.com/world-series",
+      "closeTime": 1792627200,
+      "closeTimeISO": "2026-10-22T00:00:00Z",
+      "category": "sports",
+      "icon": "⚾",
+      "prior": {
+        "yes": 0.683,
+        "basis": "Polymarket Dodgers 42.5% + Brewers 25.8% = 68.3% as of 2026-10-11 (the two remaining NL clubs).",
+        "source": "https://polymarket.com/event/mlb-world-series-champion-2026"
+      }
+    },
+    {
+      "key": "APPLE-NEWLINE-2026",
+      "question": "Will Apple release a new product line before 2027?",
+      "rules": "YES if Apple (apple.com newsroom or a keynote) ships or takes orders for a product in a category Apple did not sell as a named line on 2026-01-01 (e.g. a foldable iPhone, mixed-reality SKU distinct from Vision Pro, or a new named hardware family). Colorways, capacity bumps, and 'iPhone 18' / 'M5 MacBook' refreshes of existing lines are NO. Announcements without a ship/order date in 2026 are NO. Timezone: UTC. INVALID only if apple.com is unreachable the entire year.",
+      "resolutionSource": "https://www.apple.com/newsroom/",
+      "closeTime": 1798740000,
+      "closeTimeISO": "2026-12-31T18:00:00Z",
+      "category": "tech",
+      "icon": "🍎",
+      "prior": {
+        "yes": 0.795,
+        "basis": "Polymarket 'Will Apple release a new product line before 2027?' = 79.5% as of 2026-10-11.",
+        "source": "https://polymarket.com/event/will-apple-release-a-new-product-line-before-2027"
+      }
+    },
+    {
+      "key": "STARSHIP-LT5-2026",
+      "question": "Will fewer than 5 SpaceX Starship launches reach space in calendar 2026?",
+      "rules": "YES if the number of SpaceX Starship (Ship + Super Heavy) flights in 2026 that reach an altitude >= 100 km, as listed on SpaceX's flight history or a FAA/AST license plus webcast, is 0, 1, 2, 3, or 4. Suborbital hops below 100 km do not count. Timezone: UTC. INVALID if SpaceX and FAA publish irreconcilable counts.",
+      "resolutionSource": "https://www.spacex.com/launches/",
+      "closeTime": 1798740000,
+      "closeTimeISO": "2026-12-31T18:00:00Z",
+      "category": "tech",
+      "icon": "🚀",
+      "prior": {
+        "yes": 0.53,
+        "basis": "Polymarket 'Will less than 5 SpaceX Starship launches successfully reach Space in 2026?' = 53.0% as of 2026-10-11.",
+        "source": "https://polymarket.com/event/how-many-spacex-starship-launches-reach-space-in-2026"
+      }
+    },
+    {
+      "key": "GTA6-BY-NOV-2026",
+      "question": "Will Grand Theft Auto VI be released by 30 November 2026?",
+      "rules": "YES if Rockstar/Take-Two makes GTA VI available for purchase or download on any of PS5, Xbox Series, or PC in at least one region, with a public build, at a UTC timestamp <= 2026-11-30 23:59:59. Trailers, betas, and store listings without a playable build are NO. Timezone: UTC.",
+      "resolutionSource": "https://www.rockstargames.com/VI",
+      "closeTime": 1795996800,
+      "closeTimeISO": "2026-11-30T00:00:00Z",
+      "category": "tech",
+      "icon": "🎮",
+      "prior": {
+        "yes": 0.954,
+        "basis": "Polymarket 'GTA VI released by November 30?' = 95.4% as of 2026-10-11.",
+        "source": "https://polymarket.com/event/gta-vi-released-before-november-2026"
+      }
+    },
+    {
+      "key": "AVENGERS-RT-85-2026",
+      "question": "Will Avengers: Doomsday score at least 85 on the Rotten Tomatoes Tomatometer?",
+      "rules": "YES if, at 23:59 UTC on the film's first US theatrical Friday (or the next day if it is not a Friday), the Rotten Tomatoes Tomatometer for 'Avengers: Doomsday' (the 2026 Marvel feature) is >= 85 with the 'All Critics' filter. A later score change does not count. If RT has no page by 2026-12-31, INVALID. Timezone: UTC.",
+      "resolutionSource": "https://www.rottentomatoes.com/",
+      "closeTime": 1797552000,
+      "closeTimeISO": "2026-12-18T00:00:00Z",
+      "category": "culture",
+      "icon": "🎬",
+      "prior": {
+        "yes": 0.515,
+        "basis": "Polymarket 'Will Avengers: Doomsday score at least 85 on the Rotten Tomatoes Tomatometer?' = 51.5% as of 2026-10-11.",
+        "source": "https://polymarket.com/event/avengers-doomsday-rotten-tomatoes-score-20261221"
+      }
+    },
+    {
+      "key": "SPOTIFY-BRUNO-OCT-2026",
+      "question": "Will Bruno Mars have the most Spotify monthly listeners in October 2026?",
+      "rules": "YES if, using Spotify's public monthly-listener count as archived on 2026-10-31 23:59 UTC (kworb.net Spotify monthly listeners or Spotify's own artist page), Bruno Mars ranks #1 among individual artists. Bands count as artists. A later restatement is ignored. INVALID if no reputable snapshot exists. Timezone: UTC.",
+      "resolutionSource": "https://kworb.net/spotify/listeners.html",
+      "closeTime": 1793484000,
+      "closeTimeISO": "2026-10-31T22:00:00Z",
+      "category": "culture",
+      "icon": "🎵",
+      "prior": {
+        "yes": 0.975,
+        "basis": "Polymarket 'Top Spotify Artist in October?' Bruno Mars = 97.5% as of 2026-10-11.",
+        "source": "https://polymarket.com/event/top-spotify-artist-in-october-20261031"
+      }
+    },
+    {
+      "key": "GTA6-META-98-2026",
+      "question": "Will GTA VI have a Metacritic Metascore of at least 98?",
+      "rules": "YES if the Metacritic Metascore (PC or the highest among listed platforms if several) for Grand Theft Auto VI is an integer >= 98 at 23:59 UTC on the earlier of (a) 14 days after the first platform's review embargo and (b) 2026-12-31. Unscored / tbd is not YES. If the game is unreleased and has no score by 2026-12-31, NO (not INVALID). Timezone: UTC.",
+      "resolutionSource": "https://www.metacritic.com/",
+      "closeTime": 1798740000,
+      "closeTimeISO": "2026-12-31T18:00:00Z",
+      "category": "culture",
+      "icon": "🎮",
+      "prior": {
+        "yes": 0.265,
+        "basis": "Polymarket 'Will GTA VI have a Metascore of at least 98?' = 26.5% as of 2026-10-11.",
+        "source": "https://polymarket.com/event/gta-vi-metacritic-score"
+      }
+    }
+  ]
+}
