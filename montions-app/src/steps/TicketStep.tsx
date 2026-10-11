@@ -10,6 +10,8 @@ import {
   fmtStrikeShort, isSameUtcDay, nowSec, shortAddr,
 } from '../lib/format';
 import { useNow, useQuote, useReducedMotion } from '../lib/hooks';
+import { sigmaMove } from '../lib/model';
+import { PayoutSimulator } from '../components/Payoff';
 import { AssetIcon } from '../components/AssetIcon';
 import { BookDisclosure } from '../components/BookPanel';
 import { FundsHint } from '../components/OfflineBanner';
@@ -217,6 +219,21 @@ export function TicketStep({ flow, dispatch, asset }: StepProps) {
         </div>
       </div>
 
+      {/* ui-chart: payout */}
+      {eff && !printing && (
+        <PayoutSimulator
+          symbol={symbol}
+          direction={d.direction}
+          spot={asset.price}
+          strike={strike}
+          strikeStep={step}
+          cost={cost}
+          payout={payout}
+          sigma={sigmaMove(asset.vol, expiry - Date.now() / 1000)}
+          expiryLabel={sameDay ? `${fmtClock(expiry)} UTC` : fmtMonthDay(expiry)}
+          compact
+        />
+      )}
       {d.symbol && d.strike != null && d.expiry != null && !printing && (
         <BookDisclosure market={{ symbol: d.symbol, strike: d.strike, expiry: d.expiry }} />
       )}

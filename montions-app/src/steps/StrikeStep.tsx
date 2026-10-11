@@ -4,6 +4,7 @@ import { Info, Spinner } from '../components/Icons';
 import { fmtCents, fmtExpiryNote, fmtPct, fmtSignedPct, fmtSignedPrice, fmtStrike, decimalsOf } from '../lib/format';
 import { useQuote } from '../lib/hooks';
 import { BookDisclosure } from '../components/BookPanel';
+import { PriceChart } from '../charts/PriceChart';
 import { effective, type StepProps } from './common';
 
 export function nearestIndex(list: number[], v: number): number {
@@ -127,6 +128,19 @@ export function StrikeStep({ flow, dispatch, asset, strikes, compact }: StepProp
           renderItem={(k) => <span className="strike-item num">{fmtStrike(k, step)}</span>}
         />
       </div>
+
+      {/* ui-chart: live price */}
+      {asset && (
+        <PriceChart
+          symbol={asset.symbol}
+          spot={spot}
+          vol={asset.vol}
+          strike={d.strike ?? undefined}
+          expiry={d.expiry ?? undefined}
+          category={asset.category}
+          compact={compact}
+        />
+      )}
 
       <div className="info-card glass">
         <div className="info-row">

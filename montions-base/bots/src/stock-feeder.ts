@@ -526,7 +526,7 @@ async function main(): Promise<void> {
     const prices = actionable.map((q) => q.priceE8);
     const observedAts = actionable.map((q) => BigInt(q.observedAt));
     const account = typeof ctx.account === "string" ? ctx.account : ctx.account.address;
-    const hash = await ctx.walletClient.writeContract({
+    const hash = await guardedWriteContract(ctx, {
       address: hub,
       abi: keeperFeedHubAbi,
       functionName: "push",

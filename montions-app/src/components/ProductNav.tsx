@@ -5,14 +5,14 @@ import { useRoute } from '../state/route';
 export function ProductNav({ disabled = false }: { disabled?: boolean }) {
   const copy = useCopy();
   const { route } = useRoute();
-  const items = [
+  const items: { to: string; id: string; label: string; match: boolean }[] = [
     { to: '/', id: 'home' as const, label: copy.nav.prices, match: route.name === 'home' },
     { to: '/predictions', id: 'predictions' as const, label: copy.nav.predictions, match: route.name === 'predictions' || route.name === 'event' },
     { to: '/markets', id: 'markets' as const, label: copy.nav.markets, match: route.name === 'markets' },
   ];
   // Reading links use the existing nav slot; document routes own their active state.
   items.push(...(['paper', 'docs', 'thesis'] as const).map((page) => ({
-    to: `/${page}`, id: page as 'home', label: page[0].toUpperCase() + page.slice(1),
+    to: `/${page}`, id: page, label: page[0].toUpperCase() + page.slice(1),
     match: location.pathname === `/${page}` || location.pathname.startsWith(`/${page}/`),
   })));
   return (

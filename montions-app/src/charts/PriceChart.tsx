@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent as RE, type KeyboardEvent as KE } from 'react';
+import { useEffect, useMemo, useRef, useState, type PointerEvent as RE, type KeyboardEvent as KE } from 'react';
 import type { AssetCategory } from '../chains/types';
 import { fmtPrice } from '../lib/format';
 import { useReducedMotion } from '../lib/hooks';
@@ -43,8 +43,11 @@ export function PriceChart({ symbol, spot, vol, strike, expiry, category, compac
   const last = points[points.length - 1];
   const s0 = last?.value ?? (spot > 0 ? spot : 0);
   const tNow = last?.time ?? Date.now() / 1000;
-  const tExp = expiry && expiry > tNow ? expiry : tNow + 6 * 3600;
-  const cone = useMemo(() => (s0 > 0 ? buildCone(tNow, s0, tExp, vol) : []), [tNow, s0, tExp, vol]);
+  const tExp = expiry && expiry > tNow ? expiry : tNow + 4 * 3600;
+  const cone = useMemo(
+    () => (s0 > 0 && expiry && expiry > tNow ? buildCone(tNow, s0, expiry, vol) : []),
+    [tNow, s0, expiry, vol],
+  );
 
   const domain = useMemo(() => {
     const tMin = points[0]?.time ?? tNow - 24 * 3600;
@@ -213,7 +216,7 @@ export function PriceChart({ symbol, spot, vol, strike, expiry, category, compac
         <span className="pc__src">{loading && !snap ? 'Loading…' : snap?.label ?? '—'}</span>
       </div>
       <div
-        ref={(n) => { wrapRef.current = n; plotRef.current = n; }}
+        ref={plotRef}
         className="pc__plot"
         style={{ height: H }}
         tabIndex={0}

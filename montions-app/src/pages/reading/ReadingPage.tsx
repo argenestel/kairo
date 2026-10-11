@@ -17,6 +17,8 @@ export default function ReadingPage() {
   useEffect(() => {
     const main = root.current?.closest('main');
     main?.scrollTo({ top: 0 });
+    const contents = root.current?.querySelector('details');
+    if (contents) contents.open = !window.matchMedia('(max-width: 760px)').matches;
     const frame = root.current?.closest('.app');
     frame?.classList.add('app--reading');
     // RouteProvider also sets titles; run after its route effect has completed.
@@ -44,7 +46,11 @@ export default function ReadingPage() {
             {slug === 'paper' && <p className="reading__subtitle">{brand(meta.subtitle)}</p>}
             <div className="reading__meta"><span>{brand(meta.authors)} · {meta.date} · v{meta.version}</span><button onClick={() => window.print()}>Download PDF <span aria-hidden>↗</span></button></div>
           </header>
-          {slug === 'paper' && <p className="reading__abstract">{brand(meta.abstract)}</p>}
+          <details className="reading__status">
+            <summary>Testnet status · Base & Arbitrum live · Hyperliquid paused</summary>
+            <p>As of 11 October 2026: Base Sepolia and Arbitrum Sepolia books are deployed, with 63 series each. Solana devnet is deployed. HyperEVM and its HyperCore oracle are planned; Hyperliquid is paused and not routable. Equities use a keeper-reported demo oracle. Event markets use a bonded optimistic resolution design. Contingent-surplus netting, teleport and cross-venue maker netting are proposed. Older passages below describe the research snapshot.</p>
+            <p>Known Solana limitations: maker exposure caps omit inventory; no global maker cap; settlement-window print selection can change outcomes; 64-order / 24-seat books can be filled cheaply; permissionless refresh with POST_ONLY skips can leave quotes one-sided. Planned fixes: inventory-aware exposure, global and per-asset caps, keeper-only or rate-limited refresh, larger or paged books, and strict first-print settlement. Testnets are unaudited; mainnet is not live.</p>
+          </details>
           <div className="reading__prose" dangerouslySetInnerHTML={{ __html: rendered.html }} />
           <footer className="reading__footer"><span>Kairo · Testnet research & documentation</span><Link to="/">Open Kairo ↗</Link></footer>
         </article>

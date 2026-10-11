@@ -382,6 +382,11 @@ export async function assertBaseBudget(context: BotContext, parameters: GuardedW
   const current = await context.publicClient.getBalance({ address: account as Address });
   const spent = context.baseStartBalanceWei > current ? context.baseStartBalanceWei - current : 0n;
   const upperBound = gasLimit * maxFeePerGas + l1Fee;
+  const reserve = BigInt(process.env.MIN_RESERVE_WEI ?? process.env.LIVE_MIN_RESERVE_WEI ?? "0");
+  if (reserve < 0n || current < reserve + upperBound) {
+    throw new Error(`spend guard: estimated transaction would breach reserve ${reserve} wei`);
+  }
+  logLine("spend-guard", { balance_wei: current, estimated_max_wei: upperBound, reserve_wei: reserve });
   if (spent + upperBound > budget) {
     throw new Error(`spend guard: ${spent + upperBound} wei would exceed ${budget} wei`);
   }

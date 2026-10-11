@@ -3,6 +3,8 @@ import type { ChainKey } from '../chains';
 import { useCopy } from '../copy';
 import { bookStats, useBook, type BookTarget } from '../lib/book';
 import { fmtCents, fmtClock, fmtContracts } from '../lib/format';
+import { DepthChart } from '../charts/DepthChart';
+import { ProbabilityReadout } from '../charts/Probability';
 import { Sheet } from './Sheet';
 
 export function BookPanel({ market, compact = false, chain, hideHead = false }: { market: BookTarget; compact?: boolean; chain?: ChainKey; hideHead?: boolean }) {
@@ -55,6 +57,15 @@ export function BookPanel({ market, compact = false, chain, hideHead = false }: 
           <div><dt>{copy.book.spread}</dt><dd className="num">{stats.spread != null ? fmtCents(stats.spread) : '—'}</dd></div>
         </dl>
       </div>
+      {/* ui-chart: depth + odds */}
+      <DepthChart bids={book.bids} asks={book.asks} mid={stats.mid} height={compact ? 72 : 100} />
+      <ProbabilityReadout
+        symbol={market.symbol}
+        strike={market.strike}
+        expiry={market.expiry}
+        bookMid={stats.mid}
+        compact={compact}
+      />
       <table className="book__ladder">
         <caption className="sr-only">YES order book. Asks above, bids below. NO price is one minus YES.</caption>
         <thead>

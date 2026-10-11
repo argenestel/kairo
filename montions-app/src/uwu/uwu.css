@@ -80,3 +80,6 @@ html[data-mode='uwu'] .event-side.is-on { border-color: #ef8fb3; }
 html[data-mode='uwu'] .book { background: var(--glass-strong); }
 html[data-mode='uwu'] .event-ticket-q { color: #3a2448; }
 html[data-mode='uwu'] .perf::before, html[data-mode='uwu'] .perf::after { background: var(--bg); }
+/* reading pages: smaller host, tucked into the corner */
+.uwu-host--reading { bottom: 12px; }
+.uwu-host--reading .mascot { transform: scale(0.72); transform-origin: bottom left; }

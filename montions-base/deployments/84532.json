@@ -12,7 +12,7 @@
     "collateral": "0xE0604f8dBbd1ee282BFc1642A19eE2a83Cc4B941",
     "quoter": "0xbA78198A6F1f0b2fbBA6fD0A7E48A0f318BD8709",
     "vault": "0xadd675E7Eb9bbC2E89dA795E2fe11F9cc9Ab7aFc",
-    "keeperFeedHub": "0x88C0F18816fCaEA45d266A14c1A66AC64EfE3F6B"
+    "keeperFeedHub": "0xF4fDe98f037d8889c8e1a6C1C66f558a9091F6fC"
   },
   "assets": [
     {

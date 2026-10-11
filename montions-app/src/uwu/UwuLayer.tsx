@@ -25,8 +25,10 @@ export function UwuLayer({ step, direction, phase, chain, compact }: Props) {
   const tanName = WHO_LABEL[CHAIN_TAN[chain] ?? 'mon'];
   const beat = useMemo(() => beatFor(step, direction, phase, chain, tanName), [step, direction, phase, chain, tanName]);
   const [i, setI] = useState(0);
-  const [hideBubble, setHideBubble] = useState(false);
-  useEffect(() => { setI(0); setHideBubble(false); }, [beat]);
+  // Reading pages (paper/docs/thesis…): stay quiet so the bubble never covers text — tap the mascot to talk.
+  const reading = /^\/(paper|docs|thesis|litepaper|pitch|submission|demo-script)(\/|$)/.test(location.pathname);
+  const [hideBubble, setHideBubble] = useState(reading);
+  useEffect(() => { setI(0); setHideBubble(reading); }, [beat, reading]);
   const line = beat.lines[i % beat.lines.length];
 
   return (
@@ -36,7 +38,7 @@ export function UwuLayer({ step, direction, phase, chain, compact }: Props) {
         {!reduced && <Sakura count={compact ? 12 : 24} />}
         <Sparkles count={compact ? 6 : 12} />
       </div>
-      <div className={`uwu-host${compact ? ' uwu-host--compact' : ''}${step === 5 ? ' uwu-host--ticket' : ''}`}>
+      <div className={`uwu-host${compact ? ' uwu-host--compact' : ''}${step === 5 ? ' uwu-host--ticket' : ''}${reading ? ' uwu-host--reading' : ''}`}>
         {!hideBubble && (
           <SpeechBubble color={BUBBLE[beat.who] ?? 'pink'} className="uwu-host__bubble">
             <span className="uwu-host__name">{WHO_LABEL[beat.who]}</span>

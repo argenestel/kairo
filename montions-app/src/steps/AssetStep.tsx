@@ -4,6 +4,7 @@ import { useChain } from '../state/chain';
 import { Wheel } from '../components/Wheel';
 import { AssetIcon } from '../components/AssetIcon';
 import { LivePrice } from '../components/LivePrice';
+import { PriceChart } from '../charts/PriceChart';
 import type { StepProps } from './common';
 
 export function AssetStep({ flow, dispatch, compact }: StepProps) {
@@ -61,6 +62,16 @@ export function AssetStep({ flow, dispatch, compact }: StepProps) {
         <span className={`dot ${demo ? 'dot--demo' : 'dot--live'}`} />
         {demo ? 'Demo prices' : 'Live prices'} · scroll, drag or type a name
       </p>
+      {/* ui-chart: live price */}
+      {items[index] && (
+        <PriceChart
+          symbol={items[index].symbol}
+          spot={items[index].price}
+          vol={items[index].vol}
+          category={items[index].category}
+          compact={compact}
+        />
+      )}
     </div>
   );
 }

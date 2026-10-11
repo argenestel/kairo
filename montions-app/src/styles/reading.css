@@ -12,7 +12,10 @@
 .reading__sidebar a[aria-current='page'] { border-color: var(--ring); background: var(--glass); }
 .reading__sidebar .is-subsection { padding-left: 18px; font-size: 11px; }
 .reading__toc { margin-top: 20px; }
-.reading__card { min-width: 0; padding: 44px 48px; background: var(--glass-strong); border: 1px solid var(--line); border-radius: var(--radius-card); }
+.reading__card { min-width: 0; padding: 44px 48px; background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius-card); }
+.reading__status { margin-top: 24px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px; color: var(--muted); font-size: 12px; line-height: 1.7; }
+.reading__status summary { cursor: pointer; color: var(--text); }
+.reading__status p { margin-top: 12px; }
 .reading__eyebrow { color: var(--muted); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 20px; }
 .reading__title h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(34px, 4vw, 56px); line-height: 1.08; letter-spacing: -.025em; text-wrap: balance; }
 .reading__subtitle { margin-top: 20px; font-size: 18px; line-height: 1.55; color: var(--muted); }
@@ -64,7 +67,7 @@ html[data-mode='uwu'] .reading__prose a { color: var(--text); }
 @media print {
   @page { margin: 18mm; }
   body:has(.reading), body:has(.reading) #root, .app--reading { height: auto !important; overflow: visible !important; background: white !important; color: black !important; display: block !important; }
-  body:has(.reading) .scene, body:has(.reading) .uwu-layer, .app--reading > .top, .app--reading > .foot, .app--reading .rpc-banner, .reading__nav, .reading__sidebar, .reading__meta button, .reading__footer { display: none !important; }
+  body:has(.reading) .scene, body:has(.reading) .uwu-host, body:has(.reading) .uwu-fx, .app--reading > .top, .app--reading > .foot, .app--reading .rpc-banner, .reading__nav, .reading__sidebar, .reading__meta button, .reading__footer { display: none !important; }
   .app--reading .main { display: block !important; overflow: visible !important; height: auto !important; padding: 0; }
   .reading { width: 100%; padding: 0; color: black; }
   .reading__grid { display: block; padding: 0; }

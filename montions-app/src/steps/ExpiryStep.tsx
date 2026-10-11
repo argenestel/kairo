@@ -5,6 +5,7 @@ import { fmtCents, fmtClock, fmtDayLong, fmtIn, fmtPct, utcDayStart } from '../l
 import { useQuote } from '../lib/hooks';
 import { buildTimeline } from '../lib/timeline';
 import { BookDisclosure } from '../components/BookPanel';
+import { PriceChart } from '../charts/PriceChart';
 import { effective, type StepProps } from './common';
 
 export function ExpiryStep({ flow, dispatch, asset, expiries, compact }: StepProps) {
@@ -115,6 +116,18 @@ export function ExpiryStep({ flow, dispatch, asset, expiries, compact }: StepPro
         }
       />
       <p className="hint">Drag or scroll the timeline · click the date to type one</p>
+      {/* ui-chart: live price */}
+      {asset && (
+        <PriceChart
+          symbol={asset.symbol}
+          spot={asset.price}
+          vol={asset.vol}
+          strike={d.strike ?? undefined}
+          expiry={sel.expiry}
+          category={asset.category}
+          compact={compact}
+        />
+      )}
       {eff && !eff.tradable && eff.reason && <p className="info-warn center">{eff.reason}</p>}
       {d.symbol && d.strike != null && d.expiry != null && (
         <BookDisclosure market={{ symbol: d.symbol, strike: d.strike, expiry: d.expiry }} />

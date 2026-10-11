@@ -84,6 +84,12 @@ describe('Kairo Pyth stocks', () => {
     await updateBatch(r,[a],now);
     expect(updates).toHaveBeenCalledWith([a.feedId]);
     expect(read.mock.calls[0]?.[0].functionName).toBe('getUpdateFee');
+    const b=config.assets[1]!;
+    updates.mockResolvedValue({...structuredClone(fixture),parsed:[fixture.parsed[0]!,{...fixture.parsed[0]!,id:b.feedId.slice(2)}]});
+    read.mockClear();
+    await updateBatch(r,[a,b],now);
+    expect(updates).toHaveBeenLastCalledWith([a.feedId,b.feedId]);
+    expect(read).toHaveBeenCalledTimes(1);
   });
   it('deduplicates shared asset-expiry settlement and never settles at expiry', () => {
     expect(settlementGroups([series(now),series(now,390n*10n**18n)],now).size).toBe(0);

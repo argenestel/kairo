@@ -7,7 +7,7 @@ import thesisNav from '@kairo/paper/thesis-nav.json';
 const sources = import.meta.glob('@kairo/paper/**/*.md', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
 const figures = import.meta.glob('@kairo/paper/figures/*.svg', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
 export { meta, docsNav, thesisNav };
-export const brand = (text: string) => text.replace(/Montions/gi, 'Kairo');
+export const brand = (text: string) => text.replace(/\bMontions\b/g, 'Kairo');
 export function source(file: string) {
   return Object.entries(sources).find(([key]) => key.endsWith(`/paper/${file}`))?.[1];
 }
@@ -43,7 +43,7 @@ export function renderDocument(markdown: string, file: string) {
       const svg = Object.entries(figures).find(([key]) => key.endsWith(`/figures/${name}`))?.[1];
       if (!svg) return '';
       // SVGs are local, read-only build inputs; sanitize before placing them inline.
-      return `<figure>${DOMPurify.sanitize(svg, { USE_PROFILES: { svg: true, svgFilters: true } })}<figcaption>${DOMPurify.sanitize(text)}</figcaption></figure>`;
+      return `<figure>${inlineFigure(svg)}<figcaption>${DOMPurify.sanitize(text)}</figcaption></figure>`;
     },
     link(token) {
       return `<a href="${DOMPurify.sanitize(documentHref(token.href, file)).replace(/"/g, '&quot;')}">${this.parser.parseInline(token.tokens)}</a>`;
@@ -59,10 +59,13 @@ export function renderDocument(markdown: string, file: string) {
   body = body.replace(/^# .+\n+/, '');
   if (file === 'cross-chain-options.md') body = body.replace(/^[\s\S]*?(?=## Abstract)/, '');
   const refs = new Map<string, number>();
+  const occurrences = new Map<string, number>();
   body = body.replace(/\[\^([\w-]+)\]/g, (_, label: string) => {
     const number = refs.get(label) ?? refs.size + 1;
     refs.set(label, number);
-    return `<sup><a id="ref-${label}-${number}" href="#note-${label}" aria-label="Reference ${number}">[${number}]</a></sup>`;
+    const occurrence = (occurrences.get(label) ?? 0) + 1;
+    occurrences.set(label, occurrence);
+    return `<sup><a id="ref-${label}-${occurrence}" href="#note-${label}" aria-label="Reference ${number}">[${number}]</a></sup>`;
   });
   body = body.replace(/\\\[\s*([\s\S]*?)\s*\\\]/g, (_, math: string) => `\n\n<pre class="reading-math">${escapeHtml(math)}</pre>\n\n`)
     .replace(/\\\((.*?)\\\)/g, (_, math: string) => `<code class="reading-math-inline">${escapeHtml(math)}</code>`);
@@ -70,13 +73,25 @@ export function renderDocument(markdown: string, file: string) {
   if (notes.length) {
     html += '<section class="reading-notes" aria-label="Footnotes"><h2 id="footnotes">Footnotes</h2><ol>';
     for (const note of notes) {
-      html += `<li id="note-${note.label}" value="${refs.get(note.label) ?? notes.indexOf(note) + 1}">${parser.parse(note.body)} <a href="#ref-${note.label}-${refs.get(note.label)}" aria-label="Back to reference">↩</a></li>`;
+      html += `<li id="note-${note.label}" value="${refs.get(note.label) ?? notes.indexOf(note) + 1}">${parser.parse(note.body)} <a href="#ref-${note.label}-1" aria-label="Back to reference">↩</a></li>`;
     }
     html += '</ol></section>';
     toc.push({ id: 'footnotes', text: 'Footnotes', depth: 2 });
   }
   // Preserve safe inline diagrams and heading IDs, while excluding executable markup.
-  return { html: DOMPurify.sanitize(html, { ADD_TAGS: ['style'], FORBID_TAGS: ['script', 'iframe', 'object', 'embed'], ADD_ATTR: ['aria-label'] }), toc };
+  return { html: DOMPurify.sanitize(html, { FORBID_TAGS: ['style', 'script', 'iframe', 'object', 'embed'], ADD_ATTR: ['aria-label'] }), toc };
+}
+
+function inlineFigure(svg: string) {
+  const doc = new DOMParser().parseFromString(svg, 'image/svg+xml');
+  // Inline the trusted figure styles so generic .line/.box selectors never affect the app.
+  for (const sheet of doc.querySelectorAll('style')) {
+    for (const rule of (sheet.textContent ?? '').matchAll(/([^{}]+)\{([^{}]+)\}/g)) {
+      for (const node of doc.querySelectorAll(rule[1].trim())) node.setAttribute('style', rule[2].trim());
+    }
+    sheet.remove();
+  }
+  return DOMPurify.sanitize(doc.documentElement.outerHTML, { USE_PROFILES: { svg: true, svgFilters: true } });
 }
 
 function escapeHtml(text: string) {

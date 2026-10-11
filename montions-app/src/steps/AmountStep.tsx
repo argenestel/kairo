@@ -92,6 +92,7 @@ export function AmountStep({ flow, dispatch, asset, compact }: StepProps) {
           expiryLabel={expLabel}
           value={simPrice}
           onValue={setSimPrice}
+          compact={compact}
         />
       )}
       {eff && !eff.tradable && eff.reason && <p className="info-warn center">{eff.reason}</p>}
