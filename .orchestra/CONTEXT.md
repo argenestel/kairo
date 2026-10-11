@@ -77,3 +77,6 @@ Hard rules for every job:
     (b) **Predictions = both**: polish the price flow AND add **event markets** (yes/no real-world questions) with
     an optimistic resolver (bonded assertion, challenge window, arbitration) — same Book, same YES/NO contracts.
     (c) **Production-ready** UI (no blank screens, error boundaries, order book views, markets explorer).
+13. **Git:** the workspace root is now a git repo pushed to https://github.com/argenestel/kairo (branch main).
+    Agents still NEVER run git — the main agent commits/pushes. Secrets only in gitignored places (`.env`, `.env.*`,
+    `**/.dev/`, `.orchestra/secrets/`); never write a key into any tracked file (docs, configs, tests, logs).

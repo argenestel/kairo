@@ -14,12 +14,6 @@
     "url": "/markets",
     "violations": [
       {
-        "id": "aria-conditional-attr",
-        "impact": "serious",
-        "nodes": 28,
-        "help": "ARIA attributes must be used as specified for the element's role"
-      },
-      {
         "id": "color-contrast",
         "impact": "serious",
         "nodes": 1,

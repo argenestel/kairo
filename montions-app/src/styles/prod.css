@@ -4,7 +4,10 @@
   position: absolute; left: 12px; top: -48px; z-index: 100;
   padding: 8px 14px; border-radius: 999px; background: var(--cta-from); color: var(--cta-fg); font-weight: 650;
 }
-.skip-link:focus { top: 12px; }
+.skip-link:not(:focus):not(:focus-visible) {
+  width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); top: 0; left: 0; padding: 0;
+}
+.skip-link:focus, .skip-link:focus-visible { top: 12px; clip: auto; width: auto; height: auto; }
 
 .offline-banner, .rpc-banner {
   position: relative; z-index: 25; display: flex; align-items: center; justify-content: center; gap: 12px;
@@ -199,9 +202,3 @@
   .book__maker { position: static; transform: none; margin-left: 6px; }
 }
 
-html[data-mode='uwu'] .product-nav__btn.is-on { background: linear-gradient(180deg, #ffd3e4, #ffb1cd); color: #5a1c3c; }
-html[data-mode='uwu'] .pred-card:hover { box-shadow: 0 8px 20px rgba(214, 110, 160, 0.16); }
-html[data-mode='uwu'] .event-side.is-on { border-color: #ef8fb3; }
-html[data-mode='uwu'] .book { background: var(--glass-strong); }
-html[data-mode='uwu'] .event-ticket-q { color: #3a2448; }
-html[data-mode='uwu'] .perf::before, html[data-mode='uwu'] .perf::after { background: var(--bg); }

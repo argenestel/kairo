@@ -5,7 +5,7 @@ import { bookStats, useBook, type BookTarget } from '../lib/book';
 import { fmtCents, fmtClock, fmtContracts } from '../lib/format';
 import { Sheet } from './Sheet';
 
-export function BookPanel({ market, compact = false, chain }: { market: BookTarget; compact?: boolean; chain?: ChainKey }) {
+export function BookPanel({ market, compact = false, chain, hideHead = false }: { market: BookTarget; compact?: boolean; chain?: ChainKey; hideHead?: boolean }) {
   const copy = useCopy();
   const { book, loading, error, reload } = useBook(market, 4000, chain);
   const stats = bookStats(book);
@@ -46,7 +46,7 @@ export function BookPanel({ market, compact = false, chain }: { market: BookTarg
     <div className={`book glass${compact ? ' book--compact' : ''}`}>
       <div className="book__head">
         <div>
-          <b>{copy.book.yes}</b>
+          {!hideHead && <b>{copy.book.yes}</b>}
           <small className="book__hint">{copy.book.noHint}</small>
         </div>
         <dl className="book__stats">
@@ -131,7 +131,7 @@ export function BookDisclosure({ market, chain, className }: { market: BookTarge
         {copy.book.view}
       </button>
       <Sheet open={open} onClose={() => setOpen(false)} title={copy.book.yes}>
-        <BookPanel market={market} chain={chain} />
+        <BookPanel market={market} chain={chain} hideHead />
       </Sheet>
     </div>
   );

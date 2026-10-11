@@ -73,3 +73,10 @@ html[data-mode='uwu'] .dock__btn--primary { background: linear-gradient(180deg, 
   .sk-sway-trunk, .sk-sway-a, .sk-sway-b, .sk-sway-c { animation: none; }
   .sk-gust { display: none; }
 }
+
+html[data-mode='uwu'] .product-nav__btn.is-on { background: linear-gradient(180deg, #ffd3e4, #ffb1cd); color: #5a1c3c; }
+html[data-mode='uwu'] .pred-card:hover { box-shadow: 0 8px 20px rgba(214, 110, 160, 0.16); }
+html[data-mode='uwu'] .event-side.is-on { border-color: #ef8fb3; }
+html[data-mode='uwu'] .book { background: var(--glass-strong); }
+html[data-mode='uwu'] .event-ticket-q { color: #3a2448; }
+html[data-mode='uwu'] .perf::before, html[data-mode='uwu'] .perf::after { background: var(--bg); }

@@ -1,0 +1,10 @@
+Read /home/arg/projects/hack/colessolana/.orchestra/CONTEXT.md first (items 10–13).
+
+# Job: paper, docs and thesis pages on the Kairo website (Codex)
+
+The site is live at https://kairo-nu-red.vercel.app but /paper, /docs, /thesis, /litepaper and /pitch 404. Content (read-only input) lives in /home/arg/projects/hack/colessolana/paper/: cross-chain-options.md + meta.json + figures/*.svg (the paper "Canonical Events"), docs/*.md + docs/nav.json, thesis/*.md + thesis-nav.json.
+
+You own: montions-app/src/pages/reading/** (new), montions-app/src/styles/reading.css (new), a Vite alias for the paper dir (vite.config.ts + tsconfig paths — add, don't change existing aliases), package.json deps (`marked` + `dompurify` or similar — pnpm add), and ONE minimal, clearly marked edit to wherever routes are registered (find it: pages/ + App.tsx/router; ui-prod-grok and ui-chart-grok are editing other parts of the app concurrently — keep your edit tiny; never edit src/uwu/**, src/mascot/**, src/chains/**, src/charts/**). Add header/footer links "Paper · Docs · Thesis" only if the header already has a nav slot (it has Prices/Predictions/Markets).
+
+Pages: `/paper` (title block from meta.json, sticky table of contents, numbered sections, KaTeX-free math rendering is fine as inline code/serif, figures inline from paper/figures, footnote references, print stylesheet + "Download PDF" via window.print), `/docs` + `/docs/:slug` (sidebar from docs/nav.json), `/thesis`, `/litepaper`, `/pitch`, `/submission` (from thesis-nav.json). Markdown imported at build time (import.meta.glob with ?raw), sanitized. Reading layout in both modes (Serious: elegant dark reading view; UwU: pastel paper card) using the existing tokens (src/styles/tokens.css) — UwU decoration stays owned by main (it renders automatically in uwu mode). Mobile-friendly. Product name is Kairo everywhere (the content may still say Montions in places — show "Kairo" in UI chrome; don't edit the markdown files).
+Verify: `pnpm build` clean for your files; headless screenshots of each page desktop+mobile, both modes → montions-app/docs/screens/reading-*.png; look at them and iterate.

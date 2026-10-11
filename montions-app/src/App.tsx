@@ -99,14 +99,13 @@ function PageSkeleton() {
 function PageFrame({ children, uwuStep = 0 }: { children: ReactNode; uwuStep?: number }) {
   const { mode } = useMode();
   const chain = useChain();
-  const compact = useMedia('(max-width: 640px), (max-height: 760px)');
   const { overlayOpen } = useUi();
   const copy = useCopy();
   return (
     <>
       <NightScene mood="neutral" />
       {mode === 'uwu' && (
-        <UwuLayer step={uwuStep} direction="above" phase="ready" chain={chain.key} compact={compact} />
+        <UwuLayer step={uwuStep} direction="above" phase="ready" chain={chain.key} compact />
       )}
       <div className="app app--page" inert={overlayOpen}>
         <Header />

@@ -1,0 +1,20 @@
+{
+  "_provenance": "Synthetic Hermes-format test double. Signed endpoint returned 401 on 2026-10-11; binary is NOT a valid Pyth signature. Real metadata is recorded separately.",
+  "binary": {
+    "encoding": "hex",
+    "data": [
+      "504e4155010000"
+    ]
+  },
+  "parsed": [
+    {
+      "id": "16dad506d7db8da01c87581c87ca897a012a153557d4d578c3b9c9e1bc0632f1",
+      "price": {
+        "price": "38270000000",
+        "conf": "10000000",
+        "expo": -8,
+        "publish_time": 1791575999
+      }
+    }
+  ]
+}
