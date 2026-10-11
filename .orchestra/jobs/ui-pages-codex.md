@@ -1,0 +1,19 @@
+Read /home/arg/projects/hack/colessolana/.orchestra/CONTEXT.md first (items 10–13).
+
+# Job: redesign Markets + Predictions UX, and a footer pinned to the viewport bottom (Codex)
+
+User feedback (verbatim spirit): "the UI/UX with predictions and markets is bad" and "footers should be attached to the bottom, not at the content end". Look at the current pages first (run the app: `cd /home/arg/projects/hack/colessolana/montions-app && node_modules/.bin/vite --port 5195`; screenshot /markets and /predictions desktop 1440×900 + mobile 390×844, both `?mode=serious` and `?mode=uwu`, chains base/arbitrum/mock).
+
+You own: src/pages/MarketsPage.tsx, src/pages/PredictionsPage.tsx, src/pages/EventDetailPage.tsx (+ new files under src/pages/markets/**, src/pages/predictions/**), a NEW src/components/Footer.tsx + src/styles/footer.css, and minimal clearly-marked edits where the existing footers are rendered (App.tsx / page shells) to use the new Footer. Do NOT edit: src/components/Header.tsx, ProductNav, ModeToggle, styles/header.css (main just redesigned the header), src/uwu/**, src/mascot/**, src/chains/** (a Codex job edits evm.ts), src/charts/** and BookPanel (ui-chart-codex owns them — use BookPanel/charts as components). Use tokens from styles/tokens.css so both modes work.
+
+## Markets (/markets) — make it a real options board
+- Summary strip: live chains with dot status, number of markets, total volume (hide money values that are $0 rather than printing "$0").
+- Filters row: asset-class tabs (Crypto · Stocks · ETFs · Commodities — from AssetInfo.category), search box (symbol/name), expiry chips (from the data), chain toggles (Base · Arbitrum · Solana), "only tradable" toggle.
+- Per asset: header with name, live price, 24h-ish change if available, oracle note / "market closed" badge. Then a classic **option chain** for the selected expiry: strike in the middle column, **YES (above)** bid/ask on the left, **NO (below)** bid/ask on the right, best venue shown as a small chain badge on the best price (not a box per cell), implied probability as a subtle bar. Row click → side drawer (desktop) / bottom sheet (mobile) with the BookPanel + "Trade YES" / "Trade NO" buttons that deep-link into the ticket flow prefilled (look at how the flow reads its draft / share URL — state/flow.ts shareUrl — and reuse it). Canonical key only as a small "copy key" icon with tooltip.
+- Sorting, sticky table header, skeleton loading, empty states per filter, keyboard navigable rows. Mobile: strike cards with YES/NO prices side by side.
+## Predictions (/predictions + /predictions/:id)
+- Polymarket-quality: featured hero card (highest volume or soonest), category tabs, search, sort (trending/closing soon/new), responsive grid of event cards: icon, question, big YES probability %, a probability bar, Yes ¢ / No ¢ buttons, volume, close countdown, chain badges. Demo data clearly badged only when the adapter has no listEvents.
+- Detail page: question + rules verbatim + resolution source link + timeline (close → propose → challenge window → resolved), price/probability chart if history is available (else current book), order book (BookPanel), and a buy panel (Yes/No toggle, amount ruler or input, payout + max loss + chance) that uses adapter.buyEvent; sticky bottom buy bar on mobile; positions for this event.
+## Footer
+- One `<Footer>` used on every route: a slim bar **fixed to the bottom of the viewport** (testnet badge · product line · the settlement note truncated with a tooltip/expand · links Paper/Docs/GitHub https://github.com/argenestel/kairo), safe-area aware, never covering content (add matching bottom padding to the page containers / CTA), compact on mobile (badge + "ⓘ" that expands the note). Works in both modes.
+Verify with screenshots again (same matrix) and iterate until it is clearly better than before; `pnpm build` clean for your files. Save final screenshots to montions-app/docs/screens/pages-*.png.

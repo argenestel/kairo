@@ -106,7 +106,7 @@ export function PayoutSimulator(p: SimProps) {
 
   const cost = useSmooth(p.cost);
   const payout = useSmooth(p.payout);
-  const strike = useSmooth(p.strike);
+  const strike = p.strike;
 
   const xOf = (v: number) => padL + ((v - lo) / (hi - lo)) * (W - padL - padR);
   const vOf = (x: number) => lo + ((x - padL) / (W - padL - padR)) * (hi - lo);
@@ -166,6 +166,8 @@ export function PayoutSimulator(p: SimProps) {
   };
 
   const onDown = (e: ReactPointerEvent<HTMLDivElement>) => {
+    e.currentTarget.focus();
+    setHoverX(null);
     setDragging(true);
     e.currentTarget.setPointerCapture(e.pointerId);
     commitFromClient(e.clientX, e.currentTarget);
@@ -176,8 +178,14 @@ export function PayoutSimulator(p: SimProps) {
     setHoverX(x);
     if (dragging) commitFromClient(e.clientX, e.currentTarget);
   };
-  const onUp = () => setDragging(false);
+  const onUp = (e: ReactPointerEvent<HTMLDivElement>) => {
+    setDragging(false);
+    setHoverX(null);
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
+  };
   const onKey = (e: KeyboardEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    setHoverX(null);
     const step = (hi - lo) / 100;
     if (e.key === 'Home') { e.preventDefault(); setValue(lo); }
     if (e.key === 'End') { e.preventDefault(); setValue(hi); }
@@ -188,20 +196,11 @@ export function PayoutSimulator(p: SimProps) {
     if (e.key === 's' || e.key === 'S') { e.preventDefault(); setValue(p.strike); }
   };
 
-  const xTicks = useMemo(() => {
-    const ticks = niceTicks(lo, hi, 4);
-    const extra = [p.spot, p.strike];
-    const all = [...ticks];
-    for (const v of extra) {
-      if (v >= lo && v <= hi && all.every((t) => Math.abs(xOf(t) - xOf(v)) > 36)) all.push(v);
-    }
-    return all.sort((a, b) => a - b);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lo, hi, p.spot, p.strike, W]);
-
-  const closeLabels = Math.abs(sx - kx) < 46;
+  const xTicks = niceTicks(lo, hi, 4).filter(t => Math.abs(xOf(t) - kx) > 34 && Math.abs(xOf(t) - sx) > 30);
+  const closeLabels = Math.abs(sx - kx) < 66;
   const tip = `${p.symbol} at ${fmtPrice(shown)} → you get ${fmtMoney(ret, ret % 1 ? 2 : 0)} (${fmtSignedMoney(pnl, Math.abs(pnl) % 1 ? 2 : 0)})`;
-  const showTip = dragging || hoverX != null;
+  const [focused, setFocused] = useState(false);
+  const showTip = dragging || hoverX != null || focused;
 
   return (
     <div className={`sim glass${p.compact ? ' sim--compact' : ''}${isSnap ? ' is-snap' : ''}`}>
@@ -219,6 +218,8 @@ export function PayoutSimulator(p: SimProps) {
         aria-valuemax={Math.round(hi * 1e8) / 1e8}
         aria-valuenow={Math.round(committed * 1e8) / 1e8}
         aria-valuetext={`${fmtPrice(committed)}: return ${fmtMoney(up ? (committed >= p.strike ? payout : 0) : (committed < p.strike ? payout : 0))}`}
+        onFocus={() => setFocused(true)}
+        onBlur={() => { setFocused(false); setHoverX(null); }}
         onKeyDown={onKey}
         onPointerDown={onDown}
         onPointerMove={onMove}
@@ -252,24 +253,11 @@ export function PayoutSimulator(p: SimProps) {
           <line x1={kx} x2={kx} y1={winY} y2={lossY} className="sim__step" />
           <path d={lossPath} stroke="var(--down)" strokeWidth="2.6" fill="none" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
           <path d={winPath} stroke="var(--up)" strokeWidth="2.6" fill="none" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
-          {xTicks.map((t) => {
-            const x = xOf(t);
-            const isK = Math.abs(t - p.strike) < 1e-6 * Math.max(1, p.strike);
-            const isS = Math.abs(t - p.spot) < 1e-6 * Math.max(1, p.spot);
-            const label = isK ? `K ${fmtStrike(p.strike, p.strikeStep)}` : isS ? 'spot' : fmtPrice(t);
-            const dx = isK && closeLabels ? (kx < sx ? -18 : 18) : isS && closeLabels ? (sx < kx ? -16 : 16) : 0;
-            return (
-              <text
-                key={t}
-                x={x + dx}
-                y={H - 6}
-                className={`sim__axis${isK ? ' sim__axis--strong' : ''}`}
-                textAnchor="middle"
-              >
-                {isS && !isK ? 'spot' : label}
-              </text>
-            );
-          })}
+          {xTicks.map(t => <text key={t} x={xOf(t)} y={H - 6} className="sim__axis" textAnchor="middle">{fmtPrice(t)}</text>)}
+          <text x={kx} y={H - 6} className="sim__axis sim__axis--strong" textAnchor="middle">K {fmtStrike(p.strike, p.strikeStep)}</text>
+          <text x={sx} y={closeLabels ? H - padB - 6 : H - 6} className="sim__axis" textAnchor="middle">spot {fmtPrice(p.spot)}</text>
+          <circle cx={kx} cy={up ? winY : lossY} r="3" fill="var(--text)" />
+          <circle cx={kx} cy={up ? lossY : winY} r="3" fill="var(--bg)" stroke="var(--text)" />
           <line x1={fx} x2={fx} y1={padT - 4} y2={H - padB} stroke="var(--text)" strokeOpacity="0.35" />
           <circle cx={fx} cy={fy} r={dragging ? 8 : 7} fill="var(--bg)" stroke={wins ? 'var(--up)' : 'var(--down)'} strokeWidth="2.6" className="sim__knob" />
         </svg>
@@ -279,6 +267,7 @@ export function PayoutSimulator(p: SimProps) {
           </div>
         )}
       </div>
+      <p className="sim__hint">Drag to simulate · arrows to adjust · S snaps to strike. The strike is the win threshold; binary payouts have no separate breakeven price.</p>
       <div className="sim__foot">
         <div>
           <div className="sim__label">Your return would be</div>

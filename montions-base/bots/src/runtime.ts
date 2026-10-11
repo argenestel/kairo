@@ -155,7 +155,7 @@ function formatLogValue(value: unknown): string {
 
 export function isRetryableRpcError(error: unknown): boolean {
   const message = error instanceof Error ? `${error.name} ${error.message}` : String(error);
-  if (/execution reverted|AlreadySettled|PriceFeedNotFoundWithinRange|SeriesExists|NotKeeper/i.test(message)) {
+  if (/execution reverted|AlreadySettled|PriceFeedNotFoundWithinRange|SeriesExists|NotKeeper|gas limit too high|transaction gas cap|breach reserve|would exceed.*wei/i.test(message)) {
     return false;
   }
   const code =
@@ -366,7 +366,11 @@ export async function assertBaseBudget(context: BotContext, parameters: GuardedW
   const estimate = context.publicClient.estimateContractGas as unknown as (value: Record<string, unknown>) => Promise<bigint>;
   const rawGas = await estimate({ ...parameters, chain: undefined });
   if (rawGas <= 0n) throw new Error("gas estimate must be positive");
-  const gasLimit = (rawGas * 120n + 99n) / 100n;
+  const paddedGas = (rawGas * 120n + 99n) / 100n;
+  // EIP-7825: padding must not make an otherwise admissible Base tx exceed 2^24 gas.
+  const txGasCap = chainId === 84532 ? 16_777_216n : undefined;
+  if (txGasCap && rawGas > txGasCap) throw new Error("spend guard: estimate exceeds transaction gas cap");
+  const gasLimit = txGasCap && paddedGas > txGasCap ? txGasCap : paddedGas;
   const gasPrice = await context.publicClient.getGasPrice();
   const maxFeePerGas = baseMaxFeePerGas(gasPrice);
   const maxPriorityFeePerGas = maxFeePerGas < 1_000_000n ? maxFeePerGas : 1_000_000n;

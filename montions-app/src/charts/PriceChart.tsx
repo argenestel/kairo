@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useRef, useState, type PointerEvent as RE, type KeyboardEvent as KE } from 'react';
+import { useEffect, useId, useMemo, useRef, useState, type PointerEvent as RE, type KeyboardEvent as KE } from 'react';
 import type { AssetCategory } from '../chains/types';
 import { fmtPrice } from '../lib/format';
 import { useReducedMotion } from '../lib/hooks';
-import { buildCone } from './history';
-import { clamp, fmtAxisTime, lerp, niceTicks } from './geom';
+import { buildCone } from './cone';
+import { clamp, fmtAxisTime, niceTicks } from './geom';
 import { usePriceHistory } from './usePriceHistory';
 import { useSize } from './useSize';
 import './charts.css';
@@ -35,22 +35,22 @@ export function PriceChart({ symbol, spot, vol, strike, expiry, category, compac
   const ptrs = useRef(new Map<number, { x: number; y: number }>());
   const pinch = useRef<{ dist: number; t0: number; t1: number } | null>(null);
   const reduced = useReducedMotion();
-  const userView = useRef(false);
+  const uid = useId().replace(/:/g, '');
 
-  useEffect(() => { setView(null); userView.current = false; }, [symbol]);
+  useEffect(() => { setView(null); setHover(null); }, [symbol, snap?.source]);
 
   const points = snap?.points ?? [];
   const last = points[points.length - 1];
   const s0 = last?.value ?? (spot > 0 ? spot : 0);
-  const tNow = last?.time ?? Date.now() / 1000;
-  const tExp = expiry && expiry > tNow ? expiry : tNow + 4 * 3600;
+  const tNow = Date.now() / 1000;
+  const tExp = expiry && expiry > tNow ? expiry : tNow + 60;
   const cone = useMemo(
     () => (s0 > 0 && expiry && expiry > tNow ? buildCone(tNow, s0, expiry, vol) : []),
     [tNow, s0, expiry, vol],
   );
 
   const domain = useMemo(() => {
-    const tMin = points[0]?.time ?? tNow - 24 * 3600;
+    const tMin = Math.min(points[0]?.time ?? tNow - 3600, tNow - 3600);
     const tMax = Math.max(tExp, tNow + 60);
     return { tMin, tMax };
   }, [points, tNow, tExp]);
@@ -106,13 +106,13 @@ export function PriceChart({ symbol, spot, vol, strike, expiry, category, compac
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cone, vis.t0, vis.t1, yDomain.lo, yDomain.hi, W, H]);
 
-  const applyView = (next: View, fromUser = true) => {
+  const applyView = (next: View) => {
     const span = Math.max(5 * 60, Math.min(domain.tMax - domain.tMin, next.t1 - next.t0));
     let t0 = next.t0;
     let t1 = t0 + span;
     if (t1 > domain.tMax + 3600) { t1 = domain.tMax + 3600; t0 = t1 - span; }
     if (t0 < domain.tMin - 3600) { t0 = domain.tMin - 3600; t1 = t0 + span; }
-    if (fromUser) userView.current = true;
+
     setView({ t0, t1 });
   };
 
@@ -179,14 +179,16 @@ export function PriceChart({ symbol, spot, vol, strike, expiry, category, compac
     }
   };
   const onUp = (e: RE<HTMLDivElement>) => {
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
     ptrs.current.delete(e.pointerId);
     if (ptrs.current.size < 2) pinch.current = null;
-    if (ptrs.current.size === 0) drag.current = null;
+    drag.current = null;
   };
-  const onDbl = () => { userView.current = false; setView(null); };
+  const onDbl = () => { setView(null); };
 
   const onKey = (e: KE<HTMLDivElement>) => {
     const span = vis.t1 - vis.t0;
+    e.stopPropagation();
     if (e.key === 'ArrowLeft') { e.preventDefault(); applyView({ t0: vis.t0 - span * 0.12, t1: vis.t1 - span * 0.12 }); }
     if (e.key === 'ArrowRight') { e.preventDefault(); applyView({ t0: vis.t0 + span * 0.12, t1: vis.t1 + span * 0.12 }); }
     if (e.key === '+' || e.key === '=') { e.preventDefault(); zoomAt((vis.t0 + vis.t1) / 2, 0.8); }
@@ -194,8 +196,10 @@ export function PriceChart({ symbol, spot, vol, strike, expiry, category, compac
     if (e.key === '0' || e.key === 'Home') { e.preventDefault(); onDbl(); }
   };
 
-  const hoverT = hover ? clamp(tOf(hover.x), vis.t0, vis.t1) : null;
-  const hoverPt = hoverT != null ? interp(points, hoverT) : null;
+  const cursorT = hover ? clamp(tOf(hover.x), vis.t0, vis.t1) : null;
+  const sample = cursorT != null ? nearest(points, cursorT) : null;
+  const hoverT = hover && points.length ? sample?.time ?? cursorT : null;
+  const hoverPt = hover && points.length ? sample?.value ?? vOf(clamp(hover.y, padT, padT + iH)) : null;
   const hx = hoverT != null ? xOf(hoverT) : 0;
   const hy = hoverPt != null ? yOf(hoverPt) : 0;
 
@@ -207,7 +211,6 @@ export function PriceChart({ symbol, spot, vol, strike, expiry, category, compac
   const sx = last ? xOf(last.time) : null;
   const sy = last ? yOf(last.value) : null;
 
-  const uid = symbol.replace(/[^A-Za-z0-9]/g, '');
 
   return (
     <div className={`pc glass${compact ? ' pc--compact' : ''}${className ? ` ${className}` : ''}`}>
@@ -220,8 +223,10 @@ export function PriceChart({ symbol, spot, vol, strike, expiry, category, compac
         className="pc__plot"
         style={{ height: H }}
         tabIndex={0}
-        role="img"
+        role="group"
         aria-label={`${symbol} price chart. Drag to pan, scroll to zoom.`}
+        data-view-start={vis.t0}
+        data-view-end={vis.t1}
         onPointerDown={onDown}
         onPointerMove={onMove}
         onPointerUp={onUp}
@@ -287,7 +292,7 @@ export function PriceChart({ symbol, spot, vol, strike, expiry, category, compac
               <text x={padL + iW - 2} y={kx - 4} className="pc__tag pc__tag--k" textAnchor="end">K {fmtPrice(strike)}</text>
             )}
             {ex != null && expiry != null && expiry >= vis.t0 && expiry <= vis.t1 + 120 && (
-              <text x={ex + 4} y={padT + 10} className="pc__tag pc__tag--exp">expiry</text>
+              <text textAnchor="end" x={Math.min(ex - 4, W - padR)} y={padT + 10} className="pc__tag pc__tag--exp">expiry</text>
             )}
           </svg>
         )}
@@ -299,10 +304,11 @@ export function PriceChart({ symbol, spot, vol, strike, expiry, category, compac
               top: clamp(hy - 14, 18, H - 36),
             }}
           >
-            {fmtPrice(hoverPt)} <span>· {fmtAxisTime(hoverT)}</span>
+            {!sample && 'Scenario · '}{fmtPrice(hoverPt)} <span>· {new Date(hoverT * 1000).toLocaleString('en-US', { timeZone: 'UTC', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })} UTC</span>
           </div>
         )}
         {loading && !points.length && <div className="pc__skel" aria-hidden />}
+        {!loading && points.length < 2 && <div className="pc__empty">{points.length ? 'Collecting live samples — keep this chart open.' : 'No oracle history available. Retrying automatically.'}</div>}
       </div>
       <p className="pc__hint">Drag to pan · scroll or pinch to zoom · double-click to reset{strike ? ' · gold = strike' : ''}{expiry ? ' · dashed = expiry · cone = ±1σ' : ''}</p>
     </div>
@@ -313,19 +319,13 @@ function midPad(lo: number): number {
   return Math.max(lo * 0.02, 0.01);
 }
 
-function interp(points: { time: number; value: number }[], t: number): number | null {
-  if (!points.length) return null;
-  if (t <= points[0]!.time) return points[0]!.value;
-  const last = points[points.length - 1]!;
-  if (t >= last.time) return last.value;
+function nearest(points: { time: number; value: number }[], t: number) {
+  if (!points.length || t < points[0]!.time || t > points[points.length - 1]!.time) return null;
   let lo = 0;
   let hi = points.length - 1;
   while (hi - lo > 1) {
     const m = (lo + hi) >> 1;
     if (points[m]!.time <= t) lo = m; else hi = m;
   }
-  const a = points[lo]!;
-  const b = points[hi]!;
-  const u = (t - a.time) / Math.max(1e-9, b.time - a.time);
-  return lerp(a.value, b.value, u);
+  return t - points[lo]!.time < points[hi]!.time - t ? points[lo]! : points[hi]!;
 }

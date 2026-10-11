@@ -27,8 +27,9 @@ export function UwuLayer({ step, direction, phase, chain, compact }: Props) {
   const [i, setI] = useState(0);
   // Reading pages (paper/docs/thesis…): stay quiet so the bubble never covers text — tap the mascot to talk.
   const reading = /^\/(paper|docs|thesis|litepaper|pitch|submission|demo-script)(\/|$)/.test(location.pathname);
-  const [hideBubble, setHideBubble] = useState(reading);
-  useEffect(() => { setI(0); setHideBubble(reading); }, [beat, reading]);
+  const quiet = reading || compact; // phones + reading pages: tap the mascot to talk
+  const [hideBubble, setHideBubble] = useState(quiet);
+  useEffect(() => { setI(0); setHideBubble(quiet); }, [beat, quiet]);
   const line = beat.lines[i % beat.lines.length];
 
   return (
@@ -52,7 +53,7 @@ export function UwuLayer({ step, direction, phase, chain, compact }: Props) {
           onClick={() => { if (hideBubble) setHideBubble(false); else setI((n) => n + 1); }}
           onDoubleClick={() => setHideBubble(true)}
         >
-          <Mascot key={`${beat.who}-${beat.pose}`} who={beat.who} mood={beat.mood} pose={beat.pose} size={compact ? 92 : 172} animated={!reduced} />
+          <Mascot key={`${beat.who}-${beat.pose}`} who={beat.who} mood={beat.mood} pose={beat.pose} size={compact ? 64 : 172} animated={!reduced} />
         </button>
       </div>
     </>

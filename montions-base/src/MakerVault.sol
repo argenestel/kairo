@@ -98,6 +98,7 @@ contract MakerVault is ERC20, Ownable, ReentrancyGuard {
     struct SeriesOrders {
         uint64[8] ids;
         uint8 count;
+        bool hasHeldAsks;
     }
 
     mapping(bytes32 seriesId => SeriesOrders orders) internal _seriesOrders;
@@ -168,11 +169,11 @@ contract MakerVault is ERC20, Ownable, ReentrancyGuard {
         revert OwnershipRenunciationDisabled();
     }
 
-    function name() public pure override returns (string memory) {
+    function name() public pure virtual override returns (string memory) {
         return "Montions Maker Vault";
     }
 
-    function symbol() public pure override returns (string memory) {
+    function symbol() public pure virtual override returns (string memory) {
         return "mmUSDC";
     }
 
@@ -180,7 +181,7 @@ contract MakerVault is ERC20, Ownable, ReentrancyGuard {
         return 6;
     }
 
-    function _constantNameHash() internal pure override returns (bytes32) {
+    function _constantNameHash() internal pure virtual override returns (bytes32) {
         return keccak256("Montions Maker Vault");
     }
 
@@ -700,6 +701,7 @@ contract MakerVault is ERC20, Ownable, ReentrancyGuard {
         try book.placeOrder(p) returns (uint64 id, uint64, uint64 resting) {
             if (resting != 0) {
                 so.ids[so.count] = id;
+                if (fromHeld && side == IMontionsBook.Side.Ask) so.hasHeldAsks = true;
                 unchecked {
                     ++so.count;
                 }
@@ -829,6 +831,7 @@ contract MakerVault is ERC20, Ownable, ReentrancyGuard {
 
         uint256 remaining = nOpen - toCancel;
         so.count = uint8(remaining);
+        if (remaining == 0) so.hasHeldAsks = false;
         for (uint256 i; i < MAX_ORDERS_PER_SERIES; ++i) {
             so.ids[i] = i < remaining ? openIds[toCancel + i] : 0;
         }
@@ -891,6 +894,9 @@ contract MakerVault is ERC20, Ownable, ReentrancyGuard {
         y = book.balanceOf(address(this), info.yesId);
         n = book.balanceOf(address(this), info.noId);
         SeriesOrders storage so = _seriesOrders[seriesId];
+        // Only held asks remove YES inventory from balanceOf. Synthetic asks and
+        // cash bids cannot contribute; skip their expensive orderInfo scans.
+        if (!so.hasHeldAsks) return (y, n);
         for (uint256 i; i < so.count; ++i) {
             IMontionsBook.OrderView memory ov = book.orderInfo(so.ids[i]);
             if (ov.open && ov.fromHeld && ov.side == IMontionsBook.Side.Ask) {

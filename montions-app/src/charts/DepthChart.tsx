@@ -1,4 +1,4 @@
-import { useMemo, useState, type PointerEvent as RE } from 'react';
+import { useMemo, useState, type KeyboardEvent as KE, type PointerEvent as RE } from 'react';
 import type { BookLevel } from '../chains/types';
 import { fmtCents, fmtContracts } from '../lib/format';
 import { clamp } from './geom';
@@ -67,7 +67,12 @@ export function DepthChart({ bids, asks, mid, height = 96, className }: DepthCha
     const startP = side === 'bid' ? Math.min(midP, nodes[0]!.price) : Math.max(midP, nodes[0]!.price);
     const last = nodes[nodes.length - 1]!;
     const pts = [`${xOf(startP).toFixed(2)} ${yOf(0).toFixed(2)}`, `${xOf(startP).toFixed(2)} ${yOf(nodes[0]!.cum).toFixed(2)}`];
-    for (const n of nodes) pts.push(`${xOf(n.price).toFixed(2)} ${yOf(n.cum).toFixed(2)}`);
+    let previous = nodes[0]!.cum;
+    for (const n of nodes) {
+      pts.push(`${xOf(n.price).toFixed(2)} ${yOf(previous).toFixed(2)}`);
+      pts.push(`${xOf(n.price).toFixed(2)} ${yOf(n.cum).toFixed(2)}`);
+      previous = n.cum;
+    }
     pts.push(`${xOf(last.price).toFixed(2)} ${yOf(0).toFixed(2)}`);
     return `M ${pts.join(' L ')} Z`;
   };
@@ -89,6 +94,14 @@ export function DepthChart({ bids, asks, mid, height = 96, className }: DepthCha
   };
 
   const onMove = (e: RE<HTMLDivElement>) => pick(e.clientX, e.currentTarget);
+  const onKey = (e: KE<HTMLDivElement>) => {
+    const levels = [...bidN.map(n => ({ ...n, side: 'bid' as const })), ...askN.map(n => ({ ...n, side: 'ask' as const }))].sort((a, b) => a.price - b.price);
+    let i = levels.findIndex(n => n.price === hover?.price && n.side === hover.side);
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
+    e.preventDefault(); e.stopPropagation();
+    i = e.key === 'Home' ? 0 : e.key === 'End' ? levels.length - 1 : clamp(i + (e.key === 'ArrowLeft' ? -1 : 1), 0, levels.length - 1);
+    setHover(levels[i]);
+  };
   const mx = hover ? xOf(hover.price) : 0;
 
   return (
@@ -101,9 +114,12 @@ export function DepthChart({ bids, asks, mid, height = 96, className }: DepthCha
         ref={wrapRef}
         className="dc__plot"
         style={{ height: H }}
+        tabIndex={0}
+        onKeyDown={onKey}
+        onPointerDown={onMove}
         onPointerMove={onMove}
         onPointerLeave={() => setHover(null)}
-        role="img"
+        role="group"
         aria-label="Cumulative order book depth"
       >
         {W > 20 && (
@@ -117,6 +133,7 @@ export function DepthChart({ bids, asks, mid, height = 96, className }: DepthCha
                 <circle cx={mx} cy={yOf(hover.cum)} r="3.2" className={hover.side === 'bid' ? 'dc__dot dc__dot--bid' : 'dc__dot dc__dot--ask'} />
               </>
             )}
+            <text x={W - padR} y={padT + 9} className="dc__axis" textAnchor="end">{fmtContracts(maxCum)} contracts</text>
             <text x={padL} y={H - 3} className="dc__axis">{fmtCents(lo)}</text>
             <text x={W / 2} y={H - 3} className="dc__axis" textAnchor="middle">{fmtCents(midP)}</text>
             <text x={W - padR} y={H - 3} className="dc__axis" textAnchor="end">{fmtCents(hi)}</text>

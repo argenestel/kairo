@@ -9,6 +9,7 @@ import { ChainPicker } from './ChainPicker';
 import { ModeToggle } from './ModeToggle';
 import { ProductNav } from './ProductNav';
 import { navigate } from '../state/route';
+import { useEffect, useState } from 'react';
 
 interface Props {
   step?: number;
@@ -32,52 +33,84 @@ export function Header({ step = 0, reached = 0, onGo, onLogo, busy = false, show
     else if (route.name !== 'home') navigate('/');
   };
 
+  const [menu, setMenu] = useState(false);
+  useEffect(() => {
+    if (!menu) return;
+    const esc = (e: KeyboardEvent) => { if (e.key === 'Escape') setMenu(false); };
+    document.addEventListener('keydown', esc);
+    return () => document.removeEventListener('keydown', esc);
+  }, [menu]);
+
+  const wallet = (
+    <button className={`glass-btn wallet-btn${address ? ' is-connected' : ''}`} onClick={() => openWallet()} aria-label={address ? `Wallet ${address}` : 'Connect wallet'}>
+      {address ? (
+        <>
+          <span className="avatar" style={{ background: avatarBg(address) }} aria-hidden />
+          <span className="wallet-btn__addr">{shortAddr(address)}</span>
+          {balances && <span className="wallet-btn__bal hide-md">{fmtMoney(balances.collateral, balances.collateral < 1000 ? 2 : 0)} {sym}</span>}
+        </>
+      ) : (
+        <>
+          <Wallet size={16} />
+          <span>{copy.wallet.connect}</span>
+        </>
+      )}
+    </button>
+  );
+
   return (
-    <header className="top">
-      <button className="top__logo" onClick={handleLogo} disabled={busy} aria-label={`${copy.brand} — start a new ticket`}>
-        <Logo />
-      </button>
-      <div className="top__mid">
-        <ProductNav disabled={busy} />
-        {showDots && onGo && (
-          <ProgressDots step={step} reached={reached} onGo={(i) => { if (!busy) onGo(i); }} />
-        )}
-      </div>
-      <div className="top__right">
-        {demo && (
-          <button
-            className={`demo-badge demo-badge--${demo.kind}${demo.forced ? ' is-forced' : ''}`}
-            title={demo.reason}
-            onClick={() => !demo.forced && retry()}
-            aria-label={`${demo.reason}${demo.forced ? '' : ' Click to retry the live adapter.'}`}
-          >
-            <span className="demo-badge__dot" />
-            <span className="demo-badge__label">{chipLabel}</span>
+    <>
+      <header className="top">
+        <div className="top__left">
+          <button className="top__logo" onClick={handleLogo} disabled={busy} aria-label={`${copy.brand} — start a new ticket`}>
+            <Logo />
           </button>
-        )}
-        <ModeToggle disabled={busy} />
-        <ChainPicker value={key} onChange={(k) => { if (!busy) setKey(k); }} loading={loading} disabled={busy} />
-        <button className="glass-btn tickets-btn" onClick={openTickets} aria-label={`${copy.wallet.tickets}${ticketCount ? ` (${ticketCount})` : ''}`}>
-          <Ticket size={16} />
-          <span className="hide-sm">{copy.wallet.tickets}</span>
-          {ticketCount > 0 && <span className="count">{ticketCount}</span>}
-        </button>
-        <button className={`glass-btn wallet-btn${address ? ' is-connected' : ''}`} onClick={() => openWallet()} aria-label={address ? `Wallet ${address}` : 'Connect wallet'}>
-          {address ? (
-            <>
-              <span className="avatar" style={{ background: avatarBg(address) }} aria-hidden />
-              <span className="wallet-btn__addr">{shortAddr(address)}</span>
-              {balances && <span className="wallet-btn__bal hide-sm">{fmtMoney(balances.collateral, balances.collateral < 1000 ? 2 : 0)} {sym}</span>}
-            </>
-          ) : (
-            <>
-              <Wallet size={16} />
-              <span className="hide-xs">{copy.wallet.connect}</span>
-            </>
+          <div className="top__nav"><ProductNav disabled={busy} /></div>
+        </div>
+        <div className="top__right">
+          {demo && (
+            <button
+              className={`demo-badge demo-badge--${demo.kind}${demo.forced ? ' is-forced' : ''}`}
+              title={demo.reason}
+              onClick={() => !demo.forced && retry()}
+              aria-label={`${demo.reason}${demo.forced ? '' : ' Click to retry the live adapter.'}`}
+            >
+              <span className="demo-badge__dot" />
+              <span className="demo-badge__label">{chipLabel}</span>
+            </button>
           )}
-        </button>
-      </div>
-    </header>
+          <span className="top__desk"><ModeToggle disabled={busy} /></span>
+          <ChainPicker value={key} onChange={(k) => { if (!busy) setKey(k); }} loading={loading} disabled={busy} />
+          <button className="icon-btn top__desk" onClick={openTickets} aria-label={`${copy.wallet.tickets}${ticketCount ? ` (${ticketCount})` : ''}`} title={copy.wallet.tickets}>
+            <Ticket size={17} />
+            {ticketCount > 0 && <span className="count">{ticketCount}</span>}
+          </button>
+          {wallet}
+          <button className={`icon-btn top__burger${menu ? ' is-open' : ''}`} onClick={() => setMenu((m) => !m)} aria-label="Menu" aria-expanded={menu}>
+            <span /><span /><span />
+          </button>
+        </div>
+        {menu && (
+          <>
+            <div className="top-menu__scrim" onClick={() => setMenu(false)} />
+            <div className="top-menu glass" role="dialog" aria-label="Menu">
+              <ProductNav variant="list" disabled={busy} onNavigate={() => setMenu(false)} />
+              <div className="top-menu__row">
+                <button className="glass-btn" onClick={() => { setMenu(false); openTickets(); }}>
+                  <Ticket size={16} /> {copy.wallet.tickets}{ticketCount > 0 ? ` (${ticketCount})` : ''}
+                </button>
+                <ModeToggle disabled={busy} showLabel />
+              </div>
+            </div>
+          </>
+        )}
+      </header>
+      {showDots && onGo && (
+        <div className="top-dots">
+          <ProgressDots step={step} reached={reached} onGo={(i) => { if (!busy) onGo(i); }} />
+        </div>
+      )}
+    </>
   );
 }
 

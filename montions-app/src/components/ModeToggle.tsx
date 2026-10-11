@@ -1,29 +1,23 @@
-import { useMode, type ModeId } from '../state/mode';
+import { useMode } from '../state/mode';
 
-const MODES: { id: ModeId; label: string; icon: string; hint: string }[] = [
-  { id: 'serious', label: 'Serious', icon: '☾', hint: 'Serious mode: night sky, numbers first' },
-  { id: 'uwu', label: 'UwU', icon: '✿', hint: 'UwU mode: pastel sky, sakura and chain-tans' },
-];
-
-/** Serious ⇄ UwU switch. The whole look (tokens, copy, scene, mascots) follows `data-mode`. */
-export function ModeToggle({ disabled = false }: { disabled?: boolean }) {
+/** One compact switch: shows the current mode, click flips Serious ⇄ UwU. */
+export function ModeToggle({ disabled = false, showLabel = false }: { disabled?: boolean; showLabel?: boolean }) {
   const { mode, setMode } = useMode();
+  const uwu = mode === 'uwu';
+  const next = uwu ? 'Serious' : 'UwU';
   return (
-    <div className="mode-toggle" role="group" aria-label="Visual mode">
-      {MODES.map((m) => (
-        <button
-          key={m.id}
-          type="button"
-          className={`mode-toggle__btn${mode === m.id ? ' is-on' : ''}`}
-          aria-pressed={mode === m.id}
-          title={m.hint}
-          disabled={disabled}
-          onClick={() => setMode(m.id)}
-        >
-          <span className="mode-toggle__icon" aria-hidden>{m.icon}</span>
-          <span className="mode-toggle__label hide-sm">{m.label}</span>
-        </button>
-      ))}
-    </div>
+    <button
+      type="button"
+      className={`mode-switch${uwu ? ' is-uwu' : ''}`}
+      onClick={() => setMode(uwu ? 'serious' : 'uwu')}
+      disabled={disabled}
+      aria-label={`Switch to ${next} mode`}
+      title={`Switch to ${next} mode`}
+    >
+      <span className="mode-switch__track" aria-hidden>
+        <span className="mode-switch__knob">{uwu ? '✿' : '☾'}</span>
+      </span>
+      {showLabel && <span className="mode-switch__label">{uwu ? 'UwU mode' : 'Serious mode'}</span>}
+    </button>
   );
 }

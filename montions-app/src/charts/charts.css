@@ -174,3 +174,44 @@
   .payoff-mini__line, .payoff-mini.is-active .payoff-mini__line { transition: none; stroke-dashoffset: 0; }
   .sim__knob { transition: none; }
 }
+
+/* ui-chart: reserve space above the fixed CTA without changing shared step styles. */
+.expiry-step:has(.pc) .ruler--timeline { margin-top: 24px; }
+.expiry-step:has(.pc) > .hint { margin-top: 14px; }
+.expiry-step .pc { margin-top: 8px; }
+.pc__empty { position: absolute; inset: 40% 48px auto; font-size: 11px; color: var(--muted); text-align: center; pointer-events: none; }
+.sim__hint { margin: 3px 0 7px; font-size: 10px; color: var(--muted); }
+.sim__tip { top: 12px; transform: translate(-50%, -100%); }
+.sim .sim__badge.is-win { color: var(--on-up); }
+.sim .sim__mult { background: var(--on-up); }
+@media (max-width: 640px) {
+  .expiry-step:has(.pc) .ruler--timeline { margin-top: 12px; }
+  .expiry-step:has(.pc) > .hint { margin-top: 8px; }
+  .sim__hint { font-size: 9px; }
+  .sim__tip { max-width: 96%; width: max-content; }
+}
+/* Charts increase step content; let that content scroll inside the existing body slot. */
+.main:has(.pc, .sim):not(.app--ticket .main) .stage--body {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  overscroll-behavior-y: contain;
+}
+.main:has(.pc, .sim):not(.app--ticket .main) .stage--body > .stage__item {
+  justify-content: flex-start;
+  padding: 10px 0 16px;
+}
+.asset-step:has(.pc) .wheel--assets { height: 230px !important; }
+@media (max-width: 640px) {
+  .asset-step:has(.pc) .wheel--assets { height: 220px !important; }
+}
+.dc__plot:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.sim__chart { user-select: none; -webkit-user-select: none; }
+.sim .sim__tip {
+  left: 50% !important;
+  top: 32px;
+  transform: translateX(-50%);
+  max-width: calc(100% - 12px);
+  width: max-content;
+  white-space: normal;
+  text-align: center;
+}

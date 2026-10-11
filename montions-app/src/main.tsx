@@ -8,6 +8,7 @@ import './styles/chrome.css';
 import './styles/steps.css';
 import './styles/ticket.css';
 import './styles/prod.css';
+import './styles/header.css'; // last: header layout overrides
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

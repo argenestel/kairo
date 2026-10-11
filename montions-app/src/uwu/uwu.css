@@ -13,7 +13,8 @@
 .uwu-host--ticket { left: auto; right: max(16px, env(safe-area-inset-right)); align-items: flex-end; }
 .uwu-host--ticket .speech-bubble { border-radius: 1.35rem 1.35rem 0.55rem 1.35rem; }
 
-.uwu-host--compact { left: auto; right: 8px; bottom: 92px; max-width: 62vw; align-items: flex-end; }
+.uwu-host--compact { left: 4px; right: auto; bottom: 84px; max-width: 70vw; align-items: flex-start; opacity: 0.95; }
+.uwu-host--compact.uwu-host--ticket { left: auto; right: 4px; align-items: flex-end; }
 .uwu-host--compact .uwu-host__bubble { font-size: 0.8rem; padding: 0.5rem 0.75rem 0.6rem; max-width: 58vw; }
 
 @keyframes uwu-pop { from { opacity: 0; transform: translateY(6px) scale(0.96); } to { opacity: 1; transform: none; } }

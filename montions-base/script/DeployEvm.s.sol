@@ -9,6 +9,7 @@ import {ChainlinkSettlementResolver} from "../src/resolvers/ChainlinkSettlementR
 import {MontionsBook} from "../src/MontionsBook.sol";
 import {Quoter} from "../src/Quoter.sol";
 import {MakerVault} from "../src/MakerVault.sol";
+import {KairoBook, KairoQuoter, KairoMakerVault} from "../src/Kairo.sol";
 
 /// @notice Chain-generic Chainlink EVM deployment (Base Sepolia 84532, Arbitrum Sepolia 421614, …).
 /// @dev Reads `config/chains.json`, finds the entry whose `chainId` matches `block.chainid` (or `CHAIN_ID`),
@@ -60,12 +61,12 @@ contract DeployEvm is Script {
             "DeployEvm: ETH/BTC/LINK required"
         );
         o.resolver = address(new ChainlinkSettlementResolver(o.oracle));
-        MontionsBook book = new MontionsBook(o.usdc, deployer);
+        MontionsBook book = new KairoBook(o.usdc, deployer);
         o.book = address(book);
         o.engine = book.engine();
         book.setResolverAllowed(o.resolver, true);
-        o.quoter = address(new Quoter(o.book, o.resolver));
-        MakerVault vault = new MakerVault(o.book, o.quoter, deployer);
+        o.quoter = address(new KairoQuoter(o.book, o.resolver));
+        MakerVault vault = new KairoMakerVault(o.book, o.quoter, deployer);
         o.vault = address(vault);
         vault.setTrustedResolver(o.resolver);
         vault.setKeeper(deployer);

@@ -22,7 +22,7 @@ const aggregatorAbi = parseAbi([
   'function decimals() view returns (uint8)',
   'function latestRoundData() view returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound)',
   'function getRoundData(uint80 roundId) view returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound)',
-  'function phaseId() view returns (uint16)',
+  'function phaseAggregators(uint16 phase) view returns (address)',
 ]);
 const hubAbi = parseAbi([
   'function feedOfSymbol(string symbol) view returns (address)',
@@ -49,7 +49,7 @@ function evmClient(chainId: number): PublicClient {
   });
   const client = createPublicClient({
     chain,
-    transport: fallback(rpcs.map((u) => http(u, { timeout: 8_000 }))),
+    transport: fallback(rpcs.map((u) => http(u, { timeout: 6_000, retryCount: 0 }))),
   });
   clients.set(chainId, client);
   return client;
@@ -73,33 +73,6 @@ function synthetic(spot: number, vol: number, hours: number, seed: string, now =
   return backward.map((value, i) => ({ time: start + i * dt, value }));
 }
 
-function pinToSpot(points: Point[], spot: number): Point[] {
-  if (!(spot > 0) || points.length < 2) return points;
-  const last = points[points.length - 1]!.value;
-  if (!(last > 0)) return points;
-  const k = spot / last;
-  if (Math.abs(k - 1) < 1e-6) return points;
-  const n = points.length - 1;
-  return points.map((p, i) => {
-    const w = (i / n) ** 2;
-    return { time: p.time, value: p.value * (1 + (k - 1) * w) };
-  });
-}
-
-function mergePoints(a: Point[], b: Point[]): Point[] {
-  if (!a.length) return b;
-  if (!b.length) return a;
-  const all = [...a, ...b].sort((x, y) => x.time - y.time);
-  const out: Point[] = [];
-  for (const p of all) {
-    if (!(p.value > 0) || !isFinite(p.time)) continue;
-    const prev = out[out.length - 1];
-    if (!prev || p.time - prev.time > 0.5) out.push(p);
-    else out[out.length - 1] = p;
-  }
-  return out;
-}
-
 async function multicallRounds(
   client: PublicClient,
   feed: Address,
@@ -116,16 +89,11 @@ async function multicallRounds(
       args: [id] as const,
     }));
     try {
-      const rows = await client.multicall({ contracts, allowFailure: true });
+      const rows = await client.multicall({ contracts, allowFailure: true, batchSize: 0 });
       for (const r of rows) out.push(r.status === 'success' ? r.result : null);
-    } catch {
-      for (const id of slice) {
-        try {
-          out.push(await client.readContract({ address: feed, abi: aggregatorAbi, functionName: 'getRoundData', args: [id] }));
-        } catch {
-          out.push(null);
-        }
-      }
+    } catch (error) {
+      // A failed RPC must not fan out into hundreds of serial retries.
+      throw error;
     }
   }
   return out;
@@ -142,7 +110,7 @@ function decodeRound(
   return { time: t, value: answer };
 }
 
-async function loadAggregator(
+export async function loadAggregator(
   client: PublicClient,
   feed: Address,
   lookback: number,
@@ -161,62 +129,38 @@ async function loadAggregator(
   const mask = (1n << 64n) - 1n;
   const hi = roundId & mask;
   if (hi <= 0n) return [];
-  const cutoff = BigInt(Math.floor(Date.now() / 1000) - lookback);
-
-  const collect = (ids: bigint[], rows: Array<readonly [bigint, bigint, bigint, bigint, bigint] | null>) => {
-    const pts: Point[] = [];
-    rows.forEach((row) => {
-      const p = decodeRound(row, scale);
-      if (p) pts.push(p);
-    });
-    void ids;
-    pts.sort((a, b) => a.time - b.time);
-    const out: Point[] = [];
-    for (const p of pts) {
-      const prev = out[out.length - 1];
-      if (!prev || p.time > prev.time) out.push(p);
-      else out[out.length - 1] = p;
-    }
-    return out;
-  };
-
-  if (hi <= BigInt(maxPoints + 4)) {
-    const ids: bigint[] = [];
-    for (let i = 1n; i <= hi; i++) ids.push(base | i);
-    return collect(ids, await multicallRounds(client, feed, ids));
+  const cutoff = Math.floor(Date.now() / 1000) - lookback;
+  // Locate the start of the time window without sampling years of feed history.
+  let left = 1n;
+  let right = hi;
+  for (let i = 0; left < right && i < 64; i++) {
+    const mid = (left + right) / 2n;
+    const [row] = await multicallRounds(client, feed, [base | mid]);
+    if (!row || Number(row[3]) < cutoff) left = mid + 1n;
+    else right = mid;
   }
-
-  const PROBES = 20;
-  const probeIds: bigint[] = [];
-  for (let i = 0; i < PROBES; i++) {
-    const agg = 1n + ((hi - 1n) * BigInt(i)) / BigInt(PROBES - 1);
-    probeIds.push(base | agg);
-  }
-  const probes = await multicallRounds(client, feed, probeIds);
-  let startAgg = 1n;
-  for (let i = 0; i < probes.length; i++) {
-    const t = probes[i]?.[3] ?? 0n;
-    if (t !== 0n && t >= cutoff) {
-      startAgg = i > 0 ? (probeIds[i - 1]! & mask) : (probeIds[i]! & mask);
-      break;
-    }
-    if (i === probes.length - 1) startAgg = hi > 400n ? hi - 400n : 1n;
-  }
-
-  const span = hi - startAgg;
+  const start = left > 1n ? left - 1n : left;
+  const span = hi - start;
   const n = Math.min(maxPoints, Number(span) + 1);
-  const seen = new Set<string>();
-  const ids: bigint[] = [];
+  const ids = new Set<bigint>([roundId]);
   for (let i = 0; i < n; i++) {
-    const agg = startAgg + (n <= 1 ? 0n : (span * BigInt(i)) / BigInt(n - 1));
-    const id = base | agg;
-    const k = id.toString();
-    if (seen.has(k)) continue;
-    seen.add(k);
-    ids.push(id);
+    ids.add(base | (start + (n <= 1 ? 0n : span * BigInt(i) / BigInt(n - 1))));
   }
-  if (!seen.has(roundId.toString())) ids.push(roundId);
-  return collect(ids, await multicallRounds(client, feed, ids));
+  const rows = await multicallRounds(client, feed, [...ids].sort((a, b) => a > b ? -1 : a < b ? 1 : 0));
+  const points = rows.map(row => decodeRound(row, scale)).filter((p): p is Point => p != null);
+  // A proxy phase change resets the aggregator round counter. Query the previous
+  // aggregator directly when the current phase doesn't cover the requested window.
+  if (phase > 1n && points.length && Math.min(...points.map(p => p.time)) > cutoff) {
+    try {
+      const previous = await client.readContract({ address: feed, abi: aggregatorAbi,
+        functionName: 'phaseAggregators', args: [Number(phase - 1n)] });
+      points.push(...await loadAggregator(client, previous, lookback, maxPoints));
+    } catch { /* Keep the available current-phase history. */ }
+  }
+  points.sort((a, b) => a.time - b.time);
+  const unique = points.filter((p, i) => !i || p.time !== points[i - 1]!.time);
+  const first = unique.findIndex(p => p.time >= cutoff);
+  return first > 0 ? unique.slice(first - 1) : unique.slice(-maxPoints);
 }
 
 async function resolveKeeperFeed(chain: ChainKey, symbol: string): Promise<Address | null> {
@@ -264,7 +208,7 @@ async function samplePyth(symbol: string): Promise<Point | null> {
     const { Connection, PublicKey } = await import('@solana/web3.js');
     const conn = new Connection(feed.rpc, { commitment: 'confirmed' });
     const info = await conn.getAccountInfo(new PublicKey(feed.priceAccount), 'confirmed');
-    if (!info?.data) return null;
+    if (!info?.data || info.owner.toBase58() !== 'rec5EKMGg6MxZYaMdyBfgwp4d5rB9T1VQH5pJv5LtFJ') return null;
     const data = info.data instanceof Uint8Array ? info.data : new Uint8Array(info.data);
     return parsePythV2(data);
   } catch {
@@ -283,46 +227,17 @@ function ringPush(symbol: string, p: Point): Point[] {
   return ring;
 }
 
-export function coneBand(spot: number, vol: number, dtSec: number): { up: number; down: number } {
-  const sig = vol * Math.sqrt(Math.max(dtSec, 0) / YEAR);
-  const e = Math.exp(sig);
-  return { up: spot * e, down: spot / e };
-}
-
-export function buildCone(
-  t0: number,
-  s0: number,
-  expiry: number,
-  vol: number,
-  steps = 24,
-): { t: number; up: number; down: number }[] {
-  if (!(expiry > t0) || !(s0 > 0)) return [];
-  const out: { t: number; up: number; down: number }[] = [];
-  for (let i = 0; i <= steps; i++) {
-    const t = t0 + ((expiry - t0) * i) / steps;
-    const b = coneBand(s0, vol, t - t0);
-    out.push({ t, up: b.up, down: b.down });
-  }
-  return out;
-}
-
 async function loadReal(
   chain: ChainKey,
   symbol: string,
-  spot: number,
-  vol: number,
   category?: AssetCategory | string,
 ): Promise<HistorySnap | null> {
-  const hours = lookbackSec(category) / 3600;
-  const syn = (): Point[] => pinToSpot(synthetic(spot, vol, hours, `${chain}:${symbol}`), spot);
 
   if (chain === 'solana') {
     const live = await samplePyth(symbol);
     if (live) ringPush(symbol, live);
-    else if (spot > 0) ringPush(symbol, { time: Date.now() / 1000, value: spot });
     const ring = pythRing.get(symbol.toUpperCase()) ?? [];
-    const points = ring.length >= 8 ? ring : mergePoints(syn(), ring);
-    return { points, source: ring.length ? 'pyth' : 'synthetic', label: ring.length ? 'Pyth · live samples' : 'Simulated' };
+    return { points: [...ring], source: 'pyth', label: ring.length ? 'Pyth · live samples (this session)' : 'Pyth unavailable · retrying' };
   }
 
   if (chain === 'base' || chain === 'arbitrum') {
@@ -338,12 +253,11 @@ async function loadReal(
     if (!address) return null;
     const look = lookbackSec(category);
     const pts = await loadAggregator(client, address, look);
-    if (pts.length < 3) return null;
-    const pinned = pinToSpot(pts, spot > 0 ? spot : pts[pts.length - 1]!.value);
+
     const label = kind === 'keeper'
       ? 'Keeper-reported demo oracle · last sessions'
       : `Chainlink · ${look >= 86400 * 2 ? 'sessions' : '24h'}`;
-    return { points: pinned, source: kind, label };
+    return { points: pts, source: kind, label };
   }
 
   return null;
@@ -359,24 +273,24 @@ export async function loadHistory(opts: {
   const { chain, symbol, spot, vol, category } = opts;
   const hours = lookbackSec(category) / 3600;
   const fallback: HistorySnap = {
-    points: pinToSpot(synthetic(spot, vol, hours, `${chain}:${symbol}`), spot),
+    points: chain === 'mock' ? synthetic(spot, vol, hours, `${chain}:${symbol}`) : [],
     source: 'synthetic',
-    label: chain === 'mock' ? 'Simulated' : 'Simulated (feed unavailable)',
+    label: chain === 'mock' ? 'Simulated · demo' : 'Oracle history unavailable · retrying',
   };
   if (chain === 'mock' || chain === 'hyperliquid') return fallback;
 
   const key = `${chain}:${symbol.toUpperCase()}:${category ?? ''}`;
   const cached = histCache.get(key);
-  if (cached && Date.now() - cached.at < 90_000) {
-    return { ...cached.snap, points: pinToSpot(cached.snap.points, spot) };
+  if (cached && Date.now() - cached.at < (chain === 'solana' ? 4_000 : 30_000)) {
+    return cached.snap;
   }
   const pending = inflight.get(key);
   if (pending) return pending;
 
   const job = (async () => {
     try {
-      const real = await loadReal(chain, symbol, spot, vol, category);
-      const snap = real && real.points.length >= 3 ? real : fallback;
+      const real = await loadReal(chain, symbol, category);
+      const snap = real ?? fallback;
       histCache.set(key, { at: Date.now(), snap });
       return snap;
     } catch {
@@ -389,8 +303,3 @@ export async function loadHistory(opts: {
   return job;
 }
 
-/** Append a live tick into the in-memory Pyth ring (and return it). */
-export function noteLiveSample(symbol: string, price: number, time = Date.now() / 1000): void {
-  if (!(price > 0)) return;
-  ringPush(symbol, { time, value: price });
-}

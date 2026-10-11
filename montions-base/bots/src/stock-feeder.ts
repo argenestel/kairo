@@ -12,6 +12,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { keccak256, toBytes, type Address, type Hex } from "viem";
 import {
+  guardedWriteContract,
   hasFlag,
   isDryRun,
   loadBotContext,

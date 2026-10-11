@@ -4,6 +4,7 @@ import type { ChainKey } from '../chains';
 import type { AssetCategory } from '../chains/types';
 import baseDep from '@montions/base-deployments/84532.json';
 import arbDep from '@montions/base-deployments/421614.json';
+import chainCfg from '../../../montions-base/config/chains.json';
 import solCfg from '@montions/sol-config/assets.devnet.json';
 
 export type FeedKind = 'chainlink' | 'keeper' | 'pyth' | 'synthetic';
@@ -25,7 +26,7 @@ export interface PythFeed {
   symbol: string;
 }
 
-interface DepAsset { symbol: string; feed?: string; decimals?: number; oracle?: string }
+interface DepAsset { symbol: string; feed?: string; decimals?: number; oracle?: string; tier?: string }
 interface DepFile {
   chainId: number;
   rpc?: string;
@@ -35,9 +36,12 @@ interface DepFile {
 
 const MC3 = '0xca11bde05977b3631167028862be2a173976ca11' as Address;
 
+const configuredRpc = (id: number) => chainCfg.chains.find(c => c.chainId === id)?.rpc ?? '';
+
 const RPC: Record<number, string[]> = {
   84532: [
     (typeof import.meta !== 'undefined' && (import.meta as { env?: Record<string, string> }).env?.VITE_BASE_RPC) || '',
+    configuredRpc(84532),
     (baseDep as DepFile).rpc || '',
     'https://sepolia.base.org',
     'https://base-sepolia-rpc.publicnode.com',
@@ -45,6 +49,7 @@ const RPC: Record<number, string[]> = {
   421614: [
     (typeof import.meta !== 'undefined' && (import.meta as { env?: Record<string, string> }).env?.VITE_ARB_RPC) || '',
     'https://arbitrum-sepolia-rpc.publicnode.com',
+    configuredRpc(421614),
     (arbDep as DepFile).rpc || '',
     'https://sepolia-rollup.arbitrum.io/rpc',
   ].filter(Boolean),
@@ -59,7 +64,10 @@ function mapDep(dep: DepFile, extraRpcs: string[]): Map<string, EvmFeed> {
   const rpcs = RPC[dep.chainId] ?? extraRpcs;
   for (const a of dep.assets ?? []) {
     if (!a.feed || !a.feed.startsWith('0x')) continue;
-    const kind: EvmFeed['kind'] = a.oracle === 'keeper' || /keeper/i.test(a.oracle ?? '') ? 'keeper' : 'chainlink';
+    // KeeperFeed implements the Chainlink interface; the manifest may therefore
+    // call its protocol 'chainlink'. Equity tiers still require the demo label.
+    const tier = a.tier ?? chainCfg.chains.find(c => c.chainId === dep.chainId)?.assets.find(asset => asset.symbol === a.symbol)?.tier;
+    const kind: EvmFeed['kind'] = /keeper/i.test(a.oracle ?? '') || ['stock', 'etf', 'commodity'].includes(tier ?? '') ? 'keeper' : 'chainlink';
     out.set(a.symbol.toUpperCase(), {
       kind,
       chainId: dep.chainId,
@@ -84,6 +92,7 @@ const PYTH: Record<string, string> = Object.fromEntries(
 );
 
 export const KEEPER_HUB: Partial<Record<ChainKey, Address>> = {
+  arbitrum: (arbDep as DepFile).contracts?.keeperFeedHub as Address | undefined,
   base: ((baseDep as DepFile).contracts?.keeperFeedHub as Address | undefined) ?? undefined,
 };
 

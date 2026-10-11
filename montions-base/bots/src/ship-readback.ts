@@ -1,0 +1,28 @@
+/** Read-only deployment verification; records economic keys and liquidity. */
+import { writeFileSync } from "node:fs";
+import { keccak256, toBytes, parseAbi, type Hex } from "viem";
+import { montionsBookAbi, makerVaultAbi, quoterAbi } from "../../sdk/src/abi/index.js";
+import { loadBotContext, addressAt } from "./runtime.js";
+import { readAllSeriesIds, decodePriceSeriesData, parseSeriesInfo } from "./seriesOps.js";
+const ctx = loadBotContext(false);
+const book = addressAt(ctx.deployment, "book");
+const ids = await readAllSeriesIds(ctx, book);
+const rows = await ctx.publicClient.multicall({ contracts: ids.map(id => ({address:book,abi:montionsBookAbi,functionName:"seriesInfo" as const,args:[id]})), allowFailure:false });
+const series = rows.map((raw,i) => parseSeriesInfo(ids[i]!,raw));
+const assets = new Map(ctx.deployment.assets.map(a => [a.assetId.toLowerCase(),a]));
+const priceSeries = series.map(s => ({s,d:decodePriceSeriesData(s.data)})).filter(x => x.d && assets.has(x.d.assetId.toLowerCase()));
+const keys = priceSeries.map(({s,d}) => `${assets.get(d!.assetId.toLowerCase())!.symbol}:${Number(d!.strikeWad)/1e18}:${s.expiry}`).sort();
+const stockSeries = priceSeries.filter(({d}) => /^(stock|etf|commodity)$/.test(assets.get(d!.assetId.toLowerCase())!.tier ?? ""));
+const stock = stockSeries.find(({d}) => assets.get(d!.assetId.toLowerCase())!.symbol === "TSLA")!;
+const stockQuote = stock ? await ctx.publicClient.readContract({address:book,abi:montionsBookAbi,functionName:"bestBidAsk",args:[stock.s.id]}) : undefined;
+const fair = stock ? await ctx.publicClient.readContract({address:addressAt(ctx.deployment,"quoter"),abi:quoterAbi,functionName:"fair",args:[stock.s.id]}) : undefined;
+const eventResolver = ctx.deployment.contracts.eventResolver;
+const events = series.filter(s => s.resolver.toLowerCase() === eventResolver?.toLowerCase());
+const eventQuote = events[0] ? await ctx.publicClient.readContract({address:book,abi:montionsBookAbi,functionName:"bestBidAsk",args:[events[0].id]}) : undefined;
+const counts = stockSeries.reduce((acc,{d}) => {const a=assets.get(d!.assetId.toLowerCase())!.symbol;acc[a]=(acc[a]??0)+1;return acc;},{} as Record<string,number>);
+const liquidity = await ctx.publicClient.multicall({contracts:priceSeries.map(({s})=>({address:book,abi:montionsBookAbi,functionName:"bestBidAsk" as const,args:[s.id]})),allowFailure:false});
+const unquoted = priceSeries.filter((_,i)=>liquidity[i]![0]===0 || liquidity[i]![2]===0).map(({s,d})=>({id:s.id,symbol:assets.get(d!.assetId.toLowerCase())!.symbol}));
+const out = {chainId:ctx.deployment.chainId,contracts:ctx.deployment.contracts,seriesCount:series.length,cryptoCount:priceSeries.length-stockSeries.length,stockCount:stockSeries.length,stockTickers:counts,eventCount:events.length,stockQuote,stockFair:fair,eventQuote,keys,unquoted,balanceWei:await ctx.publicClient.getBalance({address:"0x4fcDca6181Cd22ca253c69b891a7Fc3370DD3E39"}),trustedAssetCount:await ctx.publicClient.readContract({address:addressAt(ctx.deployment,"vault"),abi:parseAbi(["function trustedAssetCount() view returns (uint256)"]),functionName:"trustedAssetCount"})};
+const json=JSON.stringify(out,(_,v)=>typeof v==="bigint"?v.toString():v,2);
+writeFileSync(`../deployments/logs/${ctx.deployment.chainId}/ship2-readback.json`,json+"\n");
+console.log(json);
