@@ -6,7 +6,11 @@ CID="${1:?chain id}"; PORT="${2:-8571}"
 if [[ "$CID" == 84532 ]]; then FORK_RPC=https://sepolia.base.org; else FORK_RPC=https://arbitrum-sepolia-rpc.publicnode.com; fi
 OUTDIR="deployments/rehearsal/ship2-$CID"
 mkdir -p "$OUTDIR"
-anvil --fork-url "$FORK_RPC" --port "$PORT" --auto-impersonate --accounts 0 > "$OUTDIR/anvil.log" 2>&1 &
+if [[ "${REUSE_CORE_STATE:-0}" == 1 && "$CID" == 421614 ]]; then
+ anvil --chain-id "$CID" --port "$PORT" --accounts 0 --auto-impersonate > "$OUTDIR/anvil.log" 2>&1 &
+else
+ anvil --fork-url "$FORK_RPC" --port "$PORT" --auto-impersonate --accounts 0 > "$OUTDIR/anvil.log" 2>&1 &
+fi
 ANVIL_PID=$!
 trap 'kill "$ANVIL_PID" 2>/dev/null || true' EXIT
 export RPC_URL="http://127.0.0.1:$PORT" CHAIN_ID="$CID" FORK_REHEARSAL=1 FORK=1
@@ -19,8 +23,16 @@ done
 cast balance 0x0000000000000000000000000000000000000000 --rpc-url "$RPC_URL" >/dev/null
 cast rpc --rpc-url "$RPC_URL" anvil_setBalance "$BOT_ADDRESS" 0x8AC7230489E80000 >/dev/null
 export DEPLOYMENT="$PWD/$OUTDIR/$CID.json"
+if [[ "${REUSE_CORE_STATE:-0}" == 1 ]]; then
+ python3 - "$RPC_URL" "$OUTDIR/core-state.json" <<'PYREUSE'
+import json,sys,urllib.request
+state=json.load(open(sys.argv[2]));data=json.dumps({'jsonrpc':'2.0','id':1,'method':'anvil_loadState','params':[state]}).encode();res=json.load(urllib.request.urlopen(urllib.request.Request(sys.argv[1],data=data,headers={'Content-Type':'application/json'})));assert res.get('result') is True,res
+PYREUSE
+fi
 if [[ "$CID" == 421614 ]]; then
+ if [[ "${REUSE_CORE_STATE:-0}" != 1 ]]; then
  CONTRACTS_OUT="$OUTDIR/$CID.contracts.json" forge script script/DeployEvm.s.sol:DeployEvm --rpc-url "$RPC_URL" --unlocked --sender "$BOT_ADDRESS" --broadcast --skip-simulation --legacy --with-gas-price 1000000000 > "$OUTDIR/core.log" 2>&1
+ fi
  CONTRACTS_IN="$OUTDIR/$CID.contracts.json" MANIFEST_RPC="$RPC_URL" node scripts/evm-manifest.mjs "$CID" "$DEPLOYMENT"
  eval "$(python3 - "$DEPLOYMENT" <<'PY'
 import json,sys
@@ -28,6 +40,7 @@ c=json.load(open(sys.argv[1]))['contracts']
 for k,v in {'ORACLE':'chainlinkOracle','BOOK':'book','RESOLVER':'chainlinkResolver','VAULT':'vault','QUOTER':'quoter'}.items(): print('export '+k+'='+c[v])
 PY
 )"
+ if [[ "${REUSE_CORE_STATE:-0}" != 1 ]]; then
  cast rpc --rpc-url "$RPC_URL" anvil_dumpState > "$OUTDIR/core-state.json"
  kill "$ANVIL_PID"; wait "$ANVIL_PID" || true
  # Continue on the exact fork-produced core state, without a pruning remote backend.
@@ -39,6 +52,7 @@ PY
 import json,sys,urllib.request
 state=json.load(open(sys.argv[2]));data=json.dumps({'jsonrpc':'2.0','id':1,'method':'anvil_loadState','params':[state]}).encode();res=json.load(urllib.request.urlopen(urllib.request.Request(sys.argv[1],data=data,headers={'Content-Type':'application/json'})));assert res.get('result') is True,res
 PYLOAD
+ fi
  OUT="$OUTDIR/stocks.json" CREATE_SERIES=0 forge script script/DeployStocks.s.sol:DeployStocks --rpc-url "$RPC_URL" --unlocked --sender "$BOT_ADDRESS" --broadcast --skip-simulation --legacy --with-gas-price 1000000000 > "$OUTDIR/stocks.log" 2>&1
 else
  cp "deployments/$CID.json" "$DEPLOYMENT"
@@ -56,6 +70,7 @@ if s.exists():
 m['contracts']['eventResolver']=json.load(open(d/'events.json'))['eventResolver'];json.dump(m,open(p,'w'),indent=2)
 PY
 pnpm --dir bots stock-seed > "$OUTDIR/stock-seed.log" 2>&1
-EVM_KEEPER_CREATE=0 EVM_KEEPER_RESOLVE=0 EVM_REFRESH_LIMIT=200 pnpm --dir bots evm-keeper --once > "$OUTDIR/refresh.log" 2>&1
+pnpm --dir bots exec tsx src/ship-initial-quotes.ts > "$OUTDIR/refresh.log" 2>&1
 EVENT_MAKER_STATE="$PWD/$OUTDIR/event-maker-state.json" EVENT_MAKER_MAX_GLOBAL=4000 pnpm --dir bots event-maker --once > "$OUTDIR/event-maker.log" 2>&1
+cast rpc --rpc-url "$RPC_URL" anvil_dumpState > "$OUTDIR/final-state.json"
 echo "Rehearsal completed $CID; anvil stopped on exit"

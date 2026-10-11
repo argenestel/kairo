@@ -28,9 +28,19 @@ def fetch(batch):
   result.append((a,slot,out['result']))
  return result
 batches=[slots[i:i+1] for i in range(0,len(slots),1)]
-with concurrent.futures.ThreadPoolExecutor(max_workers=4) as ex: values=[v for group in ex.map(fetch,batches) for v in group]
-for i in range(0,len(values),100):
- req=[{'jsonrpc':'2.0','id':j,'method':'anvil_setStorageAt','params':[a,s,v]} for j,(a,s,v) in enumerate(values[i:i+100])]
- out=rpc(local,req)
+count=0
+buffer=[]
+with concurrent.futures.ThreadPoolExecutor(max_workers=4) as ex:
+ for group in ex.map(fetch,batches):
+  buffer.extend(group)
+  if len(buffer)>=100:
+   req=[{'jsonrpc':'2.0','id':j,'method':'anvil_setStorageAt','params':[a,slot,value]} for j,(a,slot,value) in enumerate(buffer)]
+   out=rpc(local,req)
+   assert all('error' not in x for x in out),out
+   count+=len(buffer);buffer=[]
+   if count%500==0:print(f'Prewarmed {count}/{len(slots)} slots',flush=True)
+if buffer:
+ out=rpc(local,[{'jsonrpc':'2.0','id':j,'method':'anvil_setStorageAt','params':[a,slot,value]} for j,(a,slot,value) in enumerate(buffer)])
  assert all('error' not in x for x in out),out
-print(f'Prewarmed {len(values)} exact storage slots at fork block {block}')
+ count+=len(buffer)
+print(f'Prewarmed {count} exact storage slots at fork block {block}',flush=True)
