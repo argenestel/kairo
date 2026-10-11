@@ -1,8 +1,10 @@
 # Options are the right product, sold through the wrong interface, on the wrong venue
 
-Montions thesis · 11 October 2026 · v0.1
+Kairo (formerly Montions).
 
-This document extends the original Montions thesis (`montions/docs/THESIS.md`). The six claims there still hold. What has changed is the *venue*: users and USDC now live on several chains at once, so a single onchain book is not enough. We do not silently drop the Monad-era argument that matching belongs onchain; we say why cheap L2s and Solana now clear the same bar, and what new failure mode (bridging while a ticket is open) that creates. Claims below are sourced, derived from the specs, or labelled as our belief.
+Kairo thesis · 11 October 2026 · v0.1
+
+This document extends the original Kairo thesis (`montions/docs/THESIS.md`). The six claims there still hold. What has changed is the *venue*: users and USDC now live on several chains at once, so a single onchain book is not enough. We do not silently drop the Monad-era argument that matching belongs onchain; we say why cheap L2s and Solana now clear the same bar, and what new failure mode (bridging while a ticket is open) that creates. Claims below are sourced, derived from the specs, or labelled as our belief.
 
 Companion technical paper: [Canonical Events](../cross-chain-options.md). Product docs: [overview](../docs/overview.md), [how it works](../docs/how-it-works.md), [chains](../docs/chains.md), [settlement](../docs/settlement.md).
 
@@ -16,9 +18,9 @@ The **binary** is the atom of that product. “SOL ≥ $120 at Friday 16:00 UTC?
 
 The **interface** that replaces the chain is a ticket: *I think SOL will be above $120 by Friday with $100.* The app compiles the sentence to a buy of YES or NO against a real onchain central limit order book.
 
-The **venue** that replaces the desk is not “one chain to rule them.” USDC already sits in size on Ethereum, Hyperliquid, Solana, Base and Arbitrum (DefiLlama stablecoins, 11 Oct 2026 — figures in Market). Users will not bridge mid-hunch. Each Montions venue is fully funded in *local* USDC-style collateral. The same economic event is identified once, as a **canonical key** `(asset, strike, expiry)`. The UI quotes every live book and routes the ticket to the best one. Nothing cross-chain is under-collateralised. A later primitive, **contingent-surplus netting**, moves a dollar only after a venue is already over-collateralised; it is specified in the paper and **not built**.
+The **venue** that replaces the desk is not “one chain to rule them.” USDC already sits in size on Ethereum, Hyperliquid, Solana, Base and Arbitrum (DefiLlama stablecoins, 11 Oct 2026 — figures in Market). Users will not bridge mid-hunch. Each Kairo venue is fully funded in *local* USDC-style collateral. The same economic event is identified once, as a **canonical key** `(asset, strike, expiry)`. The UI quotes every live book and routes the ticket to the best one. Nothing cross-chain is under-collateralised. A later primitive, **contingent-surplus netting**, moves a dollar only after a venue is already over-collateralised; it is specified in the paper and **not built**.
 
-What is live on 11 October 2026: Solana **devnet** program `MonoTs1KRuamxFReiqsMzVt7gFM8bbn3QmEFjMbyazh`, seeded with 28 markets, keeper running. Base Sepolia and Arbitrum Sepolia are the EVM ship targets; public bytecode on Base Sepolia was empty at 15:25 UTC (fork rehearsal only). Hyperliquid is **paused** (UI: a disabled “Soon” chip). Mainnet is not live. The software is unaudited.
+As of **2026-10-11 18:36 UTC**: Base v2 and Arbitrum v1 Books have bytecode and **150 / 81 registered series** respectively. Solana devnet is reported deployed with **28 seeded markets**; fresh RPC reads failed, so current count and keeper uptime are unverified. Stocks: **29 keeper-reported demo-oracle tickers on Base**, API-key-gated Pyth path built. Events: **deploying**, no live resolver in manifests. Hyperliquid: **PAUSED**. Website: [Kairo](https://kairo-nu-red.vercel.app). Testnet, unaudited, mainnet not live. [Evidence](https://github.com/argenestel/kairo/blob/main/paper/STATUS-EVIDENCE.md).
 
 We are not claiming options volume has flipped perps, or that a sentence alone creates a market. We are claiming the interface can finally match how people bet, the matcher can live onchain, and the event can be the same event on every chain that already holds the user’s dollars.
 
@@ -36,7 +38,7 @@ An option is what you get if you keep the bounded loss and aim it at a *price pa
 
 ### The binary is the atom
 
-A **cash-or-nothing digital** (binary) pays a fixed $1 or $0. In Montions:
+A **cash-or-nothing digital** (binary) pays a fixed $1 or $0. In Kairo:
 
 - A market is the question **is SYMBOL ≥ STRIKE at EXPIRY?**
 - One **YES** contract pays $1 of 6-decimal collateral if the first valid oracle print at or after expiry is ≥ strike, else $0.
@@ -89,7 +91,7 @@ Dream ([dreamos.app](https://dreamos.app)) is in the same UX race: a faster way 
 
 ### What replaces it: the ticket
 
-Montions compiles a five-field ticket:
+Kairo compiles a five-field ticket:
 
 1. **Asset** — SOL, BTC, ETH, … (registered feeds only).
 2. **Direction** — above or below.
@@ -157,7 +159,7 @@ The design that follows is in the paper; the product claim is short.
 - **Collateral-local.** Each venue is 100% funded in local USDC-style collateral. A fill on Base is a Base liability. There is no lockbox and no in-flight CCTP on the matching path.
 - **Canonical events.** The market is \(\kappa = (A, K, T, \ge)\). UI string `SYMBOL:strike:expiry`. Same strike grid and expiry schedule on every chain, or routing compares different events.
 - **Liquidity-global (routing and quoting, not a shared pool).** The UI asks every live adapter for a quote on \(\kappa\) and prefers the tradable book with the most contracts per dollar inside the user’s limit. A model-priced maker can quote the same \(N(d_2)\) centre on every venue; inventory stays local until netting exists.
-- **Hyperliquid is paused.** The UI shows it as a disabled “Soon” chip, not a routable venue. HyperEVM plus the HyperCore oracle are planned, not live. Ship order is Base Sepolia and Arbitrum Sepolia, with Solana already on as a side line.
+- **Hyperliquid is paused.** The UI shows it as a disabled “Soon” chip, not a routable venue. HyperEVM plus the HyperCore oracle are planned, not live. Ship order is Base Sepolia and Arbitrum Sepolia, with the Solana deployment reported as a side line.
 
 ![One event, local books](../figures/canonical-events.svg)
 
@@ -187,11 +189,11 @@ Three uses of the same receipt:
 
 **What must never happen.** Minting YES on B without $1 on B. Treating a general messenger (LayerZero, Hyperlane, CCIP) as if it were USDC. Bridging the user’s premium so they can take a quote on another chain.
 
-Circle CCTP is the intended USDC path. Circle’s “Supported blockchains and domains” page (dateModified 2026-10-05, retrieved 2026-10-11) lists, among others, Ethereum, Avalanche, OP Mainnet, Arbitrum, Base, Polygon PoS, Solana, Noble, Sei, Sui, Aptos, Unichain, World Chain, HyperEVM, Ink, Monad, Codex and Linea.[^cctp] The paper records domain ids Arbitrum 3, Solana 5, Base 6, HyperEVM 19. HyperEVM support on CCTP does not make Hyperliquid a live Montions venue; that work is paused.
+Circle CCTP is the intended USDC path. Circle’s “Supported blockchains and domains” page (dateModified 2026-10-05, retrieved 2026-10-11) lists, among others, Ethereum, Avalanche, OP Mainnet, Arbitrum, Base, Polygon PoS, Solana, Noble, Sei, Sui, Aptos, Unichain, World Chain, HyperEVM, Ink, Monad, Codex and Linea.[^cctp] The paper records domain ids Arbitrum 3, Solana 5, Base 6, HyperEVM 19. HyperEVM support on CCTP does not make Hyperliquid a live Kairo venue; that work is paused.
 
 ![Contingent-surplus netting](../figures/contingent-surplus.svg)
 
-Until CSN ships, Montions is honest multi-venue, not unified liquidity: one ticket, several solvent books, best-venue routing, local claim.
+Until CSN ships, Kairo is honest multi-venue, not unified liquidity: one ticket, several solvent books, best-venue routing, local claim.
 
 ---
 
@@ -247,7 +249,7 @@ DefiLlama DEX-volume adapters, 11 Oct 2026 (these adapters classify event-contra
 
 Polymarket `data-api` global open interest: **$358.8 million**. DefiLlama TVL for Polymarket International: **$357.5 million**. Gamma API, top 100 *open* markets only: **$28.0 million** combined 24h volume — a lower bound, sports-heavy on a Sunday.
 
-Kalshi **fees** (DefiLlama, methodology: trading fees collected): $5.77 million (24h), $152.9 million (30d). Polymarket **fees**: $4.24 million (24h), $107.9 million (30d). Fee ÷ volume is about 1.3% (Kalshi) and ~2.3% (Polymarket) on this snapshot; those are platform takes on event contracts, not a Montions fee proposal.
+Kalshi **fees** (DefiLlama, methodology: trading fees collected): $5.77 million (24h), $152.9 million (30d). Polymarket **fees**: $4.24 million (24h), $107.9 million (30d). Fee ÷ volume is about 1.3% (Kalshi) and ~2.3% (Polymarket) on this snapshot; those are platform takes on event contracts, not a Kairo fee proposal.
 
 **Hyperliquid Outcomes** is listed on DefiLlama as a prediction-market protocol with no volume print in this pull. HIP-4 outcome markets are the closest *payoff* cousin (fully collateralised binaries on HyperCore). They are not cross-chain and they settle to HyperCore marks.[^hip4]
 
@@ -321,7 +323,7 @@ Testnet labelling. Faucet. Chain picker with Hyperliquid **Soon**. Oracle name o
 
 Honesty over positioning. X commentary in the original thesis appendix remains unverified and is not used here.
 
-| Venue | What it is | Matching | Collateral | Settlement | Interface | Strength | Weakness vs Montions |
+| Venue | What it is | Matching | Collateral | Settlement | Interface | Strength | Weakness vs Kairo |
 |---|---|---|---|---|---|---|---|
 | **Deribit** | Dominant crypto options CEX | Offchain CLOB + RFQ | Portfolio margin | Venue index / listed expiry | Strike chain, greeks | Depth, professionals, OI in the tens of billions of USD notional (snapshot above) | Custody; US-party issues after the 2025 acquisition (Derive’s claim, Aug 2026); not a sentence; not onchain |
 | **OKX / Bybit / similar CEX options** | Exchange-listed vanillas | Offchain | Margin | Exchange | Strike chain | Distribution, fiat ramps | Same custody and interface problems; not portable |
@@ -339,9 +341,9 @@ Honesty over positioning. X commentary in the original thesis appendix remains u
 | **Hunch** | Sentence UX | Derive + Rysk | As Derive | As Derive | Sentence | Proved the sentence independently of us | Different machine: listed vanillas, not our book |
 | **Dream** | Mobile options UX | Listed options | As underlying venue | As venue | Fast trade | UX race | Not an onchain binary CLOB |
 | **Nadex / offshore binary brokers** | Traditional binaries | Centralised | Various | Centralised | Yes/no | Nadex is a regulated US binary/event path | Offshore binaries are the reputational tar pit; we are not a bucket shop |
-| **Montions** | Outcome-first binary CLOB | **Onchain** CLOB | **100%** | First print per oracle class; void 50/50 | Ticket | Canonical events; local solvency; sentence = product | Liquidity unproven; unaudited; CSN not built; thin vs Deribit/Polymarket; regulatory overlay |
+| **Kairo** | Outcome-first binary CLOB | **Onchain** CLOB | **100%** | First print per oracle class; void 50/50 | Ticket | Canonical events; local solvency; sentence = product | Liquidity unproven; unaudited; CSN not built; thin vs Deribit/Polymarket; regulatory overlay |
 
-Montions’ actual gap, restated: **onchain matching + 100% collateral + first-print settlement + the same event on every chain the user already sits on**, sold as a ticket. Not another skin on Derive. Not a Polymarket clone for elections. Not HIP-4 on one core.
+Kairo’ actual gap, restated: **onchain matching + 100% collateral + first-print settlement + the same event on every chain the user already sits on**, sold as a ticket. Not another skin on Derive. Not a Polymarket clone for elections. Not HIP-4 on one core.
 
 ---
 
@@ -434,7 +436,7 @@ The vault can still lose money. Informed flow that knows the print will hit the 
 
 ### Cold start per chain
 
-Do not split one maker’s inventory across Base, Arbitrum, and Solana on day one. Pick a chain where we can see fills (Solana devnet is already seeded; Base Sepolia is the EVM first live target). Quote a **short ladder** of strikes around spot, **few expiries** (tomorrow, Friday, next month), and only then list the long tail. Permissionless `create_market` / `createSeries` is on a grid so the UI can open a strike without a governance ticket, but the *maker* does not have to quote every grid point.
+Do not split one maker’s inventory across Base, Arbitrum, and Solana on day one. Pick a chain where we can see fills (Solana devnet is already seeded; Base Sepolia v2 is already deployed). Quote a **short ladder** of strikes around spot, **few expiries** (tomorrow, Friday, next month), and only then list the long tail. Permissionless `create_market` / `createSeries` is on a grid so the UI can open a strike without a governance ticket, but the *maker* does not have to quote every grid point.
 
 ### Long-dated ladders
 
@@ -511,7 +513,7 @@ USDC issuer freeze (Circle can blacklist the Book). Chain halt / reorg. Pyth or 
 ### Sequence
 
 1. **Hackathon.** Prove the ticket, the onchain book, and the multi-chain claim with *honest* status. Tracks we actually fit: Base, Arbitrum, Solana / Colosseum, cross-chain infra, consumer. Submission copy: [submission.md](./submission.md).
-2. **Testnets, Base Sepolia + Arbitrum Sepolia first.** Solana devnet is already live as a side line (28 markets). Do not wait on Hyperliquid. Keepers record, resolve, refresh. Soak settlement across Chainlink and Pyth on the same \(\kappa\).
+2. **Testnets, Base Sepolia + Arbitrum Sepolia first.** Solana devnet deployment is reported as a side line (28 seeded markets historically; current count unverified). Do not wait on Hyperliquid. Keepers record, resolve, refresh. Soak settlement across Chainlink and Pyth on the same \(\kappa\).
 3. **Public testnet app.** Serious default, UwU if original mascots are ready; otherwise Serious only. Shareable tickets. Faucet. “Soon” on Hyperliquid.
 4. **Partners, in the order we actually use them.** Chainlink (Base/Arb settlement). Pyth (Solana settlement). Circle (USDC + CCTP, *after* we are ready to talk about surplus, not as a sticker). Wallet standards we already speak: Wallet Standard on Solana, injected EVM.
 5. **Audit, legal, Safe, caps.** Then mainnet on **Base and Arbitrum first** — that is where we can list into native USDC without asking the user to learn a new chain for the product. Solana mainnet is a subsequent listing of the same \(\kappa\), not a rewrite. HyperEVM is a subsequent listing if and when unpaused.
@@ -531,7 +533,7 @@ Dates are order, not promises. Metrics are what we would actually look at.
 
 | Stage | Milestones | Metrics |
 |---|---|---|
-| **H0 — now** | Solana devnet live (28 markets, keeper). EVM stack complete in `montions-base/`. App ticket flow. Paper + this thesis. Hyperliquid paused. | Public bytecode on Base/Arb Sepolia; #devnet tickets; void rate; keeper liveness |
+| **H0 — now** | Base v2 and Arbitrum v1 deployed (150 / 81 total series at the snapshot). Solana deployment reported (28 seeded; fresh reads unavailable). App ticket flow. Paper + this thesis. Hyperliquid paused. | Public bytecode on Base/Arb Sepolia; #devnet tickets; void rate; keeper liveness |
 | **H1 — testnet soak** | Live Base Sepolia + Arbitrum Sepolia Books; adapters in the app; shared grids; settlement comparison table (Pyth vs Chainlink on the same \((A,T)\)) | Fill rate; time-to-resolve; print \(\lvert P_A-P_B\rvert\) near ATM; maker PnL (can be negative) |
 | **H2 — product complete on testnet** | Serious + UwU both shippable; shareable ticket; faucet UX; positions/claim; vault deposit UI that states loss | Returning wallets; tickets posted; mode split; support load |
 | **H3 — CSN spec freeze** | Receipts as tokens; burn preserves local solvency; fuzz vs existing invariants; disagreement policy on paper | Invariant suite green; no unbacked mint in tests |
@@ -547,28 +549,40 @@ Kill criteria: no fills after a public testnet; vault NAV monotonically down wit
 
 ## What we built
 
-Status as of **11 October 2026**. Testnet play money. No professional audit. No mainnet.
+As of **2026-10-11 18:36 UTC**. Testnet tUSDC only; unaudited; mainnet is not live. Website: [Kairo](https://kairo-nu-red.vercel.app); [GitHub](https://github.com/argenestel/kairo). Counts include registered series, not necessarily open or liquid books. Bytecode confirms deployment, not successful trading or settlement.
 
-| Piece | Status | Evidence |
+| Component | Verified status | Address / evidence |
 |---|---|---|
-| Original EVM Book, vault, Pyth/TWAP resolvers (Monad) | **Reference only** (`montions/`, read-only). Monad testnet demo existed; pool TWAP is MOCK | `montions/README.md`, `docs/ONCHAIN.md` |
-| Solana program + CLOB + Pyth first-print / sponsored-window settlement | **LIVE on devnet** | Program id `MonoTs1KRuamxFReiqsMzVt7gFM8bbn3QmEFjMbyazh`. 28 markets seeded, keeper running (operator / CONTEXT, 11 Oct 2026). Spec: `montions-sol/docs/SPEC.md`. Tests reported in CONTEXT: 76 host, 61 LiteSVM, 64 SDK |
-| EVM multi-chain stack (Base / Arbitrum) | **Code complete.** `forge test` 295 passing (CONTEXT) | `montions-base/` Book, `ChainlinkOracle`, `ChainlinkSettlementResolver`, MakerVault, Quoter |
-| Base Sepolia (84532) public deploy | **DEPLOYING** | `deployments/84532.contracts.json` holds fork-rehearsal addresses (RPC in `84532.json` is `http://127.0.0.1:8547`). `cast code` on `0xe576…280DE` via `https://sepolia.base.org` at 15:25 UTC 11 Oct 2026 returned `0x`. Do not treat those addresses as public Sepolia |
-| Arbitrum Sepolia (421614) | **DEPLOYING** | No `deployments/421614.json` at write time |
-| HyperEVM / HyperCore oracle | **PAUSED** (planned / in-progress in the paper; not live; not routable) | UI: disabled “Soon”. No HyperEVM deploy work in current scope |
-| Canonical keys | **In the app** | `canonicalMarketKey` in frozen `montions-app/src/chains/types.ts` |
-| Multi-chain UI, ticket printer | **IN PROGRESS** | React 19 + Vite; Solana adapter exists; Base adapter present; Serious copy shipped; UwU pack still a stub overlay (`copy.ts`: `uwu = serious` until the modes job fills it) |
-| Model-priced maker | **LIVE per venue (testnet)** | Solana `refresh_quotes`; EVM MakerVault. Not cross-venue netted |
-| Contingent-surplus netting, teleport, cross-venue maker netting, disagreement reserve | **PROPOSED** | [Paper](../cross-chain-options.md) §6. Not in the Book/program |
-| Mainnet | **Not live** | Needs audit, legal, Safe, soak, real USDC |
+| Base Sepolia (84532) | **LIVE**, current v2 manifest; **150 registered series** from Book | [Book `0xb4D664BCfAE26E9C6F40C880b2A1ebA1FF09C659`](https://sepolia.basescan.org/address/0xb4D664BCfAE26E9C6F40C880b2A1ebA1FF09C659) |
+| Arbitrum Sepolia (421614) | **LIVE**, existing v1 manifest; **81 registered series** from Book; v2 fixes not assumed deployed | [Book `0x26F24a01ba7EE5C5Ca29f73b9BbB7d4cFAa0035e`](https://sepolia.arbiscan.io/address/0x26F24a01ba7EE5C5Ca29f73b9BbB7d4cFAa0035e) |
+| Solana devnet | **Reported live on devnet** — 28 seeded markets and keeper running per manager; fresh program/market reads failed (public RPC 429 / CLI transport error). Current market count and keeper liveness are not independently confirmed. | [Program `MonoTs1KRuamxFReiqsMzVt7gFM8bbn3QmEFjMbyazh`](https://explorer.solana.com/address/MonoTs1KRuamxFReiqsMzVt7gFM8bbn3QmEFjMbyazh?cluster=devnet) |
+| Stocks / ETFs | **29 tickers** in Base v2 manifests; **keeper-reported demo oracle**; hub bytecode present. Fresh equity price/settlement liveness not measured | Pyth path built; API key absent; signed equity updates still need acceptance/entitlement verification |
+| Event markets | **DEPLOYING** — optimistic resolver built and fork-rehearsed; no live event resolver in either current manifest | Bonded assertion → challenge window → owner-EOA arbitration on testnet; no live event trading claimed |
+| Hyperliquid / HyperEVM | **PAUSED** — planned/in-progress; not live or routable | Disabled “Soon”; HyperCore windowed record is a proposed weaker settlement path |
+| UI / canonical keys / routing | Implemented in source, website responds HTTP 200; Serious and UwU copy exist; browser trading E2E unverified | UI modes report empty; app-e2e report missing at this snapshot |
+| Model maker | Deployed components; active quotes and continuous keeper operation not verified by this refresh | Solana `refresh_quotes`, EVM MakerVault; inventory remains local |
+| CSN / teleport / cross-venue maker netting / disagreement reserve | **PROPOSED, not built** | Paper §6 |
+| Mainnet | **NOT LIVE** | Audit, operational hardening and production collateral/oracles required |
 
-Live addresses for a public Base/Arb Sepolia deploy should be substituted when they exist:
+Ground truth and reproducible commands: [verification record](https://github.com/argenestel/kairo/blob/main/paper/STATUS-EVIDENCE.md). Historical reports and `montions-base/docs/EVM.md` contain v1 Base addresses and 63-series snapshots; current manifests and fresh RPC reads supersede them.
 
-- Base Book `{{BASE_BOOK}}` · Oracle `{{BASE_ORACLE}}` · Resolver `{{BASE_RESOLVER}}` · Vault `{{BASE_VAULT}}` · tUSDC `{{BASE_COLLATERAL}}` · Quoter `{{BASE_QUOTER}}`
-- Arbitrum Book `{{ARB_BOOK}}` · Oracle `{{ARB_ORACLE}}` · Resolver `{{ARB_RESOLVER}}` · Vault `{{ARB_VAULT}}` · tUSDC `{{ARB_COLLATERAL}}` · Quoter `{{ARB_QUOTER}}`
+### Known limitations
 
-Solana is not a placeholder: program `MonoTs1KRuamxFReiqsMzVt7gFM8bbn3QmEFjMbyazh` on devnet.
+- **Solana H1:** the per-market maker cap ignores inventory; fills plus repeated refresh can exceed intended treasury exposure. Planned fix: inventory-aware exposure accounting.
+- **Solana H2:** no global maker cap; permissionless market creation and refresh can lock treasury across many markets. Planned fix: global and per-asset budgets and restricted/rate-limited refresh.
+- **Solana M3:** the sponsored Pyth settle-window fallback permits choosing among prints on opposite sides of a strike. Planned fix: strict first-print settlement and snapshot oracle rails at market creation.
+- **Solana M4:** cheap orders can fill the 64-order / 24-seat tables and deny liquidity. Planned fix: larger/paged books, minimum notional and a reserved maker seat.
+- **Solana M5:** permissionless refresh plus POST_ONLY skips can leave the maker one-sided. Planned fix: keeper-only or rate-limited refresh and an all-or-nothing quote ladder.
+- **Other Solana findings:** non-positive prints can force void; admin changes to live confidence/window parameters can affect settlement; self-trade refunds remain in seats until withdrawn. Planned fixes include immutable market rails and clearer withdrawal handling. These are unresolved review findings, not a mainnet-safe implementation.
+- **EVM review #1/#2/#6:** heartbeat-aware quoting, asset/strike restrictions and phase-upgrade protection are reported fixed in source. Base has a new v2 manifest, but this refresh does not attest deployed runtime equivalence or policy settings. Arbitrum retains its earlier v1 addresses: stale-price pickoff and phase-history risks remain until an onchain upgrade/redeploy is verified. Chainlink proxy phase changes may cause a fail-closed 50/50 void.
+- **EVM review #3:** shared-grid seeding is reported fixed offchain, but equal keys on every venue are not guaranteed by deployment or total counts. Crypto asset coverage differs (SOL on Solana, LINK on EVM), and spot-centred windows can still differ; route only identical keys.
+- **EVM review #8:** an unhealthy feed can still abort the ladder-rolling path (`readAssets` throws); per-asset continuation remains a planned fix. Keeper uptime, backlog catch-up and quote coverage were not verified.
+- **EVM review #9:** inherited shell xtrace can expose operator secrets during extraction; disable tracing before secret handling. No secret material belongs in documentation.
+- **EVM review #10:** tUSDC owner mint and deployer-EOA administration are testnet trust assumptions. Proxy compatibility, residual config consistency and Book bytecode size need release checks. Plan multisig ownership and production collateral before mainnet.
+- **EVM review #4/#5:** rehearsal manifest isolation and longer round-search continuation are reported fixed in source; that does not establish continuous keeper operation. **#7:** HyperCore first-recorder timing/staleness risk remains a design limitation; Hyperliquid is paused.
+- **Stocks/events:** equities use a keeper-reported demo oracle, not verified Pyth equity settlement; the API-key-gated Pyth path is not live. Events are deploying; the planned testnet arbitrator can choose an outcome and seize dispute bonds. Do not extend price-market owner guarantees to event arbitration.
+
+Sources: [Solana review](https://github.com/argenestel/kairo/blob/main/.orchestra/out/sol-review-grok.md), [EVM review](https://github.com/argenestel/kairo/blob/main/.orchestra/out/evm-review-grok.md), [source-fix report](https://github.com/argenestel/kairo/blob/main/.orchestra/out/evm-fix-grok.md), and [verification record](https://github.com/argenestel/kairo/blob/main/paper/STATUS-EVIDENCE.md). Review/source fixes are not a professional audit.
 
 ---
 

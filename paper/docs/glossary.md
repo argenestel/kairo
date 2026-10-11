@@ -1,5 +1,7 @@
 # Glossary
 
+Kairo (formerly Montions).
+
 **Ask** — Resting sell of YES (a write, or a sale of held YES).
 
 **Bid** — Resting buy of YES (or a close of held NO when `fromHeld`).

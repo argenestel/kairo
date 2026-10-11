@@ -1,5 +1,7 @@
 # How it works
 
+Kairo (formerly Montions).
+
 A ticket is compiled to an order on one venue’s book. Matching, escrow and settlement are onchain. Numbers below use 6-decimal collateral (`UNIT = 1_000_000` = $1).
 
 ## 1. Sentence → market
@@ -54,3 +56,5 @@ Exact per-oracle rules: [settlement](./settlement.md).
 ## 6. What does *not* happen (yet)
 
 Collateral does not bridge when you trade. A proposed later step, **contingent-surplus netting**, would let a YES on venue A and a NO on venue B settle as a $1 pair after expiry. That is specified in the paper and is **not built**.
+
+Status as of **2026-10-11 18:36 UTC**: this page explains price-market mechanics, not a browser-tested trade. [Current deployments](./chains.md) · [Verification](https://github.com/argenestel/kairo/blob/main/paper/STATUS-EVIDENCE.md) · [Known limitations](../cross-chain-options.md#known-limitations). Hyperliquid is **PAUSED**. Real-world event markets are **deploying** and use optimistic resolution rather than a price print.

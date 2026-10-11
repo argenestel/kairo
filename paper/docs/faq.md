@@ -1,8 +1,10 @@
 # FAQ
 
+Kairo (formerly Montions).
+
 ## Is this mainnet? Can I lose real money?
 
-No. Testnets and play-money tUSDC. Mainnet is not live and is not ready for real funds. If someone is offering you “Montions mainnet,” it is not this deployment.
+No. Testnets and play-money tUSDC. Mainnet is not live and is not ready for real funds. If someone is offering you “Kairo mainnet,” it is not this deployment.
 
 ## What is a ticket?
 
@@ -14,7 +16,7 @@ That is the book’s price of one YES contract. It is an implied probability, no
 
 ## Which chain should I use?
 
-Today: **Solana devnet** is the venue that has been deployed, seeded, and kept. EVM chains share the design; whether a Book is on Sepolia / HyperEVM testnet depends on [chains](./chains.md). The UI can quote every live venue and route to the best book. You still need gas and tUSDC **on that chain**.
+Base v2 and Arbitrum v1 Books are deployed. Solana is reported deployed; current reads were rate-limited. Hyperliquid is **PAUSED**, not routable. [Current addresses, counts and gas instructions](./chains.md). You need gas and tUSDC on the chain you trade on.
 
 ## Do you bridge my USDC?
 
@@ -22,7 +24,7 @@ No. Each venue is fully collateralised in local tUSDC. Cross-venue surplus netti
 
 ## Who sets the expiry price?
 
-The venue’s oracle, under “first print at or after expiry.” Chainlink: first round with a predecessor proof. Pyth: first signed print (`prev_publish_time` / unique parse), with a short sponsored-window fallback on Solana. HyperCore: first `record()` in a short window — weaker, documented in [settlement](./settlement.md). Montions cannot change an outcome. If no valid print arrives, the market voids 50/50.
+The venue’s oracle, under “first print at or after expiry.” Chainlink: first round with a predecessor proof. Pyth: first signed print (`prev_publish_time` / unique parse), with a short sponsored-window fallback on Solana. HyperCore (planned, PAUSED): first `record()` in a short window — weaker, documented in [settlement](./settlement.md). Price outcomes follow oracle checks; Solana admin can change live oracle rails, and the planned event arbitrator is an owner EOA. If no valid print arrives, the market voids 50/50.
 
 ## What if two chains disagree?
 
@@ -38,7 +40,7 @@ You trust Chainlink, Pyth, or HyperCore (plus the recorder on HyperEVM). You als
 
 ## Maker vault / protocol maker
 
-A model-priced maker (`N(d2)`) rests two-sided quotes so books are not empty. Exposure is capped. It can still lose money to informed flow. Vault deposits are not a savings product.
+A model-priced maker (`N(d2)`) rests two-sided quotes so books are not empty. Solana’s per-market cap omits inventory and no global maker cap exists; intended cap protections remain incomplete. It can still lose money to informed flow. Vault deposits are not a savings product.
 
 ## Fees
 
@@ -55,3 +57,5 @@ Settlement, balances and outcomes are onchain — check the explorer. Keepers ar
 ## Where is the paper?
 
 [Canonical Events](../cross-chain-options.md).
+
+Status as of **2026-10-11 18:36 UTC**: [verification record](https://github.com/argenestel/kairo/blob/main/paper/STATUS-EVIDENCE.md), [known limitations](../cross-chain-options.md#known-limitations). Stocks use a keeper-reported demo oracle (29 Base tickers); Pyth migration is API-key gated. Events are deploying, not live.

@@ -1,4 +1,4 @@
-# Montions on EVM (Chainlink venues)
+# Kairo on EVM (Chainlink venues)
 
 One Solidity stack, many chains. `montions-base/` is the multi-chain EVM
 repo. Every venue lists the same economic events: canonical key
@@ -172,7 +172,7 @@ fetch the JSON and `parseDeployment`.
 
 ## Addresses
 
-### Base Sepolia (84532) — LIVE
+### Base Sepolia (84532) — archived v1
 
 Explorer: https://sepolia.basescan.org  
 Manifest: `deployments/84532.json`  
@@ -215,7 +215,7 @@ Keeper (not started):
 )
 ```
 
-### Arbitrum Sepolia (421614) — LIVE
+### Arbitrum Sepolia (421614) — archived v1
 
 Explorer: https://sepolia.arbiscan.io  
 Manifest: `deployments/421614.json`  

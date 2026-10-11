@@ -1,4 +1,6 @@
-# Montions pitch
+# Kairo pitch
+
+Kairo (formerly Montions).
 
 11 October 2026 · 12 slides · 60-second close at the end  
 Long form: [thesis](./thesis.md) · mechanism: [Canonical Events](../cross-chain-options.md)
@@ -87,7 +89,7 @@ Style: one headline, three bullets, speaker notes. No “revolutionary.” Numbe
 - HyperCore windowed `record()` is weaker — planned, paused, will be labelled if it ever ships.
 - Near-strike disagreement across oracles is basis, disclosed. Void beats stuck funds.
 
-**Notes:** Settlement is “the whole game” in the original thesis. Don’t skip. ATM + slow heartbeat (Base Sepolia 10–20 min) is a wide band; we will measure prints before claiming venues agree. Owner cannot change an outcome.
+**Notes:** Settlement is “the whole game” in the original thesis. Don’t skip. ATM + slow heartbeat (Base Sepolia 10–20 min) is a wide band; we will measure prints before claiming venues agree. Price outcomes follow oracle checks; Solana admin can alter live oracle rails. Event arbitration is a separate trusted-EOA design.
 
 ---
 
@@ -120,7 +122,7 @@ Style: one headline, three bullets, speaker notes. No “revolutionary.” Numbe
 **Headline:** Taker bps on premium. Caps on the maker. No APY story.
 
 - Testnet fee **0**. Cap 100 bps; we would try **10–30 bps** taker, makers 0. A $100 / 41¢ ticket at 20 bps is ~**$0.20**.
-- Model maker quotes \(N(d_2)\), stops near expiry, per-series and global caps. LPs can lose money.
+- Model maker quotes \(N(d_2)\), stops near expiry, intended per-series and global caps; Solana cap gaps remain unresolved. LPs can lose money.
 - We die if the vault is picked off, if incumbents list the same questions deeper, or if we launch into a binary-options ban without geoblock and counsel.
 
 **Notes:** Walk example B only if asked (2,000 tickets × $80 × 20 bps = $320 protocol — small on purpose). EU/UK/AU retail binary bans are real; US event contracts are DCM-shaped. Do not say “we’re like Kalshi.”
@@ -129,13 +131,22 @@ Style: one headline, three bullets, speaker notes. No “revolutionary.” Numbe
 
 ## Slide 11 — What’s live
 
-**Headline:** Solana devnet is live. Base and Arbitrum are the EVM targets. Mainnet is not.
+**Headline:** Base and Arbitrum Books are deployed; Solana devnet is reported live. Testnet only.
 
-- Program `MonoTs1KRuamxFReiqsMzVt7gFM8bbn3QmEFjMbyazh` — **28 markets**, keeper running.
-- EVM stack complete (`montions-base/`, 295 Foundry tests). Public Sepolia deploy: **deploying** (no public bytecode as of 11 Oct 15:25 UTC).
-- App: ticket printer, canonical keys, Serious mode; UwU original-mascot mode in progress. CSN: paper only.
+As of **2026-10-11 18:36 UTC**. [Website](https://kairo-nu-red.vercel.app) · [Evidence](https://github.com/argenestel/kairo/blob/main/paper/STATUS-EVIDENCE.md) · [Addresses](../docs/chains.md).
 
-**Notes:** Scrupulous. If a live Base address exists by demo day, use it; otherwise placeholders and the Solana faucet path. Never say Hyperliquid is live.
+| Piece | Status |
+|---|---|
+| Base Sepolia / Arbitrum Sepolia | **LIVE Book deployments**, Base v2 / Arb v1, **150 / 81 total registered series**; liquidity and runtime fixes not attested |
+| Solana devnet | **Reported deployed**, 28 seeded historically; fresh RPC failed, current count and keeper unverified |
+| Stocks / ETFs | **29 Base tickers**, keeper-reported demo oracle; Pyth path API-key gated |
+| Event markets | **DEPLOYING**, optimistic resolver fork-rehearsed; no live resolver in manifests |
+| Hyperliquid | **PAUSED / Soon**, not routable |
+| UI | Serious/UwU and routing source implemented; HTTP 200; browser E2E unverified |
+| CSN / teleport / netting | **PROPOSED, not built** |
+| Mainnet | **NOT LIVE**; testnet, unaudited |
+
+**Notes:** Disclose the unresolved maker/settlement findings in [paper §9](../cross-chain-options.md#known-limitations). UI source exists; browser E2E unverified.
 
 ---
 
@@ -157,4 +168,4 @@ Options are the right product, sold through the wrong interface, on the wrong ve
 
 We put that on an onchain order book and we sell it as a ticket, not a greek. Users and USDC already live on Base, Arbitrum, and Solana, so we list the *same* event on each chain, keep the dollars local, and route the ticket to the best book. We do not bridge while the ticket is open. A later primitive nets leftover collateral after settlement; we have not built it yet.
 
-Solana devnet is live, twenty-eight markets. Base and Arbitrum are what we’re shipping next. Hyperliquid is paused. Mainnet is not up. Liquidity is the real risk, not the sentence. If you remember one thing: say it, print it, settle the first print — or void fifty-fifty.
+Base and Arbitrum Books are deployed with 150 and 81 registered series at the snapshot. Solana is reported deployed with 28 seeded markets; our fresh RPC check was rate-limited. Hyperliquid is paused. Mainnet is not up. Liquidity is the real risk, not the sentence. If you remember one thing: say it, print it, settle the first print — or void fifty-fifty.

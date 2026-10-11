@@ -1,20 +1,22 @@
 # User guide
 
+Kairo (formerly Montions).
+
 Testnet only. Tokens here are play money. Nothing is audited for mainnet. Binary options may be restricted where you live.
 
 ## 0. What you need
 
-- The Montions app (`montions-app/`, Vite on port 5180 in dev).
+- [The Kairo app](https://kairo-nu-red.vercel.app).
 - A wallet on the chain you want to trade.
 - A little **gas** plus **tUSDC** from the in-protocol faucet.
 
-Pick a chain in the UI (Base · Arbitrum · Hyperliquid · Solana) or use **best venue** once several books are live. Solana devnet is the venue that has been deployed and seeded; EVM venues depend on deploy status ([chains](./chains.md)).
+Pick Base Sepolia, Arbitrum Sepolia or Solana devnet, or use **best venue** for identical event keys. Base and Arbitrum Books are deployed; Solana deployment is reported but fresh RPC reads failed. Hyperliquid is **PAUSED / Soon**, disabled and not routable. [Current addresses](./chains.md).
 
 ## 1. Get testnet gas
 
 **Solana devnet**
 
-1. Install [Phantom](https://phantom.app/), Backpack, or Solflare.
+1. Use Phantom/Solflare or choose the built-in **Devnet burner** (testnet only).
 2. Switch the wallet to **Devnet**.
 3. Request SOL: [faucet.solana.com](https://faucet.solana.com) (or the CLI `solana airdrop 1` against `https://api.devnet.solana.com`).
 4. You need a fraction of a SOL for fees and ATAs.
@@ -22,29 +24,25 @@ Pick a chain in the UI (Base · Arbitrum · Hyperliquid · Solana) or use **best
 **Base Sepolia (84532)**
 
 1. MetaMask / Rabby / Coinbase Wallet. Add Base Sepolia if needed (RPC `https://sepolia.base.org`).
-2. Test ETH: [Base faucets](https://docs.base.org/chain/network-faucets) (Alchemy, Coinbase, …).
-3. Circle’s faucet can mint test USDC; Montions still uses **protocol tUSDC**, not Circle’s USDC, on testnet.
+2. Test ETH: [Base testnet funding guide](https://docs.base.org/get-started/get-funds) (Alchemy, Coinbase, …).
+3. Circle’s faucet can mint test USDC; Kairo still uses **protocol tUSDC**, not Circle’s USDC, on testnet.
 
 **Arbitrum Sepolia (421614)**
 
 1. Add Arbitrum Sepolia (RPC `https://sepolia-rollup.arbitrum.io/rpc`).
-2. Test ETH: Alchemy / QuickNode Arbitrum Sepolia faucets.
-3. The deployer wallet may be unfunded; if the Book is not deployed yet, the adapter will not be tradable.
+2. Test ETH: follow the [Arbitrum testnet faucet guide](https://docs.arbitrum.io/chain-info#testnet-faucets).
+3. The Book is deployed. You still need ETH on Arbitrum Sepolia in your own wallet; [current addresses](./chains.md).
 
-**HyperEVM testnet (998)**
-
-1. Add network: RPC `https://rpc.hyperliquid-testnet.xyz/evm`, chain id 998, symbol HYPE (18 decimals).
-2. You need HYPE on **HyperCore** first, then send it to `0x2222222222222222222222222222222222` to move it to HyperEVM ([Hyperliquid docs](https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/hyperevm)).
-3. There is no official EVM UI; [purrsec.com](https://purrsec.com) is a community explorer.
+**Hyperliquid / HyperEVM:** PAUSED; disabled “Soon”. No funding or trading while paused.
 
 ## 2. Faucet tUSDC
 
 In the app, connect the wallet and hit **Faucet**. That calls the onchain faucet (rate-limited).
 
 - Solana: `faucet` on program `MonoTs1KRuamxFReiqsMzVt7gFM8bbn3QmEFjMbyazh` mints tUSDC to your ATA.
-- EVM: `TestUSDC.faucet()` — 10,000 tUSDC per address per hour (once the contracts are deployed).
+- EVM: `TestUSDC.faucet()` — 10,000 tUSDC per address per hour.
 
-If the button fails, the chain adapter is not pointed at a live deployment.
+If the faucet fails, check network and address, cooldown and gas; public RPC limits may require waiting before retrying.
 
 ## 3. Place a ticket
 
@@ -61,7 +59,7 @@ Slippage: the ticket has a max price. If the book moves, the transaction reverts
 
 ## 4. After expiry — claim
 
-Wait until expiry. A keeper should record the oracle and resolve within seconds to a minute. You can also wait.
+Wait until expiry. Resolution depends on a valid oracle observation and recording. Solana sponsored feeds can update quickly; Base Chainlink can lag 10–20 minutes, Arbitrum crypto feeds roughly 30–60 seconds historically. Keeper uptime was not verified. These are not guaranteed settlement times.
 
 - **Resolved, you won:** Claim. Each winning contract pays $1 tUSDC.
 - **Resolved, you lost:** Claim burns the tokens for $0 (or just leave them).
@@ -74,3 +72,9 @@ If the market is still Open after `VOID_GRACE` (24 h Solana, 2 days EVM), anyone
 ## 5. Selling before expiry
 
 Use **sell** in the UI to hit bids on the same book. You need a bid. Illiquid strikes may have no bid; then you wait or hold to settlement. There is no cross-chain exit yet.
+
+## Status and limitations
+
+As of **2026-10-11 18:36 UTC**, [Base v2 / Arbitrum v1 addresses](./chains.md) are verified with **150 / 81 total registered series**. Solana’s last manager report says **28 seeded markets**; current count and keeper are unverified because fresh RPC reads failed. [Evidence](https://github.com/argenestel/kairo/blob/main/paper/STATUS-EVIDENCE.md). Stocks: **29 keeper-reported demo-oracle tickers on Base**, not verified Pyth equity data. Events: **deploying**, optimistic dispute resolution planned with a testnet owner arbitrator.
+
+Known Solana maker cap gaps can overexpose treasury; sponsored-window settlement permits print selection; small books can be filled cheaply, and maker quotes can become one-sided. EVM source fixes are not verified on both live runtimes. Read [known limitations](../cross-chain-options.md#known-limitations). The two-minute flow is a target; faucet limits, missing liquidity and market-creation rent can take longer.

@@ -8,7 +8,7 @@ def rpc(url,body):
  data=json.dumps(body).encode()
  for attempt in range(4):
   try:
-   with urllib.request.urlopen(urllib.request.Request(url,data=data,headers={'Content-Type':'application/json'}),timeout=30) as r: return json.load(r)
+   with urllib.request.urlopen(urllib.request.Request(url,data=data,headers={'Content-Type':'application/json','User-Agent':'Mozilla/5.0'}),timeout=30) as r: return json.load(r)
   except Exception:
    if attempt==3:raise
    time.sleep(.5)
@@ -20,17 +20,15 @@ def fetch(batch):
  with rate_lock:
   delay=max(0,next_read-time.monotonic())
   if delay:time.sleep(delay)
-  next_read=time.monotonic()+len(batch)/18
- req=[{'jsonrpc':'2.0','id':i,'method':'eth_getStorageAt','params':[a,s,block]} for i,(a,s) in enumerate(batch)]
- out=rpc(remote,req);byid={x['id']:x for x in out}
+  next_read=time.monotonic()+len(batch)/16
  result=[]
- for i,(a,s) in enumerate(batch):
-  value=byid[i]
-  if 'error' in value:raise RuntimeError(value['error'])
-  result.append((a,s,value['result']))
+ for a,slot in batch:
+  out=rpc(remote,{'jsonrpc':'2.0','id':1,'method':'eth_getStorageAt','params':[a,slot,block]})
+  if 'error' in out:raise RuntimeError(out['error'])
+  result.append((a,slot,out['result']))
  return result
-batches=[slots[i:i+10] for i in range(0,len(slots),10)]
-with concurrent.futures.ThreadPoolExecutor(max_workers=2) as ex: values=[v for group in ex.map(fetch,batches) for v in group]
+batches=[slots[i:i+1] for i in range(0,len(slots),1)]
+with concurrent.futures.ThreadPoolExecutor(max_workers=4) as ex: values=[v for group in ex.map(fetch,batches) for v in group]
 for i in range(0,len(values),100):
  req=[{'jsonrpc':'2.0','id':j,'method':'anvil_setStorageAt','params':[a,s,v]} for j,(a,s,v) in enumerate(values[i:i+100])]
  out=rpc(local,req)

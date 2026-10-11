@@ -1,24 +1,62 @@
 # Chains
 
-Every venue asks the same question — `SYMBOL ≥ STRIKE at EXPIRY?` — under the same first-print rule, with 6-decimal USDC-style collateral. Oracles differ. Status below is **testnet only**.
+Kairo (formerly Montions).
 
-Canonical key: `SYMBOL:strike:expiry` (see `canonicalMarketKey` in `montions-app/src/chains/types.ts`). Intended strike grids, shared across venues: BTC $500, ETH $25, SOL $1. Expiries snap to a 5-minute unix grid on Solana; EVM venues should use the same schedule so books line up.
+As of **2026-10-11 18:36 UTC**. [Website](https://kairo-nu-red.vercel.app) · [GitHub](https://github.com/argenestel/kairo) · [Verification record](https://github.com/argenestel/kairo/blob/main/paper/STATUS-EVIDENCE.md).
 
-![Canonical event across venues](../figures/canonical-events.svg)
+All current venues use testnet tUSDC, not real USDC. Chainlink settles crypto price markets on EVM (2-day void grace); Solana uses Pyth (24-hour void grace). Oracle timing differs, and identical canonical keys are required for routing.
 
-| | Base Sepolia | Arbitrum Sepolia | HyperEVM testnet | Solana devnet |
-|---|---|---|---|---|
-| Chain id | 84532 | 421614 | 998 | n/a (devnet) |
-| RPC | `https://sepolia.base.org` | `https://sepolia-rollup.arbitrum.io/rpc` | `https://rpc.hyperliquid-testnet.xyz/evm` | `https://api.devnet.solana.com` |
-| Collateral | tUSDC (6 dec) | tUSDC (6 dec) | tUSDC (6 dec) | tUSDC (6 dec, program mint) |
-| Oracle | Chainlink | Chainlink | HyperCore `oraclePx` | Pyth PriceUpdateV2 |
-| Settlement | First round with `updatedAt ≥ expiry`, proven by predecessor | Same as Base | Permissionless `record()` in `[expiry, expiry+W]` (first caller wins) | First print: `prev_publish_time < T ≤ publish_time`, else sponsored window 60 s |
-| Feeds / indices | ETH/USD `0x4aDC67696bA383F43DD60A9e78F2C97Fbbfc7cb1`, BTC/USD `0x0FB99723Aee6f420beAD13e6bBB79b7E6F034298`, LINK/USD `0xb113F5A928BCfF189C998ab20d753a47F9dE5A61` (8 dec; Sepolia often 10–20 min) | ETH/USD `0xd30e2101a97dcbAeBCBC04F14C3f624E67A35165` (~60 s), BTC/USD `0x56a43EB56Da12C0dc1D972ACb089c06a5dEF8e69` (~30 s), LINK/USD `0x0FB99723Aee6f420beAD13e6bBB79b7E6F034298` | Precompile `0x0000000000000000000000000000000000000807`. Testnet perps (verified): SOL index 0, BTC 3, ETH 4. Price = `raw / 10^(6 − szDecimals)` | Sponsored accounts (shard 0): SOL `7UVimffxr9ow1uXYxsr4LHAcV58mLzhmwaeKvJ1pjLiE`, BTC `4cSM2e6rvbGQUFiJbqytoVMi5GgghSMr8LwVrT9VPSPo`, ETH `42amVS4KgzR9rA28tkVYqVXjq9Qa8dcZQMbH5EYFX6XC`, plus BNB/XRP/DOGE in `montions-sol/config/assets.devnet.json`. Receiver `rec5EKMGg6MxZYaMdyBfgwp4d5rB9T1VQH5pJv5LtFJ` |
-| Explorer | [sepolia.basescan.org](https://sepolia.basescan.org) | [sepolia.arbiscan.io](https://sepolia.arbiscan.io) | Community: [purrsec.com](https://purrsec.com) (no official HyperEVM UI; JSON-RPC is the interface) | [explorer.solana.com](https://explorer.solana.com/?cluster=devnet) |
-| Program / stack | `montions-base/` (Solidity Book + `ChainlinkSettlementResolver`) | same repo, Chainlink feeds for 421614 | same repo, HyperCore oracle + windowed resolver (in progress) | Anchor program `MonoTs1KRuamxFReiqsMzVt7gFM8bbn3QmEFjMbyazh` |
-| Status (2026-10-11) | Code complete, Foundry tests green; **live Sepolia deploy not assumed** — check `montions-base/deployments/`. Fork rehearsal used a local Anvil fork of Sepolia. | In progress (unfunded deployer until topped up) | In progress. Precompile verified live. Large deploys need HyperEVM **big blocks**. Deployer must exist on HyperCore. | **Live on devnet**: program deployed, markets seeded, keeper running. Pyth does **not** exist on Solana testnet — use devnet. |
-| Void grace | 2 days | 2 days | 2 days (EVM Book) | 24 hours |
+## Base Sepolia (84532), v2
 
-Gas tokens: ETH on Base/Arbitrum Sepolia, HYPE on HyperEVM (18 dec), SOL on Solana.
+**LIVE Book deployment**, 150 registered series as of 2026-10-11 18:36 UTC.
 
-Wallet: EVM venues need an injected wallet on the right chain id; Solana uses Wallet Standard (Phantom, Backpack, Solflare, …). The UI holds one adapter per chain; it does not bridge funds for you.
+| Contract | Current address |
+|---|---|
+| book | [`0xb4D664BCfAE26E9C6F40C880b2A1ebA1FF09C659`](https://sepolia.basescan.org/address/0xb4D664BCfAE26E9C6F40C880b2A1ebA1FF09C659) |
+| bookEngine | [`0xf9F2baf910f3F068143C3D5184dc335Bd4eb8A90`](https://sepolia.basescan.org/address/0xf9F2baf910f3F068143C3D5184dc335Bd4eb8A90) |
+| chainlinkOracle | [`0x7176742E0b1E4A3A082D8CcfFC545A447e28C448`](https://sepolia.basescan.org/address/0x7176742E0b1E4A3A082D8CcfFC545A447e28C448) |
+| chainlinkResolver | [`0x8A513FA3A89db98504D74078008d0937EA5F8A24`](https://sepolia.basescan.org/address/0x8A513FA3A89db98504D74078008d0937EA5F8A24) |
+| collateral | [`0xE0604f8dBbd1ee282BFc1642A19eE2a83Cc4B941`](https://sepolia.basescan.org/address/0xE0604f8dBbd1ee282BFc1642A19eE2a83Cc4B941) |
+| quoter | [`0xbA78198A6F1f0b2fbBA6fD0A7E48A0f318BD8709`](https://sepolia.basescan.org/address/0xbA78198A6F1f0b2fbBA6fD0A7E48A0f318BD8709) |
+| vault | [`0xadd675E7Eb9bbC2E89dA795E2fe11F9cc9Ab7aFc`](https://sepolia.basescan.org/address/0xadd675E7Eb9bbC2E89dA795E2fe11F9cc9Ab7aFc) |
+| keeperFeedHub | [`0xF4fDe98f037d8889c8e1a6C1C66f558a9091F6fC`](https://sepolia.basescan.org/address/0xF4fDe98f037d8889c8e1a6C1C66f558a9091F6fC) |
+
+## Arbitrum Sepolia (421614), v1
+
+**LIVE Book deployment**, 81 registered series as of 2026-10-11 18:36 UTC.
+
+| Contract | Current address |
+|---|---|
+| book | [`0x26F24a01ba7EE5C5Ca29f73b9BbB7d4cFAa0035e`](https://sepolia.arbiscan.io/address/0x26F24a01ba7EE5C5Ca29f73b9BbB7d4cFAa0035e) |
+| bookEngine | [`0x635c6981Ec028Bbde45603B52d50B0f9f89e070d`](https://sepolia.arbiscan.io/address/0x635c6981Ec028Bbde45603B52d50B0f9f89e070d) |
+| chainlinkOracle | [`0xAE3Bc21Cf5A4bF961DbBeC69066A937b88e2704B`](https://sepolia.arbiscan.io/address/0xAE3Bc21Cf5A4bF961DbBeC69066A937b88e2704B) |
+| chainlinkResolver | [`0xc907f4FEF8782d87f17D4CC181A3f0AE267735A3`](https://sepolia.arbiscan.io/address/0xc907f4FEF8782d87f17D4CC181A3f0AE267735A3) |
+| collateral | [`0x844EAC441D9c70Dc6745Ca1a41643995B7B04612`](https://sepolia.arbiscan.io/address/0x844EAC441D9c70Dc6745Ca1a41643995B7B04612) |
+| quoter | [`0x4094e4CC956d989580233034b6B898db4aE6b78e`](https://sepolia.arbiscan.io/address/0x4094e4CC956d989580233034b6B898db4aE6b78e) |
+| vault | [`0x6EBFA2426f1ae0Bfd87fDFAFde093C1E583f457A`](https://sepolia.arbiscan.io/address/0x6EBFA2426f1ae0Bfd87fDFAFde093C1E583f457A) |
+
+## Solana devnet
+
+**Reported live on devnet** — 28 seeded markets and keeper running per manager; fresh program/market reads failed (public RPC 429 / CLI transport error). Current market count and keeper liveness are not independently confirmed.
+
+[Program `MonoTs1KRuamxFReiqsMzVt7gFM8bbn3QmEFjMbyazh`](https://explorer.solana.com/address/MonoTs1KRuamxFReiqsMzVt7gFM8bbn3QmEFjMbyazh?cluster=devnet). Pyth PriceUpdateV2 settlement; SPL outcome tokens; 24h void grace. Pyth sponsored-window fallback permits print selection; see [limitations](../cross-chain-options.md#known-limitations).
+
+## Stocks and events
+
+Base v2 includes **29 stock/ETF tickers** backed by a **keeper-reported demo oracle**, with a deployed KeeperFeedHub. Manifest `oracle: chainlink` describes AggregatorV3 compatibility, not Chainlink equity data. The Pyth equity migration path is built but API-key gated and unverified with signed live updates. Arbitrum’s current manifest contains three crypto assets, not 29 stocks.
+
+Event markets: **deploying**. Optimistic resolver built and fork-tested; neither current manifest has a live event resolver. Testnet disputes trust an owner EOA.
+
+## Wallets, gas and faucets
+
+- **Solana devnet:** Phantom/Solflare on Devnet or the app’s **Devnet burner**. [Solana faucet](https://faucet.solana.com/) supplies devnet SOL; the app Faucet attempts a 1 SOL airdrop when gas is low, then mints protocol tUSDC (cooldown read from Config). Rate limits may require waiting and retrying. Existing trades need fees/ATAs; the app budgets about 0.05 SOL for creating a missing market, or 0.007 SOL otherwise. These are UI estimates, not guaranteed costs.
+- **Base Sepolia:** chain id **84532**, RPC `https://sepolia.base.org`, gas **ETH**. Use the [Base testnet funding guide](https://docs.base.org/get-started/get-funds), then the in-app protocol tUSDC Faucet.
+- **Arbitrum Sepolia:** chain id **421614**, RPC `https://arbitrum-sepolia-rpc.publicnode.com` (fallback `https://sepolia-rollup.arbitrum.io/rpc`), gas **ETH**. Use the [Arbitrum testnet faucet guide](https://docs.arbitrum.io/chain-info#testnet-faucets), then the in-app protocol tUSDC Faucet.
+- **EVM collateral:** each current deployment has its own 6-decimal TestUSDC address above. `faucet()` mints **10,000 tUSDC once per address per hour**. Circle faucet USDC is a different token and cannot fund these Books. Connect an injected EVM wallet (e.g. MetaMask/Rabby) on the selected chain.
+- **Hyperliquid:** **PAUSED / Soon**; no trading or funding instructions while paused. HyperEVM/HyperCore are planned, not a deployed Kairo venue.
+
+Funds stay on the selected chain; Kairo does not bridge gas or collateral. Quotes can be unavailable despite deployed bytecode.
+
+## Known limitations
+
+See [paper §9](../cross-chain-options.md#known-limitations) for unresolved Solana maker caps, print selection, capacity DoS and one-sided quoting, plus EVM runtime/source-fix differences and operational risks. Counts above are all registered series, not live liquidity. Keeper uptime was not measured.

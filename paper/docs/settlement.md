@@ -1,8 +1,10 @@
 # Settlement
 
+Kairo (formerly Montions).
+
 Shared rule: **the first print at or after expiry**. YES iff that price `≥` strike (WAD or 1e8, depending on the chain). If no valid print can be proven in time, the market **voids 50/50** after `VOID_GRACE`.
 
-Nobody in Montions chooses the timestamp except where an oracle **cannot** prove first-print (HyperCore window, Pyth sponsored-feed fallback). Those cases are labelled below.
+Nobody in Kairo chooses the timestamp except where an oracle **cannot** prove first-print (HyperCore window, Pyth sponsored-feed fallback). Those cases are labelled below.
 
 ![Settlement proofs](../figures/settlement-proofs.svg)
 
@@ -42,11 +44,11 @@ EVM `PythSettlementResolver` uses `parsePriceFeedUpdatesUnique` in `[expiry, exp
 
 If nothing valid is stored, `void_market` / Book void after grace (24 h Solana, 2 days EVM). Residual trust: Pyth publishers, aggregation, and the onchain receiver upgrade key. Hermes currently requires an API key for pull; Solana **devnet sponsored accounts do not**.
 
-## HyperCore (HyperEVM)
+## HyperCore (HyperEVM, proposed / PAUSED)
 
 Read precompile `0x0000000000000000000000000000000000000807`, `oraclePx(uint32 perpIndex) → uint64`. Price = `raw / 10^(6 − szDecimals)`. The precompile exposes the **current** price, not history.
 
-Settlement is a permissionless `record(assetId, expiry)` that succeeds only if
+Proposed settlement (not live) is a permissionless `record(assetId, expiry)` that succeeds only if
 
 ```
 expiry ≤ block.timestamp ≤ expiry + window
@@ -58,8 +60,10 @@ This is **weaker** than Chainlink/Pyth: the recorder chooses the moment inside t
 
 ## Void
 
-Anyone may void after `expiry + VOID_GRACE` if the market is still open. Redeem pays `(yesQty + noQty) * $1 / 2`. Funds are never stuck.
+Anyone may void after `expiry + VOID_GRACE` if the market is still open. Redeem pays `(yesQty + noQty) * $1 / 2`. Redemption requires a successful resolve/void transaction and available RPC access.
 
 ## When venues disagree
 
 Each venue settles **its own** oracle. Near the strike, a few seconds or one heartbeat can flip YES/NO. That is basis risk, not a bug. Proposed contingent-surplus netting pays each venue’s surplus per its own oracle and uses a disagreement reserve for the $0 / $2 cells — see the [paper](../cross-chain-options.md). That primitive is not built.
+
+As of **2026-10-11 18:36 UTC**: [evidence](https://github.com/argenestel/kairo/blob/main/paper/STATUS-EVIDENCE.md), [known limitations](../cross-chain-options.md#known-limitations). Equity feeds on Base use a **keeper-reported demo oracle**, not live Pyth equity settlement. Event markets are **deploying** and use a different optimistic proposal/challenge/arbitration flow; first-price-print rules do not apply to real-world event questions.

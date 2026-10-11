@@ -28,6 +28,17 @@ c=json.load(open(sys.argv[1]))['contracts']
 for k,v in {'ORACLE':'chainlinkOracle','BOOK':'book','RESOLVER':'chainlinkResolver','VAULT':'vault','QUOTER':'quoter'}.items(): print('export '+k+'='+c[v])
 PY
 )"
+ cast rpc --rpc-url "$RPC_URL" anvil_dumpState > "$OUTDIR/core-state.json"
+ kill "$ANVIL_PID"; wait "$ANVIL_PID" || true
+ # Continue on the exact fork-produced core state, without a pruning remote backend.
+ # Only stock/event operations run here; external crypto feeds are verified in core phase.
+ anvil --chain-id "$CID" --port "$PORT" --accounts 0 --auto-impersonate > "$OUTDIR/anvil-stocks.log" 2>&1 &
+ ANVIL_PID=$!
+ for i in $(seq 1 30); do if cast chain-id --rpc-url "$RPC_URL" >/dev/null 2>&1; then break; fi; sleep 1; done
+ python3 - "$RPC_URL" "$OUTDIR/core-state.json" <<'PYLOAD'
+import json,sys,urllib.request
+state=json.load(open(sys.argv[2]));data=json.dumps({'jsonrpc':'2.0','id':1,'method':'anvil_loadState','params':[state]}).encode();res=json.load(urllib.request.urlopen(urllib.request.Request(sys.argv[1],data=data,headers={'Content-Type':'application/json'})));assert res.get('result') is True,res
+PYLOAD
  OUT="$OUTDIR/stocks.json" CREATE_SERIES=0 forge script script/DeployStocks.s.sol:DeployStocks --rpc-url "$RPC_URL" --unlocked --sender "$BOT_ADDRESS" --broadcast --skip-simulation --legacy --with-gas-price 1000000000 > "$OUTDIR/stocks.log" 2>&1
 else
  cp "deployments/$CID.json" "$DEPLOYMENT"
