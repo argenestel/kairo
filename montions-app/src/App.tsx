@@ -14,6 +14,8 @@ import { NightScene } from './scene/NightScene';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { UwuLayer } from './uwu/UwuLayer';
 import { Header } from './components/Header';
+// Pages/footer job: shared fixed viewport footer.
+import { Footer } from './components/Footer';
 import { SentenceBar } from './components/SentenceBar';
 import { StepStage } from './components/StepStage';
 import { WalletSheet } from './components/WalletSheet';
@@ -95,6 +97,7 @@ function PageSkeleton() {
           <div className="skel-card skel-text" />
         </div>
       </main>
+      <Footer />
     </div>
   );
 }
@@ -103,7 +106,6 @@ function PageFrame({ children, uwuStep = 0 }: { children: ReactNode; uwuStep?: n
   const { mode } = useMode();
   const chain = useChain();
   const { overlayOpen } = useUi();
-  const copy = useCopy();
   return (
     <>
       <NightScene mood="neutral" />
@@ -114,15 +116,8 @@ function PageFrame({ children, uwuStep = 0 }: { children: ReactNode; uwuStep?: n
         <Header />
         <RpcBanner />
         <main className="main" id="main">{children}</main>
-        <footer className="foot">
-          <span className="foot__left">
-            <span className="foot__badge">{copy.footer.testnet}</span>
-            <span className="hide-sm">{copy.footer.product}</span>
-          </span>
-          <span className="foot__note" title={chain.adapter?.meta.settlementNote}>
-            {chain.adapter ? chain.adapter.meta.settlementNote : 'Loading network…'}
-          </span>
-        </footer>
+        {/* Pages/footer job: one footer implementation for all routes. */}
+        <Footer />
       </div>
     </>
   );
@@ -297,15 +292,8 @@ function TicketFlow() {
             </button>
           </div>
         )}
-        <footer className="foot">
-          <span className="foot__left">
-            <span className="foot__badge">{copy.footer.testnet}</span>
-            <span className="hide-sm">{copy.footer.product}</span>
-          </span>
-          <span className="foot__note" title={chain.adapter?.meta.settlementNote}>
-            {chain.adapter ? chain.adapter.meta.settlementNote : 'Loading network…'}
-          </span>
-        </footer>
+        {/* Pages/footer job: one footer implementation for all routes. */}
+        <Footer />
       </div>
     </>
   );

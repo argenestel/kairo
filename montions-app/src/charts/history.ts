@@ -206,7 +206,11 @@ async function samplePyth(symbol: string): Promise<Point | null> {
   if (!feed) return null;
   try {
     const { Connection, PublicKey } = await import('@solana/web3.js');
-    const conn = new Connection(feed.rpc, { commitment: 'confirmed' });
+    const conn = new Connection(feed.rpc, {
+      commitment: 'confirmed',
+      disableRetryOnRateLimit: true,
+      fetch: (input, init) => fetch(input, { ...init, signal: AbortSignal.timeout(6_000) }),
+    });
     const info = await conn.getAccountInfo(new PublicKey(feed.priceAccount), 'confirmed');
     if (!info?.data || info.owner.toBase58() !== 'rec5EKMGg6MxZYaMdyBfgwp4d5rB9T1VQH5pJv5LtFJ') return null;
     const data = info.data instanceof Uint8Array ? info.data : new Uint8Array(info.data);

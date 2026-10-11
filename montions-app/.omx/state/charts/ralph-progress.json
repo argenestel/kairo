@@ -1,1 +1,27 @@
-{"score":86,"verdict":"revise","category_match":true,"differences":["Expiry chart now fits above Continue","Simulator tooltip overflows the right edge on mobile","Dragging selects SVG axis text"],"suggestions":["Center the bounded tooltip inside the simulator","Disable selection inside the simulator plot"],"reasoning":"Price and depth layouts are now usable; tooltip containment needs one final pass.","next_actions":["Contain simulator tooltip","Rerun full browser suite"]}
+{
+  "score": 94,
+  "verdict": "pass",
+  "category_match": true,
+  "differences": [
+    "Price plots remain visible above Continue; long step content scrolls",
+    "Simulator tooltip is contained on mobile and SVG labels no longer select during drag",
+    "Depth, ladder and probability values are readable in both modes"
+  ],
+  "suggestions": [],
+  "reasoning": "Desktop and mobile screenshots in both modes preserve the existing visual style and the full interaction suite passes. Live Base captures show real oracle history with strike, expiry and uncertainty cone.",
+  "next_actions": [],
+  "active": false,
+  "completed_at": "2026-10-11T18:29:04.307641+00:00",
+  "evidence": {
+    "production_build": "passed",
+    "chromium_modes": [
+      "serious desktop",
+      "serious mobile",
+      "uwu desktop",
+      "uwu mobile"
+    ],
+    "new_screenshots": 28,
+    "data_regressions": "146 real fixture points, 12 multicalls, unmodified timestamps/prices; missing feed empty; failed RPC only 2 metadata reads",
+    "solana_memory": "1 \u2192 2 real publication samples; initial sample preserved"
+  }
+}

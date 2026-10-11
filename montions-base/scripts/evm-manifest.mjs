@@ -103,8 +103,10 @@ function registeredFeedFor(id) {
 function readSidecar(name) {
   const candidates = [
     resolve(deploymentDir, `${chainId}.${name}.json`),
-    resolve(deploymentDir, "rehearsal", `${name}-${chainId}.json`),
-    resolve(deploymentDir, "rehearsal", `${chainId}.${name}.json`),
+    ...(process.env.FORK_REHEARSAL === "1" ? [
+      resolve(deploymentDir, "rehearsal", `${name}-${chainId}.json`),
+      resolve(deploymentDir, "rehearsal", `${chainId}.${name}.json`),
+    ] : []),
   ];
   for (const path of candidates) {
     if (!existsSync(path)) continue;

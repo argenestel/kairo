@@ -310,7 +310,7 @@ export function PriceChart({ symbol, spot, vol, strike, expiry, category, compac
         {loading && !points.length && <div className="pc__skel" aria-hidden />}
         {!loading && points.length < 2 && <div className="pc__empty">{points.length ? 'Collecting live samples — keep this chart open.' : 'No oracle history available. Retrying automatically.'}</div>}
       </div>
-      <p className="pc__hint">Drag to pan · scroll or pinch to zoom · double-click to reset{strike ? ' · gold = strike' : ''}{expiry ? ' · dashed = expiry · cone = ±1σ' : ''}</p>
+      <p className="pc__hint">Drag to pan · scroll or pinch to zoom · double-click to reset{strike ? ' · K = strike' : ''}{expiry ? ' · dashed = expiry · cone = ±1σ' : ''}</p>
     </div>
   );
 }

@@ -104,12 +104,12 @@ export function Header({ step = 0, reached = 0, onGo, onLogo, busy = false, show
             </div>
           </>
         )}
+        {showDots && onGo && (
+          <div className="top-dots">
+            <ProgressDots step={step} reached={reached} onGo={(i) => { if (!busy) onGo(i); }} />
+          </div>
+        )}
       </header>
-      {showDots && onGo && (
-        <div className="top-dots">
-          <ProgressDots step={step} reached={reached} onGo={(i) => { if (!busy) onGo(i); }} />
-        </div>
-      )}
     </>
   );
 }

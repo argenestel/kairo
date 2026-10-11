@@ -27,7 +27,9 @@
 .mode-switch:focus-visible { outline: none; }
 .mode-switch:focus-visible .mode-switch__track { outline: 2px solid var(--ring); outline-offset: 2px; }
 
-.top-dots { display: flex; justify-content: center; margin: -4px 0 4px; position: relative; z-index: 5; }
+/* step dots live inside <header> (absolutely placed under it) so they never take a grid row of .app */
+.top { position: relative; }
+.top-dots { position: absolute; left: 50%; top: calc(100% - 6px); transform: translateX(-50%); display: flex; justify-content: center; z-index: 5; pointer-events: auto; }
 
 .top__burger { display: none; gap: 4px; align-content: center; justify-items: center; }
 .top__burger span { display: block; width: 16px; height: 2px; border-radius: 2px; background: currentColor; transition: transform 0.25s var(--ease), opacity 0.2s; }

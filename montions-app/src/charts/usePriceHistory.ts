@@ -22,6 +22,8 @@ export function usePriceHistory(symbol: string | null, spot: number, vol: number
         const { loadHistory } = await import('./history');
         const next = await loadHistory({ chain: key, symbol, ...current.current, category });
         if (active) setSnap(prev => next.points.length || !prev ? next : { ...prev, label: `${prev.label.replace(' · refresh unavailable', '')} · refresh unavailable` });
+      } catch {
+        if (active) setSnap(prev => prev ? { ...prev, label: 'Oracle refresh unavailable · retrying' } : { points: [], source: 'synthetic', label: 'Oracle history unavailable · retrying' });
       } finally {
         if (active) {
           setLoading(false);

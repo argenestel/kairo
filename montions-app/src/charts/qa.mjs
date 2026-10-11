@@ -73,6 +73,7 @@ try {
     assert.match(await page.$eval('.sim__pl',e=>e.textContent),/profit/);
     await page.keyboard.press('s'); await wait(100);
     assert.ok(await page.$('.sim.is-snap'));
+    assert.match(await page.$eval('.sim__pl',e=>e.textContent), /profit/, 'YES wins at equality');
     assert.match(await sim.evaluate(e=>e.getAttribute('aria-valuetext')),/return/);
     const box=await sim.boundingBox();
     await page.mouse.move(box.x+50,box.y+box.height/2); await page.mouse.down();
@@ -136,7 +137,13 @@ try {
    if(calls>14) throw Error('unbounded RPC requests');
    const mock=await loadHistory({chain:'mock',symbol:'ETH',spot:2000,vol:.6});
    if(mock.source!=='synthetic' || mock.points.length<80) throw Error('mock history');
-   return {points:points.length,multicalls:calls,last:points.at(-1)};
+   const absent=await loadHistory({chain:'arbitrum',symbol:'__NO_FEED__',spot:12345,vol:.6});
+   if(absent.points.length || !absent.label.includes('unavailable')) throw Error('fabricated live fallback');
+   let failedReads=0, rejected=false;
+   const failing={readContract:async args=>{failedReads++;return client.readContract(args);},multicall:async()=>{throw Error('RPC unavailable');}};
+   try {await loadAggregator(failing,'0x0000000000000000000000000000000000000001',86400);} catch {rejected=true;}
+   if(!rejected || failedReads!==2) throw Error('RPC failure fans out into serial round reads');
+   return {points:points.length,multicalls:calls,last:points.at(-1),missingFeed:'empty (no fabricated prices)',failureReads:failedReads};
  });
  report.push(`PASS NO equality/below/above; loader time-window and unmodified-round regression: ${JSON.stringify(dataTests)}`);
  assert.deepEqual(errors,[]);
