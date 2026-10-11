@@ -8,6 +8,7 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
+      '@kairo/paper': r('../paper'),
       // SDKs are consumed from source so the app always matches the programs/contracts.
       '@montions/solana-sdk': r('../montions-sol/sdk/src/index.ts'),
       '@montions/base-sdk': r('../montions-base/sdk/src/index.ts'),

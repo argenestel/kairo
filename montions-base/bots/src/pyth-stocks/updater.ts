@@ -1,3 +1,4 @@
+import { offlineFixture } from './offline.js';
 import { assetId, config, fail, isMain, loop, pythAbi, runtime, stocks, write, type Asset, type Runtime } from './common.js';
 import { validateUpdate, type Metadata } from './hermes.js';
 import { marketOpen } from './session.js';
@@ -25,6 +26,7 @@ export function verifiedSchedules(metadata: Metadata[]): Asset[] {
   });
 }
 async function main(): Promise<void> {
+  if (offlineFixture("latest")) return;
   const r = await runtime(), last = new Map<string,number>(), expiries = new Set<string>();
   let assets = verifiedSchedules(await r.hermes.metadata()), metadataAt = 0;
   await loop(async () => {

@@ -4,7 +4,7 @@ import { parseHermesUpdate } from '../pyth.js';
 export interface Metadata { id: string; attributes: { symbol: string; schedule: string }; market_hours: { is_open: boolean; next_open: number | null; next_close: number | null } }
 export interface Update { binary: { encoding: string; data: string[] }; parsed: { id: string; price: { price: string; conf: string; expo: number; publish_time: number } }[] }
 export class HermesError extends Error { constructor(readonly status: number) { super(`Hermes HTTP ${status}`); } }
-/** Shared serialized limiter: below the public 10 requests / 10 seconds / IP ceiling. */
+/** Serialized limiter: reserve half the 10 requests / 10 seconds / IP ceiling for the sibling keeper. */
 export class Hermes {
   private tail: Promise<unknown> = Promise.resolve();
   private last = 0;
@@ -13,7 +13,7 @@ export class Hermes {
   async request(path: string): Promise<unknown> {
     if (!this.key?.trim()) throw new Error('Set PYTH_HERMES_API_KEY in bots/.env');
     const task = this.tail.then(async () => {
-      await this.sleep(Math.max(0, this.last + 1100 - Date.now()));
+      await this.sleep(Math.max(0, this.last + 2200 - Date.now()));
       this.last = Date.now();
       let response: Response;
       try { response = await this.fetcher(`https://hermes.pyth.network${path}`, {

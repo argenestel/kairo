@@ -1,3 +1,4 @@
+import { offlineFixture } from './offline.js';
 import { parseAbi, type Hex } from 'viem';
 import { decodePriceSeriesData, type OnchainSeries } from '../seriesOps.js';
 import { assetId, config, fail, isMain, loop, pythAbi, resolverAbi, runtime, stocks, write, type Runtime } from './common.js';
@@ -34,6 +35,7 @@ export async function settleGroup(r: Runtime, series: OnchainSeries[]): Promise<
   for (const s of series) await write(r,r.book,bookAbi,'resolve',[s.id]);
 }
 async function main(): Promise<void> {
+  if (offlineFixture("settlement")) return;
   const r = await runtime();
   await loop(async () => {
     const now = Number((await r.context.publicClient.getBlock()).timestamp);

@@ -1,0 +1,77 @@
+/* Reading surfaces consume the shared Serious / UwU token palette. */
+.reading { width: min(1160px, 100%); margin: 0 auto; padding: 18px 12px 56px; color: var(--text); }
+.reading__nav { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 10px 0 26px; border-bottom: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+.reading__nav > div { display: flex; gap: 24px; }
+.reading a[aria-current='page'] { color: var(--text); font-weight: 700; }
+.reading__grid { display: grid; grid-template-columns: 216px minmax(0, 1fr); gap: 36px; align-items: start; padding-top: 32px; }
+.reading__sidebar { position: sticky; top: 16px; max-height: calc(100dvh - 190px); overflow: auto; scrollbar-width: thin; font-size: 12px; line-height: 1.5; }
+.reading__sidebar summary { cursor: pointer; font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: var(--faint); margin-bottom: 16px; }
+.reading__sidebar nav { display: grid; gap: 3px; }
+.reading__sidebar a { display: block; padding: 6px 8px; color: var(--muted); border-left: 1px solid var(--line); }
+.reading__sidebar a:hover { color: var(--text); border-color: var(--ring); }
+.reading__sidebar a[aria-current='page'] { border-color: var(--ring); background: var(--glass); }
+.reading__sidebar .is-subsection { padding-left: 18px; font-size: 11px; }
+.reading__toc { margin-top: 20px; }
+.reading__card { min-width: 0; padding: 44px 48px; background: var(--glass-strong); border: 1px solid var(--line); border-radius: var(--radius-card); }
+.reading__eyebrow { color: var(--muted); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 20px; }
+.reading__title h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(34px, 4vw, 56px); line-height: 1.08; letter-spacing: -.025em; text-wrap: balance; }
+.reading__subtitle { margin-top: 20px; font-size: 18px; line-height: 1.55; color: var(--muted); }
+.reading__meta { margin-top: 26px; padding: 18px 0; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); color: var(--muted); font-size: 11px; flex-wrap: wrap; }
+.reading__meta button { color: var(--text); border: 1px solid var(--line-strong); border-radius: var(--radius-pill); padding: 9px 14px; font-size: 12px; }
+.reading__abstract { margin-top: 30px; color: var(--muted); font-size: 16px; line-height: 1.8; }
+.reading__prose { font-size: 16px; line-height: 1.85; overflow-wrap: anywhere; }
+.reading__prose h2 { font-family: var(--serif); font-size: 30px; font-weight: 400; line-height: 1.25; margin: 48px 0 20px; scroll-margin-top: 20px; }
+.reading__prose h3 { font-size: 18px; line-height: 1.4; margin: 30px 0 16px; scroll-margin-top: 20px; }
+.reading__prose p { margin: 18px 0; }
+.reading__prose ul, .reading__prose ol { padding-left: 24px; margin: 18px 0; list-style: disc; }
+.reading__prose ol { list-style: decimal; }
+.reading__prose li { padding-left: 4px; margin: 7px 0; }
+.reading__prose a { color: var(--up-soft); text-decoration: underline; text-underline-offset: 3px; }
+.reading__prose code { font-size: .8em; background: var(--glass); border: 1px solid var(--line); border-radius: 4px; padding: 2px 4px; }
+.reading__prose pre { overflow-x: auto; max-width: 100%; padding: 18px; border: 1px solid var(--line); background: var(--glass); border-radius: 12px; font-size: 12px; line-height: 1.7; }
+.reading__prose pre code { padding: 0; border: 0; background: none; font-size: inherit; }
+.reading__prose blockquote { margin: 24px 0; padding: 1px 20px; border-left: 2px solid var(--up-soft); color: var(--muted); font-family: var(--serif); font-size: 23px; }
+.reading__prose table { display: block; overflow-x: auto; max-width: 100%; border-collapse: collapse; font-size: 12px; line-height: 1.6; margin: 24px 0; }
+.reading__prose th, .reading__prose td { padding: 10px 12px; border: 1px solid var(--line); text-align: left; min-width: 100px; }
+.reading__prose th { background: var(--glass); }
+.reading__prose hr { border: 0; border-top: 1px solid var(--line); margin: 30px 0; }
+.reading__prose figure { margin: 28px 0; padding: 16px; background: var(--paper); color: var(--ink); border-radius: 12px; }
+.reading__prose svg { display: block; width: 100%; height: auto; }
+.reading__prose figcaption { text-align: center; font-size: 11px; margin-top: 14px; }
+.reading__prose sup { font-size: 10px; }
+.reading-notes { font-size: 12px; }
+.reading__footer { margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--line); font-size: 11px; color: var(--muted); display: flex; gap: 16px; justify-content: space-between; }
+html[data-mode='uwu'] .reading__card { background: var(--paper); box-shadow: 0 12px 48px var(--line); }
+html[data-mode='uwu'] .reading__title h1 { font-size: clamp(30px, 3vw, 44px); font-weight: 700; }
+html[data-mode='uwu'] .reading__prose a { color: var(--text); }
+.app--reading .product-nav { flex-wrap: wrap; justify-content: center; }
+@media (max-width: 1100px) { .app--reading .top { grid-template-columns: auto 1fr; } .app--reading .top__mid { grid-column: 1 / -1; grid-row: 2; } .app--reading .top__right { justify-self: end; } }
+@media (max-width: 760px) {
+  .reading { padding: 10px 0 36px; }
+  .reading__grid { grid-template-columns: minmax(0, 1fr); gap: 20px; padding-top: 20px; }
+  .reading__sidebar { position: static; max-height: none; padding: 12px 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--glass-strong); }
+  .reading__sidebar details[open] nav { max-height: 160px; overflow: auto; }
+  .reading__sidebar summary { margin-bottom: 0; }
+  .reading__sidebar details[open] summary { margin-bottom: 12px; }
+  .reading__card { padding: 28px 20px; }
+  .reading__nav { font-size: 11px; gap: 8px; padding: 10px 4px 18px; }
+  .reading__nav > div { gap: 16px; }
+  .reading__prose { font-size: 15px; line-height: 1.8; }
+  .reading__prose h2 { font-size: 26px; }
+  .reading__footer { flex-wrap: wrap; }
+  .app--reading .product-nav__btn { padding: 0 9px; font-size: 11px; }
+}
+@media print {
+  @page { margin: 18mm; }
+  body:has(.reading), body:has(.reading) #root, .app--reading { height: auto !important; overflow: visible !important; background: white !important; color: black !important; display: block !important; }
+  body:has(.reading) .scene, body:has(.reading) .uwu-layer, .app--reading > .top, .app--reading > .foot, .app--reading .rpc-banner, .reading__nav, .reading__sidebar, .reading__meta button, .reading__footer { display: none !important; }
+  .app--reading .main { display: block !important; overflow: visible !important; height: auto !important; padding: 0; }
+  .reading { width: 100%; padding: 0; color: black; }
+  .reading__grid { display: block; padding: 0; }
+  .reading__card { padding: 0; border: 0; background: white !important; box-shadow: none !important; }
+  .reading__prose { font-size: 10pt; line-height: 1.6; }
+  .reading__prose h2, .reading__prose h3 { break-after: avoid; }
+  .reading__prose figure, .reading__prose pre { break-inside: avoid; }
+  .reading__prose a, .reading__abstract, .reading__subtitle, .reading__eyebrow, .reading__meta { color: black !important; }
+  .reading__prose code, .reading__prose pre, .reading__prose th { background: #f4f4f4; color: black; }
+}

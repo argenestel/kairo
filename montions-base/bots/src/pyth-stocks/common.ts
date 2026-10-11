@@ -5,7 +5,8 @@ import { keccak256, stringToHex, parseAbi, type Address, type Hex } from 'viem';
 import { loadBotContext, addressAt, isDryRun, guardedWriteContract, sendAndWait, type BotContext } from '../runtime.js';
 import { readAllSeries, decodePriceSeriesData, type OnchainSeries } from '../seriesOps.js';
 import { Hermes } from './hermes.js';
-export const ROOT = fileURLToPath(new URL('../../../..', import.meta.url));
+import { guardCost } from './gas.js';
+export const ROOT = fileURLToPath(new URL('../../../', import.meta.url));
 export const config = JSON.parse(readFileSync(resolve(ROOT, 'config/pyth-stocks.json'), 'utf8')) as { assets: Asset[]; chains: Record<string, { pyth: Address; rpc: string }> };
 export interface Asset { symbol: string; feedId: Hex; schedule: string; maxAge: number }
 export const pythAbi = parseAbi(['function getUpdateFee(bytes[] data) view returns (uint256)', 'function updatePriceFeeds(bytes[] data) payable']);
@@ -44,7 +45,10 @@ export async function write(r: Runtime, address: Address, abi: readonly unknown[
   // Enforce existing L1-aware cumulative spend guard; never permit disabling it here.
   if (process.env.SKIP_SPEND_GUARD) throw new Error('Pyth stock spend guard cannot be disabled');
   if (await r.context.publicClient.getGasPrice() > BigInt(process.env.PYTH_MAX_GAS_PRICE_WEI ?? '1000000000')) throw new Error('Gas price guard');
-  const hash = await guardedWriteContract(r.context,{ address,abi,functionName,args,value,account:r.context.account });
+  const parameters = { address,abi,functionName,args,value,account:r.context.account };
+  const cost = await guardCost(r.context,parameters);
+  console.log(JSON.stringify({functionName,estimatedMaxCostWei:cost.toString()}));
+  const hash = await guardedWriteContract(r.context,parameters);
   await sendAndWait(r.context,hash,functionName);
 }
 export const isMain = (url: string) => process.argv[1] && fileURLToPath(url) === resolve(process.argv[1]);

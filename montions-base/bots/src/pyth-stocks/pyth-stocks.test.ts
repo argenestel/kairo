@@ -1,3 +1,4 @@
+import { checkCost } from './gas.js';
 import { describe, it, expect, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { type Hex } from 'viem';
@@ -19,14 +20,18 @@ function mockRuntime(settled = false) {
   return {r,read,updates};
 }
 describe('Kairo Pyth stocks', () => {
+  it('caps combined execution, L1 and Pyth fee and preserves balance reserve', () => {
+    expect(()=>checkCost(1000n,950n,50n,100n,900n)).not.toThrow();
+    expect(()=>checkCost(1000n,950n,51n,100n,0n)).toThrow();
+    expect(()=>checkCost(1000n,950n,50n,100n,901n)).toThrow();
+  });
   it('records 29 exact catalog matches, unique feeds and valid operator volatility', () => {
     expect(verifiedSchedules(metadata)).toHaveLength(29);
     expect(new Set(config.assets.map(a=>a.feedId)).size).toBe(29);
-    expect(verifiedSchedules(metadata.map((m,i)=>i===0?{...m,id:'00'}:m))).toBeDefined;
   });
   it('rejects changed IDs at startup', () => expect(()=>verifiedSchedules(metadata.map((m,i)=>i===0?{...m,id:'00'}:m))).toThrow());
   it('requires credentials, adds server-side bearer and never returns response bodies in errors', async () => {
-    const fetcher = vi.fn(async () => new Response(JSON.stringify(fixture),{status:200}));
+    const fetcher = vi.fn(async (_url: string | URL | Request, _init?: RequestInit) => new Response(JSON.stringify(fixture),{status:200}));
     await expect(new Hermes(undefined,fetcher).updates([a.feedId])).rejects.toThrow('PYTH_HERMES_API_KEY');
     expect(fetcher).not.toHaveBeenCalled();
     const h = new Hermes('test-secret',fetcher,async()=>{});
@@ -39,7 +44,7 @@ describe('Kairo Pyth stocks', () => {
     }
   });
   it('serializes requests and rate limits even after errors', async () => {
-    const sleep = vi.fn(async()=>{}), fetcher = vi.fn(async()=>new Response('{}'));
+    const sleep = vi.fn(async(_ms: number)=>{}), fetcher = vi.fn(async()=>new Response('{}'));
     const h = new Hermes('test-key',fetcher,sleep);
     await Promise.all([h.metadata(),h.metadata(),h.metadata()]);
     expect(fetcher).toHaveBeenCalledTimes(3);

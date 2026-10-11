@@ -14,6 +14,7 @@
     "types": ["vite/client"],
     "baseUrl": ".",
     "paths": {
+      "@kairo/paper/*": ["../paper/*"],
       "@montions/solana-sdk": ["../montions-sol/sdk/src/index.ts"],
       "@montions/base-sdk": ["../montions-base/sdk/src/index.ts"],
       "@montions/sol-config/*": ["../montions-sol/config/*"],

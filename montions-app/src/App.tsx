@@ -32,6 +32,8 @@ const MarketsPage = lazy(() => import('./pages/MarketsPage'));
 const PredictionsPage = lazy(() => import('./pages/PredictionsPage'));
 const EventDetailPage = lazy(() => import('./pages/EventDetailPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
+// Reading routes: bounded integration; content and presentation live in pages/reading.
+const ReadingPage = lazy(() => import('./pages/reading/ReadingPage'));
 
 export function App() {
   return (
@@ -50,7 +52,7 @@ export function App() {
 }
 
 function AppShell() {
-  const { route } = useRoute();
+  const { route, path } = useRoute();
   const [wallet, setWallet] = useState<{ open: boolean; then?: (a: string) => void }>({ open: false });
   const [ticketsOpen, setTicketsOpen] = useState(false);
   const positions = usePositions(ticketsOpen);
@@ -70,7 +72,8 @@ function AppShell() {
         {route.name === 'markets' && <PageFrame><MarketsPage /></PageFrame>}
         {route.name === 'predictions' && <PageFrame uwuStep={0}><PredictionsPage /></PageFrame>}
         {route.name === 'event' && <PageFrame uwuStep={4}><EventDetailPage eventKey={route.key} /></PageFrame>}
-        {route.name === 'notfound' && <PageFrame><NotFoundPage /></PageFrame>}
+        {/* Reading routes — keep the shared product router independent of document navigation. */}
+        {route.name === 'notfound' && <PageFrame>{/^\/(paper|docs(?:\/[^/]+)?|thesis|litepaper|pitch|submission|demo-script)\/?$/.test(path) ? <ReadingPage /> : <NotFoundPage />}</PageFrame>}
       </Suspense>
       <WalletSheet
         open={wallet.open}
